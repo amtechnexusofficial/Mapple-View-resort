@@ -12,10 +12,10 @@ export default async function RoomsPage() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
       <div className="text-center">
-        <span className="text-sm font-semibold uppercase tracking-widest text-gold-600">
+        <span className="text-sm font-semibold uppercase tracking-widest text-petrol-600">
           Accommodation
         </span>
-        <h1 className="mt-2 font-display text-4xl font-bold text-forest-800">
+        <h1 className="mt-2 font-display text-4xl font-bold text-ink">
           Rooms &amp; Suites
         </h1>
         <p className="mx-auto mt-4 max-w-xl text-ink/70">

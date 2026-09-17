@@ -42,7 +42,7 @@ function Field({
         type={type}
         value={value}
         onChange={(e) => onChange(field, e.target.value)}
-        className="mt-1 w-full rounded-lg border border-forest-200 px-3 py-2 text-sm focus:border-forest-500 focus:outline-none"
+        className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm focus:border-petrol-500 focus:outline-none"
       />
       {hint && <p className="mt-1 text-xs text-ink/40">{hint}</p>}
     </div>
@@ -101,7 +101,7 @@ export default function SettingsForm({ settings }: { settings: Settings }) {
   return (
     <form onSubmit={handleSubmit} className="max-w-2xl space-y-8">
       <section>
-        <h2 className="font-display text-lg font-semibold text-forest-800">
+        <h2 className="font-display text-lg font-semibold text-ink">
           Resort Information
         </h2>
         <div className="mt-4 space-y-4">
@@ -113,7 +113,7 @@ export default function SettingsForm({ settings }: { settings: Settings }) {
               rows={3}
               value={form.description}
               onChange={(e) => set("description", e.target.value)}
-              className="mt-1 w-full rounded-lg border border-forest-200 px-3 py-2 text-sm focus:border-forest-500 focus:outline-none"
+              className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm focus:border-petrol-500 focus:outline-none"
             />
           </div>
           <Field label="Address" field="address" value={form.address} onChange={set} />
@@ -128,8 +128,8 @@ export default function SettingsForm({ settings }: { settings: Settings }) {
         </div>
       </section>
 
-      <section className="border-t border-forest-100 pt-6">
-        <h2 className="font-display text-lg font-semibold text-forest-800">
+      <section className="border-t border-petrol-100 pt-6">
+        <h2 className="font-display text-lg font-semibold text-ink">
           UPI Payment
         </h2>
         <p className="mt-1 text-xs text-ink/50">
@@ -141,8 +141,8 @@ export default function SettingsForm({ settings }: { settings: Settings }) {
         </div>
       </section>
 
-      <section className="border-t border-forest-100 pt-6">
-        <h2 className="font-display text-lg font-semibold text-forest-800">
+      <section className="border-t border-petrol-100 pt-6">
+        <h2 className="font-display text-lg font-semibold text-ink">
           WhatsApp Notifications
         </h2>
         <p className="mt-1 text-xs text-ink/50">
@@ -185,7 +185,7 @@ export default function SettingsForm({ settings }: { settings: Settings }) {
       <button
         type="submit"
         disabled={submitting}
-        className="rounded-full bg-forest-700 px-6 py-2.5 text-sm font-semibold text-cream hover:bg-forest-800 disabled:opacity-60"
+        className="rounded-full bg-ink px-6 py-2.5 text-sm font-semibold text-stone hover:bg-charcoal-light disabled:opacity-60"
       >
         {submitting ? "Saving..." : "Save Settings"}
       </button>

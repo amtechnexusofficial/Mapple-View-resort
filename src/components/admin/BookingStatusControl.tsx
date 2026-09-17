@@ -42,8 +42,8 @@ export default function BookingStatusControl({
           disabled={busy || o.value === status}
           className={`rounded-full px-4 py-1.5 text-sm font-medium transition disabled:cursor-not-allowed ${
             o.value === status
-              ? "bg-forest-700 text-cream"
-              : "bg-white text-forest-700 ring-1 ring-forest-200 hover:bg-forest-50"
+              ? "bg-ink text-stone"
+              : "bg-white text-ink-soft ring-1 ring-line hover:bg-petrol-50"
           }`}
         >
           {o.label}

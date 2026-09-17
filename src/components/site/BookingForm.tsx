@@ -74,9 +74,9 @@ export default function BookingForm({ room }: { room: Room }) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="rounded-2xl border border-forest-100 bg-white p-6 shadow-sm"
+      className="rounded-2xl border border-petrol-100 bg-white p-6 shadow-sm"
     >
-      <h3 className="font-display text-xl font-semibold text-forest-800">
+      <h3 className="font-display text-xl font-semibold text-ink">
         Book This Room
       </h3>
 
@@ -94,7 +94,7 @@ export default function BookingForm({ room }: { room: Room }) {
                 setCheckOut(format(addDays(new Date(e.target.value), 1), "yyyy-MM-dd"));
               }
             }}
-            className="mt-1 w-full rounded-lg border border-forest-200 px-3 py-2 text-sm focus:border-forest-500 focus:outline-none"
+            className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm focus:border-petrol-500 focus:outline-none"
           />
         </div>
         <div>
@@ -105,7 +105,7 @@ export default function BookingForm({ room }: { room: Room }) {
             min={format(addDays(new Date(checkIn), 1), "yyyy-MM-dd")}
             value={checkOut}
             onChange={(e) => setCheckOut(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-forest-200 px-3 py-2 text-sm focus:border-forest-500 focus:outline-none"
+            className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm focus:border-petrol-500 focus:outline-none"
           />
         </div>
       </div>
@@ -119,7 +119,7 @@ export default function BookingForm({ room }: { room: Room }) {
           max={room.max_guests}
           value={guests}
           onChange={(e) => setGuests(Number(e.target.value))}
-          className="mt-1 w-full rounded-lg border border-forest-200 px-3 py-2 text-sm focus:border-forest-500 focus:outline-none"
+          className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm focus:border-petrol-500 focus:outline-none"
         />
         <p className="mt-1 text-xs text-ink/50">Max {room.max_guests} guests</p>
       </div>
@@ -132,7 +132,7 @@ export default function BookingForm({ room }: { room: Room }) {
           value={guestName}
           onChange={(e) => setGuestName(e.target.value)}
           placeholder="Your full name"
-          className="mt-1 w-full rounded-lg border border-forest-200 px-3 py-2 text-sm focus:border-forest-500 focus:outline-none"
+          className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm focus:border-petrol-500 focus:outline-none"
         />
       </div>
 
@@ -144,7 +144,7 @@ export default function BookingForm({ room }: { room: Room }) {
           value={guestPhone}
           onChange={(e) => setGuestPhone(e.target.value)}
           placeholder="+91 98765 43210"
-          className="mt-1 w-full rounded-lg border border-forest-200 px-3 py-2 text-sm focus:border-forest-500 focus:outline-none"
+          className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm focus:border-petrol-500 focus:outline-none"
         />
       </div>
 
@@ -157,7 +157,7 @@ export default function BookingForm({ room }: { room: Room }) {
           value={guestEmail}
           onChange={(e) => setGuestEmail(e.target.value)}
           placeholder="you@example.com"
-          className="mt-1 w-full rounded-lg border border-forest-200 px-3 py-2 text-sm focus:border-forest-500 focus:outline-none"
+          className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm focus:border-petrol-500 focus:outline-none"
         />
       </div>
 
@@ -169,16 +169,16 @@ export default function BookingForm({ room }: { room: Room }) {
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           rows={2}
-          className="mt-1 w-full rounded-lg border border-forest-200 px-3 py-2 text-sm focus:border-forest-500 focus:outline-none"
+          className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm focus:border-petrol-500 focus:outline-none"
         />
       </div>
 
-      <div className="mt-6 space-y-1 rounded-xl bg-forest-50 p-4 text-sm">
+      <div className="mt-6 space-y-1 rounded-xl bg-petrol-50 p-4 text-sm">
         <div className="flex justify-between text-ink/70">
           <span>{formatInr(room.price_per_night)} x {nights || 0} night{nights === 1 ? "" : "s"}</span>
           <span>{formatInr(total)}</span>
         </div>
-        <div className="flex justify-between border-t border-forest-100 pt-2 font-semibold text-forest-800">
+        <div className="flex justify-between border-t border-petrol-100 pt-2 font-semibold text-ink">
           <span>Total</span>
           <span>{formatInr(total)}</span>
         </div>
@@ -193,7 +193,7 @@ export default function BookingForm({ room }: { room: Room }) {
       <button
         type="submit"
         disabled={submitting || nights < 1}
-        className="mt-6 w-full rounded-full bg-forest-700 px-6 py-3 text-sm font-semibold text-cream transition hover:bg-forest-800 disabled:cursor-not-allowed disabled:opacity-60"
+        className="mt-6 w-full rounded-full bg-ink px-6 py-3 text-sm font-semibold text-stone transition hover:bg-charcoal-light disabled:cursor-not-allowed disabled:opacity-60"
       >
         {submitting ? "Processing..." : "Continue to Payment"}
       </button>

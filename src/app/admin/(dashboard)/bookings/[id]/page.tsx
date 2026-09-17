@@ -15,14 +15,14 @@ export default async function AdminBookingDetailPage({
   return (
     <div className="max-w-2xl">
       <div className="flex items-center justify-between">
-        <h1 className="font-display text-2xl font-bold text-forest-800">
+        <h1 className="font-display text-2xl font-bold text-ink">
           Booking Details
         </h1>
         <StatusBadge status={booking.status} />
       </div>
 
-      <div className="mt-6 rounded-2xl border border-forest-100 bg-white p-6 shadow-sm">
-        <h2 className="font-display text-lg font-semibold text-forest-800">
+      <div className="mt-6 rounded-2xl border border-petrol-100 bg-white p-6 shadow-sm">
+        <h2 className="font-display text-lg font-semibold text-ink">
           {room?.name || "Unknown Room"}
         </h2>
 
@@ -58,8 +58,8 @@ export default async function AdminBookingDetailPage({
         <p className="mt-4 text-xs text-ink/40">Booking ID: {booking.id}</p>
       </div>
 
-      <div className="mt-6 rounded-2xl border border-forest-100 bg-white p-6 shadow-sm">
-        <h3 className="font-display text-base font-semibold text-forest-800">
+      <div className="mt-6 rounded-2xl border border-petrol-100 bg-white p-6 shadow-sm">
+        <h3 className="font-display text-base font-semibold text-ink">
           Update Status
         </h3>
         <div className="mt-3">

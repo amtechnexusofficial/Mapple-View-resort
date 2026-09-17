@@ -1,42 +1,50 @@
 @import "tailwindcss";
 
 :root {
-  --color-cream: #faf6ef;
-  --color-cream-dark: #f0e8d8;
-  --color-forest-50: #f2f6f2;
-  --color-forest-100: #dfe9df;
-  --color-forest-600: #2f5233;
-  --color-forest-700: #24402a;
-  --color-forest-800: #1a301f;
-  --color-forest-900: #10200f;
-  --color-gold-400: #d9a441;
-  --color-gold-500: #c48c2a;
-  --color-gold-600: #a8721c;
-  --color-ink: #2a2823;
+  --color-stone: #f6f3ec;
+  --color-stone-dark: #ece6d6;
+  --color-ink: #1c1916;
+  --color-ink-soft: #58524a;
+  --color-line: #e2dbc9;
+  --color-petrol-50: #eaf4f3;
+  --color-petrol-100: #d3e7e5;
+  --color-petrol-300: #4a938d;
+  --color-petrol-400: #2f7d78;
+  --color-petrol-500: #1f5d5a;
+  --color-petrol-600: #164541;
+  --color-charcoal: #211e1a;
+  --color-charcoal-light: #2c2822;
 }
 
 @theme inline {
-  --color-cream: var(--color-cream);
-  --color-cream-dark: var(--color-cream-dark);
-  --color-forest-50: var(--color-forest-50);
-  --color-forest-100: var(--color-forest-100);
-  --color-forest-600: var(--color-forest-600);
-  --color-forest-700: var(--color-forest-700);
-  --color-forest-800: var(--color-forest-800);
-  --color-forest-900: var(--color-forest-900);
-  --color-gold-400: var(--color-gold-400);
-  --color-gold-500: var(--color-gold-500);
-  --color-gold-600: var(--color-gold-600);
+  --color-stone: var(--color-stone);
+  --color-stone-dark: var(--color-stone-dark);
   --color-ink: var(--color-ink);
-  --font-display: var(--font-playfair);
-  --font-sans: var(--font-inter);
+  --color-ink-soft: var(--color-ink-soft);
+  --color-line: var(--color-line);
+  --color-petrol-50: var(--color-petrol-50);
+  --color-petrol-100: var(--color-petrol-100);
+  --color-petrol-300: var(--color-petrol-300);
+  --color-petrol-400: var(--color-petrol-400);
+  --color-petrol-500: var(--color-petrol-500);
+  --color-petrol-600: var(--color-petrol-600);
+  --color-charcoal: var(--color-charcoal);
+  --color-charcoal-light: var(--color-charcoal-light);
+  --font-display: var(--font-outfit);
+  --font-sans: var(--font-jakarta);
+  --font-mono: var(--font-plex-mono);
 }
 
 body {
-  background: var(--color-cream);
+  background: var(--color-stone);
   color: var(--color-ink);
 }
 
 .font-display {
-  font-family: var(--font-display), Georgia, serif;
+  font-family: var(--font-display), system-ui, sans-serif;
+}
+
+.font-mono-data {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
 }

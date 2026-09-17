@@ -21,7 +21,7 @@ export default async function AdminDashboardPage() {
 
   return (
     <div>
-      <h1 className="font-display text-2xl font-bold text-forest-800">
+      <h1 className="font-display text-2xl font-bold text-ink">
         Dashboard
       </h1>
       <p className="mt-1 text-sm text-ink/60">
@@ -32,24 +32,24 @@ export default async function AdminDashboardPage() {
         {cards.map((c) => (
           <div
             key={c.label}
-            className="rounded-2xl border border-forest-100 bg-white p-5 shadow-sm"
+            className="rounded-2xl border border-petrol-100 bg-white p-5 shadow-sm"
           >
             <p className="text-xs font-medium uppercase tracking-wide text-ink/50">
               {c.label}
             </p>
-            <p className="mt-2 font-display text-2xl font-bold text-forest-800">
+            <p className="mt-2 font-display text-2xl font-bold text-ink">
               {c.value}
             </p>
           </div>
         ))}
       </div>
 
-      <div className="mt-8 rounded-2xl border border-forest-100 bg-white shadow-sm">
-        <div className="flex items-center justify-between border-b border-forest-100 px-6 py-4">
-          <h2 className="font-display text-lg font-semibold text-forest-800">
+      <div className="mt-8 rounded-2xl border border-petrol-100 bg-white shadow-sm">
+        <div className="flex items-center justify-between border-b border-petrol-100 px-6 py-4">
+          <h2 className="font-display text-lg font-semibold text-ink">
             Recent Bookings
           </h2>
-          <Link href="/admin/bookings" className="text-sm font-medium text-gold-600 hover:underline">
+          <Link href="/admin/bookings" className="text-sm font-medium text-petrol-600 hover:underline">
             View all
           </Link>
         </div>
@@ -61,7 +61,7 @@ export default async function AdminDashboardPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead>
-                <tr className="border-b border-forest-100 text-xs uppercase text-ink/50">
+                <tr className="border-b border-petrol-100 text-xs uppercase text-ink/50">
                   <th className="px-6 py-3 font-medium">Guest</th>
                   <th className="px-6 py-3 font-medium">Room</th>
                   <th className="px-6 py-3 font-medium">Dates</th>
@@ -71,9 +71,9 @@ export default async function AdminDashboardPage() {
               </thead>
               <tbody>
                 {recentBookings.map((b) => (
-                  <tr key={b.id} className="border-b border-forest-50 last:border-0">
+                  <tr key={b.id} className="border-b border-petrol-50 last:border-0">
                     <td className="px-6 py-3">
-                      <Link href={`/admin/bookings/${b.id}`} className="font-medium text-forest-800 hover:underline">
+                      <Link href={`/admin/bookings/${b.id}`} className="font-medium text-ink hover:underline">
                         {b.guest_name}
                       </Link>
                       <p className="text-xs text-ink/50">{b.guest_phone}</p>

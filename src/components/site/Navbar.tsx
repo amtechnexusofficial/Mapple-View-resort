@@ -12,10 +12,10 @@ export default async function Navbar() {
   ];
 
   return (
-    <header className="sticky top-0 z-40 border-b border-forest-100 bg-cream/90 backdrop-blur">
+    <header className="sticky top-0 z-40 border-b border-petrol-100 bg-stone/90 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
         <Link href="/" className="flex items-baseline gap-2">
-          <span className="font-display text-xl font-semibold text-forest-800 sm:text-2xl">
+          <span className="font-display text-xl font-semibold text-ink sm:text-2xl">
             {settings.resort_name}
           </span>
         </Link>
@@ -24,7 +24,7 @@ export default async function Navbar() {
             <Link
               key={l.href}
               href={l.href}
-              className="text-sm font-medium text-forest-700 transition hover:text-gold-600"
+              className="text-sm font-medium text-ink-soft transition hover:text-petrol-600"
             >
               {l.label}
             </Link>
@@ -34,20 +34,20 @@ export default async function Navbar() {
           {settings.contact_phone && (
             <a
               href={`tel:${settings.contact_phone.replace(/\s/g, "")}`}
-              className="hidden text-sm font-medium text-forest-700 sm:block"
+              className="hidden text-sm font-medium text-ink-soft sm:block"
             >
               {settings.contact_phone}
             </a>
           )}
           <Link
             href="/rooms"
-            className="rounded-full bg-forest-700 px-4 py-2 text-sm font-semibold text-cream shadow-sm transition hover:bg-forest-800"
+            className="rounded-full bg-ink px-4 py-2 text-sm font-semibold text-stone shadow-sm transition hover:bg-charcoal-light"
           >
             Book Now
           </Link>
         </div>
       </div>
-      <nav className="flex items-center gap-6 overflow-x-auto border-t border-forest-100 px-4 py-2 text-sm font-medium text-forest-700 md:hidden">
+      <nav className="flex items-center gap-6 overflow-x-auto border-t border-petrol-100 px-4 py-2 text-sm font-medium text-ink-soft md:hidden">
         {links.map((l) => (
           <Link key={l.href} href={l.href} className="whitespace-nowrap">
             {l.label}

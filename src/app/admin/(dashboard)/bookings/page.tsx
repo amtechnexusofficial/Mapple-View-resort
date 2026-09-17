@@ -27,7 +27,7 @@ export default async function AdminBookingsPage({
 
   return (
     <div>
-      <h1 className="font-display text-2xl font-bold text-forest-800">Bookings</h1>
+      <h1 className="font-display text-2xl font-bold text-ink">Bookings</h1>
       <p className="mt-1 text-sm text-ink/60">Manage guest booking requests.</p>
 
       <div className="mt-6 flex flex-wrap gap-2">
@@ -37,8 +37,8 @@ export default async function AdminBookingsPage({
             href={t.value === "all" ? "/admin/bookings" : `/admin/bookings?status=${t.value}`}
             className={`rounded-full px-4 py-1.5 text-sm font-medium transition ${
               statusParam === t.value
-                ? "bg-forest-700 text-cream"
-                : "bg-white text-forest-700 ring-1 ring-forest-200 hover:bg-forest-50"
+                ? "bg-ink text-stone"
+                : "bg-white text-ink-soft ring-1 ring-line hover:bg-petrol-50"
             }`}
           >
             {t.label}
@@ -46,7 +46,7 @@ export default async function AdminBookingsPage({
         ))}
       </div>
 
-      <div className="mt-6 rounded-2xl border border-forest-100 bg-white shadow-sm">
+      <div className="mt-6 rounded-2xl border border-petrol-100 bg-white shadow-sm">
         {bookings.length === 0 ? (
           <p className="px-6 py-10 text-center text-sm text-ink/50">
             No bookings found.
@@ -55,7 +55,7 @@ export default async function AdminBookingsPage({
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead>
-                <tr className="border-b border-forest-100 text-xs uppercase text-ink/50">
+                <tr className="border-b border-petrol-100 text-xs uppercase text-ink/50">
                   <th className="px-6 py-3 font-medium">Guest</th>
                   <th className="px-6 py-3 font-medium">Room</th>
                   <th className="px-6 py-3 font-medium">Dates</th>
@@ -65,9 +65,9 @@ export default async function AdminBookingsPage({
               </thead>
               <tbody>
                 {bookings.map((b) => (
-                  <tr key={b.id} className="border-b border-forest-50 last:border-0">
+                  <tr key={b.id} className="border-b border-petrol-50 last:border-0">
                     <td className="px-6 py-3">
-                      <Link href={`/admin/bookings/${b.id}`} className="font-medium text-forest-800 hover:underline">
+                      <Link href={`/admin/bookings/${b.id}`} className="font-medium text-ink hover:underline">
                         {b.guest_name}
                       </Link>
                       <p className="text-xs text-ink/50">{b.guest_phone}</p>

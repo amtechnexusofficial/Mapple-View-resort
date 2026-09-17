@@ -111,7 +111,7 @@ export default function RoomForm({ room }: { room?: Room }) {
             setName(e.target.value);
             if (!slugTouched) setSlug(slugify(e.target.value));
           }}
-          className="mt-1 w-full rounded-lg border border-forest-200 px-3 py-2 text-sm focus:border-forest-500 focus:outline-none"
+          className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm focus:border-petrol-500 focus:outline-none"
         />
       </div>
 
@@ -125,7 +125,7 @@ export default function RoomForm({ room }: { room?: Room }) {
             setSlugTouched(true);
             setSlug(slugify(e.target.value));
           }}
-          className="mt-1 w-full rounded-lg border border-forest-200 px-3 py-2 text-sm font-mono focus:border-forest-500 focus:outline-none"
+          className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm font-mono focus:border-petrol-500 focus:outline-none"
         />
       </div>
 
@@ -135,7 +135,7 @@ export default function RoomForm({ room }: { room?: Room }) {
           type="text"
           value={summary}
           onChange={(e) => setSummary(e.target.value)}
-          className="mt-1 w-full rounded-lg border border-forest-200 px-3 py-2 text-sm focus:border-forest-500 focus:outline-none"
+          className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm focus:border-petrol-500 focus:outline-none"
         />
       </div>
 
@@ -145,7 +145,7 @@ export default function RoomForm({ room }: { room?: Room }) {
           rows={4}
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          className="mt-1 w-full rounded-lg border border-forest-200 px-3 py-2 text-sm focus:border-forest-500 focus:outline-none"
+          className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm focus:border-petrol-500 focus:outline-none"
         />
       </div>
 
@@ -158,7 +158,7 @@ export default function RoomForm({ room }: { room?: Room }) {
             min={0}
             value={price}
             onChange={(e) => setPrice(Number(e.target.value))}
-            className="mt-1 w-full rounded-lg border border-forest-200 px-3 py-2 text-sm focus:border-forest-500 focus:outline-none"
+            className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm focus:border-petrol-500 focus:outline-none"
           />
         </div>
         <div>
@@ -169,7 +169,7 @@ export default function RoomForm({ room }: { room?: Room }) {
             min={1}
             value={maxGuests}
             onChange={(e) => setMaxGuests(Number(e.target.value))}
-            className="mt-1 w-full rounded-lg border border-forest-200 px-3 py-2 text-sm focus:border-forest-500 focus:outline-none"
+            className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm focus:border-petrol-500 focus:outline-none"
           />
         </div>
         <div>
@@ -178,7 +178,7 @@ export default function RoomForm({ room }: { room?: Room }) {
             type="text"
             value={bedType}
             onChange={(e) => setBedType(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-forest-200 px-3 py-2 text-sm focus:border-forest-500 focus:outline-none"
+            className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm focus:border-petrol-500 focus:outline-none"
           />
         </div>
         <div>
@@ -188,7 +188,7 @@ export default function RoomForm({ room }: { room?: Room }) {
             min={0}
             value={sizeSqft}
             onChange={(e) => setSizeSqft(Number(e.target.value))}
-            className="mt-1 w-full rounded-lg border border-forest-200 px-3 py-2 text-sm focus:border-forest-500 focus:outline-none"
+            className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm focus:border-petrol-500 focus:outline-none"
           />
         </div>
       </div>
@@ -202,7 +202,7 @@ export default function RoomForm({ room }: { room?: Room }) {
           value={amenities}
           onChange={(e) => setAmenities(e.target.value)}
           placeholder={"Free Wi-Fi\nMountain View\nAir Conditioning"}
-          className="mt-1 w-full rounded-lg border border-forest-200 px-3 py-2 text-sm focus:border-forest-500 focus:outline-none"
+          className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm focus:border-petrol-500 focus:outline-none"
         />
       </div>
 
@@ -210,7 +210,7 @@ export default function RoomForm({ room }: { room?: Room }) {
         <label className="text-xs font-medium text-ink/60">Room Images</label>
         <div className="mt-2 flex flex-wrap gap-3">
           {images.map((img, i) => (
-            <div key={img} className="relative h-24 w-24 overflow-hidden rounded-lg border border-forest-100">
+            <div key={img} className="relative h-24 w-24 overflow-hidden rounded-lg border border-petrol-100">
               <Image src={img} alt="" fill className="object-cover" />
               <button
                 type="button"
@@ -221,7 +221,7 @@ export default function RoomForm({ room }: { room?: Room }) {
               </button>
             </div>
           ))}
-          <label className="flex h-24 w-24 cursor-pointer items-center justify-center rounded-lg border border-dashed border-forest-300 text-xs text-ink/50 hover:bg-forest-50">
+          <label className="flex h-24 w-24 cursor-pointer items-center justify-center rounded-lg border border-dashed border-petrol-300 text-xs text-ink/50 hover:bg-petrol-50">
             {uploading ? "Uploading…" : "+ Add"}
             <input
               type="file"
@@ -246,7 +246,7 @@ export default function RoomForm({ room }: { room?: Room }) {
         <button
           type="submit"
           disabled={submitting}
-          className="rounded-full bg-forest-700 px-6 py-2.5 text-sm font-semibold text-cream hover:bg-forest-800 disabled:opacity-60"
+          className="rounded-full bg-ink px-6 py-2.5 text-sm font-semibold text-stone hover:bg-charcoal-light disabled:opacity-60"
         >
           {submitting ? "Saving..." : isEdit ? "Save Changes" : "Create Room"}
         </button>

@@ -91,8 +91,8 @@ export default function ConfirmPanel({
 
   if (status === "payment_claimed") {
     return (
-      <div className="mt-8 rounded-xl bg-gold-400/10 p-6 text-center ring-1 ring-gold-400/40">
-        <p className="text-lg font-semibold text-forest-800">
+      <div className="mt-8 rounded-xl bg-petrol-400/10 p-6 text-center ring-1 ring-petrol-400/40">
+        <p className="text-lg font-semibold text-ink">
           Booking Request Sent
         </p>
         <p className="mt-1 text-sm text-ink/70">
@@ -110,8 +110,8 @@ export default function ConfirmPanel({
   }
 
   return (
-    <div className="mt-8 border-t border-forest-100 pt-6">
-      <h2 className="font-display text-lg font-semibold text-forest-800">
+    <div className="mt-8 border-t border-petrol-100 pt-6">
+      <h2 className="font-display text-lg font-semibold text-ink">
         Pay via UPI
       </h2>
 
@@ -121,7 +121,7 @@ export default function ConfirmPanel({
           to complete your booking, or click confirm below to send your request.
         </p>
       ) : (
-        <div className="mt-4 flex flex-col items-center gap-4 rounded-xl bg-forest-50 p-6 sm:flex-row sm:items-start">
+        <div className="mt-4 flex flex-col items-center gap-4 rounded-xl bg-petrol-50 p-6 sm:flex-row sm:items-start">
           {qrDataUrl && (
             <Image
               src={qrDataUrl}
@@ -134,16 +134,16 @@ export default function ConfirmPanel({
           )}
           <div className="text-center sm:text-left">
             <p className="text-sm text-ink/70">Scan with any UPI app</p>
-            <p className="mt-1 font-mono text-sm font-semibold text-forest-800">
+            <p className="mt-1 font-mono text-sm font-semibold text-ink">
               {upiId}
             </p>
-            <p className="mt-2 text-2xl font-bold text-forest-800">
+            <p className="mt-2 text-2xl font-bold text-ink">
               {formatInr(amount)}
             </p>
             {upiUri && (
               <a
                 href={upiUri}
-                className="mt-3 inline-block text-sm font-semibold text-gold-600 underline sm:hidden"
+                className="mt-3 inline-block text-sm font-semibold text-petrol-600 underline sm:hidden"
               >
                 Open in UPI App
               </a>
@@ -161,7 +161,7 @@ export default function ConfirmPanel({
           value={paymentRef}
           onChange={(e) => setPaymentRef(e.target.value)}
           placeholder="e.g. 123456789012"
-          className="mt-1 w-full rounded-lg border border-forest-200 px-3 py-2 text-sm focus:border-forest-500 focus:outline-none"
+          className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm focus:border-petrol-500 focus:outline-none"
         />
       </div>
 
@@ -181,7 +181,7 @@ export default function ConfirmPanel({
       <button
         onClick={handleConfirm}
         disabled={submitting}
-        className="mt-6 w-full rounded-full bg-gold-500 px-6 py-3 text-sm font-semibold text-forest-900 transition hover:bg-gold-600 disabled:cursor-not-allowed disabled:opacity-60"
+        className="mt-6 w-full rounded-full bg-petrol-500 px-6 py-3 text-sm font-semibold text-stone transition hover:bg-petrol-600 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {submitting ? "Confirming..." : "I've Paid — Confirm Booking"}
       </button>

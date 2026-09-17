@@ -21,10 +21,10 @@ export default function Sidebar({ username }: { username: string }) {
   }
 
   return (
-    <aside className="flex w-full flex-col border-forest-800 bg-forest-900 text-cream md:h-screen md:w-64 md:border-r">
+    <aside className="flex w-full flex-col border-charcoal-light bg-charcoal text-stone md:h-screen md:w-64 md:border-r">
       <div className="px-6 py-6">
         <p className="font-display text-lg font-semibold">Mapple View</p>
-        <p className="text-xs text-cream/50">Admin Panel</p>
+        <p className="text-xs text-stone/50">Admin Panel</p>
       </div>
       <nav className="flex flex-1 flex-col gap-1 px-3">
         {links.map((l) => {
@@ -37,8 +37,8 @@ export default function Sidebar({ username }: { username: string }) {
               href={l.href}
               className={`rounded-lg px-3 py-2 text-sm font-medium transition ${
                 active
-                  ? "bg-forest-700 text-cream"
-                  : "text-cream/70 hover:bg-forest-800 hover:text-cream"
+                  ? "bg-ink text-stone"
+                  : "text-stone/70 hover:bg-charcoal-light hover:text-stone"
               }`}
             >
               {l.label}
@@ -46,17 +46,17 @@ export default function Sidebar({ username }: { username: string }) {
           );
         })}
       </nav>
-      <div className="border-t border-forest-800 px-6 py-4">
-        <p className="truncate text-xs text-cream/50">Signed in as {username}</p>
+      <div className="border-t border-charcoal-light px-6 py-4">
+        <p className="truncate text-xs text-stone/50">Signed in as {username}</p>
         <button
           onClick={handleLogout}
-          className="mt-2 text-sm font-medium text-gold-400 hover:text-gold-300"
+          className="mt-2 text-sm font-medium text-petrol-400 hover:text-petrol-300"
         >
           Log Out
         </button>
         <Link
           href="/"
-          className="mt-2 block text-xs text-cream/50 hover:text-cream"
+          className="mt-2 block text-xs text-stone/50 hover:text-stone"
         >
           ← Back to website
         </Link>

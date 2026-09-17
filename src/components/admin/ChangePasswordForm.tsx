@@ -43,7 +43,7 @@ export default function ChangePasswordForm() {
           required
           value={currentPassword}
           onChange={(e) => setCurrentPassword(e.target.value)}
-          className="mt-1 w-full rounded-lg border border-forest-200 px-3 py-2 text-sm focus:border-forest-500 focus:outline-none"
+          className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm focus:border-petrol-500 focus:outline-none"
         />
       </div>
       <div>
@@ -54,7 +54,7 @@ export default function ChangePasswordForm() {
           minLength={6}
           value={newPassword}
           onChange={(e) => setNewPassword(e.target.value)}
-          className="mt-1 w-full rounded-lg border border-forest-200 px-3 py-2 text-sm focus:border-forest-500 focus:outline-none"
+          className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm focus:border-petrol-500 focus:outline-none"
         />
       </div>
       {message && (
@@ -69,7 +69,7 @@ export default function ChangePasswordForm() {
       <button
         type="submit"
         disabled={submitting}
-        className="rounded-full bg-forest-700 px-6 py-2.5 text-sm font-semibold text-cream hover:bg-forest-800 disabled:opacity-60"
+        className="rounded-full bg-ink px-6 py-2.5 text-sm font-semibold text-stone hover:bg-charcoal-light disabled:opacity-60"
       >
         {submitting ? "Updating..." : "Update Password"}
       </button>

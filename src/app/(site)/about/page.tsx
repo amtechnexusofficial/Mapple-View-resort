@@ -15,9 +15,9 @@ export default async function AboutPage() {
 
   return (
     <div>
-      <section className="bg-forest-800 py-20 text-center text-cream">
+      <section className="bg-charcoal-light py-20 text-center text-stone">
         <div className="mx-auto max-w-3xl px-4 sm:px-6">
-          <span className="text-sm font-semibold uppercase tracking-widest text-gold-400">
+          <span className="text-sm font-semibold uppercase tracking-widest text-petrol-400">
             About Us
           </span>
           <h1 className="mt-2 font-display text-4xl font-bold sm:text-5xl">
@@ -38,9 +38,9 @@ export default async function AboutPage() {
 
         <div className="mt-14 grid gap-8 sm:grid-cols-3">
           {values.map((v) => (
-            <div key={v.title} className="rounded-2xl border border-forest-100 bg-white p-6 shadow-sm">
-              <div className="h-1 w-10 rounded-full bg-gold-500" />
-              <h3 className="mt-4 font-display text-lg font-semibold text-forest-800">
+            <div key={v.title} className="rounded-2xl border border-petrol-100 bg-white p-6 shadow-sm">
+              <div className="h-1 w-10 rounded-full bg-petrol-500" />
+              <h3 className="mt-4 font-display text-lg font-semibold text-ink">
                 {v.title}
               </h3>
               <p className="mt-2 text-sm text-ink/70">{v.desc}</p>
@@ -49,8 +49,8 @@ export default async function AboutPage() {
         </div>
 
         {settings.address && (
-          <div className="mt-14 rounded-2xl bg-forest-50 p-8">
-            <h3 className="font-display text-lg font-semibold text-forest-800">
+          <div className="mt-14 rounded-2xl bg-petrol-50 p-8">
+            <h3 className="font-display text-lg font-semibold text-ink">
               Find Us
             </h3>
             <p className="mt-2 text-ink/70">{settings.address}</p>

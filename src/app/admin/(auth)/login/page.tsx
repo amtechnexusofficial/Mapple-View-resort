@@ -37,12 +37,12 @@ function LoginFormInner() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-forest-900 px-4">
+    <div className="flex min-h-screen items-center justify-center bg-charcoal px-4">
       <form
         onSubmit={handleSubmit}
         className="w-full max-w-sm rounded-2xl bg-white p-8 shadow-xl"
       >
-        <h1 className="font-display text-2xl font-bold text-forest-800">
+        <h1 className="font-display text-2xl font-bold text-ink">
           Admin Login
         </h1>
         <p className="mt-1 text-sm text-ink/60">
@@ -57,7 +57,7 @@ function LoginFormInner() {
             autoFocus
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-forest-200 px-3 py-2 text-sm focus:border-forest-500 focus:outline-none"
+            className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm focus:border-petrol-500 focus:outline-none"
           />
         </div>
         <div className="mt-4">
@@ -67,7 +67,7 @@ function LoginFormInner() {
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-forest-200 px-3 py-2 text-sm focus:border-forest-500 focus:outline-none"
+            className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm focus:border-petrol-500 focus:outline-none"
           />
         </div>
 
@@ -80,7 +80,7 @@ function LoginFormInner() {
         <button
           type="submit"
           disabled={submitting}
-          className="mt-6 w-full rounded-full bg-forest-700 px-6 py-3 text-sm font-semibold text-cream transition hover:bg-forest-800 disabled:opacity-60"
+          className="mt-6 w-full rounded-full bg-ink px-6 py-3 text-sm font-semibold text-stone transition hover:bg-charcoal-light disabled:opacity-60"
         >
           {submitting ? "Signing in..." : "Sign In"}
         </button>

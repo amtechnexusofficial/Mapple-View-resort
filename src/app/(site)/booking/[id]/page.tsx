@@ -37,11 +37,11 @@ export default async function BookingPaymentPage({
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-14 sm:px-6">
-      <div className="rounded-2xl border border-forest-100 bg-white p-6 shadow-sm sm:p-8">
-        <span className="text-sm font-semibold uppercase tracking-widest text-gold-600">
+      <div className="rounded-2xl border border-petrol-100 bg-white p-6 shadow-sm sm:p-8">
+        <span className="text-sm font-semibold uppercase tracking-widest text-petrol-600">
           Booking Summary
         </span>
-        <h1 className="mt-2 font-display text-2xl font-bold text-forest-800 sm:text-3xl">
+        <h1 className="mt-2 font-display text-2xl font-bold text-ink sm:text-3xl">
           {room.name}
         </h1>
 
@@ -72,9 +72,9 @@ export default async function BookingPaymentPage({
           </div>
         </dl>
 
-        <div className="mt-6 flex items-center justify-between rounded-xl bg-forest-50 px-5 py-4">
-          <span className="font-medium text-forest-800">Total Amount</span>
-          <span className="font-display text-2xl font-bold text-forest-800">
+        <div className="mt-6 flex items-center justify-between rounded-xl bg-petrol-50 px-5 py-4">
+          <span className="font-medium text-ink">Total Amount</span>
+          <span className="font-display text-2xl font-bold text-ink">
             {formatInr(booking.total_amount)}
           </span>
         </div>

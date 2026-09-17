@@ -7,17 +7,17 @@ export default async function AdminSettingsPage() {
 
   return (
     <div>
-      <h1 className="font-display text-2xl font-bold text-forest-800">Settings</h1>
+      <h1 className="font-display text-2xl font-bold text-ink">Settings</h1>
       <p className="mt-1 text-sm text-ink/60">
         Configure your resort details, UPI payment, and WhatsApp notifications.
       </p>
 
-      <div className="mt-6 rounded-2xl border border-forest-100 bg-white p-6 shadow-sm">
+      <div className="mt-6 rounded-2xl border border-petrol-100 bg-white p-6 shadow-sm">
         <SettingsForm settings={settings} />
       </div>
 
-      <div className="mt-8 rounded-2xl border border-forest-100 bg-white p-6 shadow-sm">
-        <h2 className="font-display text-lg font-semibold text-forest-800">
+      <div className="mt-8 rounded-2xl border border-petrol-100 bg-white p-6 shadow-sm">
+        <h2 className="font-display text-lg font-semibold text-ink">
           Change Admin Password
         </h2>
         <div className="mt-4">
