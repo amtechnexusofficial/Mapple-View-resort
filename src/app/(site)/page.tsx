@@ -17,9 +17,12 @@ const steps = [
   { n: "04", title: "Get Confirmed", desc: "We're notified instantly on WhatsApp and confirm your stay." },
 ];
 
-export default function HomePage() {
-  const settings = SettingsModel.get();
-  const rooms = RoomModel.all().slice(0, 3);
+export default async function HomePage() {
+  const [settings, allRooms] = await Promise.all([
+    SettingsModel.get(),
+    RoomModel.all(),
+  ]);
+  const rooms = allRooms.slice(0, 3);
 
   return (
     <div>

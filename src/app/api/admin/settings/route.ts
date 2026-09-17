@@ -3,7 +3,7 @@ import { SettingsModel } from "@/lib/models";
 import { settingsSchema } from "@/lib/validation";
 
 export async function GET() {
-  const settings = SettingsModel.get();
+  const settings = await SettingsModel.get();
   return NextResponse.json({ settings });
 }
 
@@ -20,7 +20,7 @@ export async function PUT(request: NextRequest) {
     );
   }
   const d = parsed.data;
-  const settings = SettingsModel.update({
+  const settings = await SettingsModel.update({
     resort_name: d.resortName,
     tagline: d.tagline,
     description: d.description,

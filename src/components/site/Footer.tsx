@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { SettingsModel } from "@/lib/models";
 
-export default function Footer() {
-  const settings = SettingsModel.get();
+export default async function Footer() {
+  const settings = await SettingsModel.get();
   const year = new Date().getFullYear();
 
   return (

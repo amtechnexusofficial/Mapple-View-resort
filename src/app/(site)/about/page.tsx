@@ -4,8 +4,8 @@ import { LinkButton } from "@/components/ui/Button";
 
 export const metadata: Metadata = { title: "About Us | Mapple View Resort" };
 
-export default function AboutPage() {
-  const settings = SettingsModel.get();
+export default async function AboutPage() {
+  const settings = await SettingsModel.get();
 
   const values = [
     { title: "Warm Hospitality", desc: "Every guest is welcomed like family, with attentive and genuine service." },

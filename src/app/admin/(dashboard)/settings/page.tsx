@@ -2,8 +2,8 @@ import { SettingsModel } from "@/lib/models";
 import SettingsForm from "@/components/admin/SettingsForm";
 import ChangePasswordForm from "@/components/admin/ChangePasswordForm";
 
-export default function AdminSettingsPage() {
-  const settings = SettingsModel.get();
+export default async function AdminSettingsPage() {
+  const settings = await SettingsModel.get();
 
   return (
     <div>

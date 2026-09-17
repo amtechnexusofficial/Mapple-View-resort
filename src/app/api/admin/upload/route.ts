@@ -1,9 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import path from "path";
-import fs from "fs/promises";
+import { getCloudflareContext } from "@opennextjs/cloudflare";
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 const MAX_SIZE = 5 * 1024 * 1024;
+const EXT_BY_TYPE: Record<string, string> = {
+  "image/jpeg": ".jpg",
+  "image/png": ".png",
+  "image/webp": ".webp",
+  "image/gif": ".gif",
+};
 
 export async function POST(request: NextRequest) {
   const formData = await request.formData().catch(() => null);
@@ -24,18 +29,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "File too large (max 5MB)" }, { status: 400 });
   }
 
-  const uploadsDir = path.join(process.cwd(), "public", "uploads");
-  await fs.mkdir(uploadsDir, { recursive: true });
+  const { env } = await getCloudflareContext({ async: true });
+  const key = `${crypto.randomUUID()}${EXT_BY_TYPE[file.type]}`;
 
-  const ext = path.extname(file.name).toLowerCase() || ".jpg";
-  const safeExt = [".jpg", ".jpeg", ".png", ".webp", ".gif"].includes(ext)
-    ? ext
-    : ".jpg";
-  const filename = `${crypto.randomUUID()}${safeExt}`;
-  const filePath = path.join(uploadsDir, filename);
+  await env.UPLOADS_BUCKET.put(key, await file.arrayBuffer(), {
+    httpMetadata: { contentType: file.type },
+  });
 
-  const buffer = Buffer.from(await file.arrayBuffer());
-  await fs.writeFile(filePath, buffer);
-
-  return NextResponse.json({ url: `/uploads/${filename}` });
+  return NextResponse.json({ url: `/uploads/${key}` });
 }

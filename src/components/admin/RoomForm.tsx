@@ -45,12 +45,12 @@ export default function RoomForm({ room }: { room?: Room }) {
         method: "POST",
         body: formData,
       });
-      const data = await res.json();
+      const data = (await res.json()) as { error?: string; url?: string };
       if (!res.ok) {
         setError(data.error || "Upload failed");
         return;
       }
-      setImages((prev) => [...prev, data.url]);
+      setImages((prev) => [...prev, data.url!]);
     } catch {
       setError("Upload failed. Please try again.");
     } finally {
@@ -85,7 +85,7 @@ export default function RoomForm({ room }: { room?: Room }) {
           body: JSON.stringify(payload),
         }
       );
-      const data = await res.json();
+      const data = (await res.json()) as { error?: string };
       if (!res.ok) {
         setError(data.error || "Something went wrong");
         setSubmitting(false);

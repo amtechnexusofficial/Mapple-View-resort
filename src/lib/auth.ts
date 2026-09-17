@@ -1,7 +1,7 @@
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import bcrypt from "bcryptjs";
-import { db } from "@/lib/db";
+import { sql, ensureMigrated } from "@/lib/db";
 import type { AdminUser } from "@/lib/types";
 
 export const SESSION_COOKIE = "mvr_admin_session";
@@ -37,20 +37,25 @@ export async function getSession() {
   return verifySessionToken(token);
 }
 
-export function findAdminByUsername(username: string): AdminUser | undefined {
-  return db
-    .prepare("SELECT * FROM admin_users WHERE username = ?")
-    .get(username) as AdminUser | undefined;
+export async function findAdminByUsername(
+  username: string
+): Promise<AdminUser | undefined> {
+  await ensureMigrated();
+  const rows = (await sql.query("SELECT * FROM admin_users WHERE username = $1", [
+    username,
+  ])) as AdminUser[];
+  return rows[0];
 }
 
 export function verifyPassword(plain: string, hash: string) {
   return bcrypt.compareSync(plain, hash);
 }
 
-export function updateAdminPassword(userId: string, newPassword: string) {
+export async function updateAdminPassword(userId: string, newPassword: string) {
+  await ensureMigrated();
   const hash = bcrypt.hashSync(newPassword, 10);
-  db.prepare("UPDATE admin_users SET password_hash = ? WHERE id = ?").run(
+  await sql.query("UPDATE admin_users SET password_hash = $1 WHERE id = $2", [
     hash,
-    userId
-  );
+    userId,
+  ]);
 }

@@ -3,8 +3,8 @@ import { SettingsModel } from "@/lib/models";
 
 export const metadata: Metadata = { title: "Contact Us | Mapple View Resort" };
 
-export default function ContactPage() {
-  const settings = SettingsModel.get();
+export default async function ContactPage() {
+  const settings = await SettingsModel.get();
   const waNumber = settings.whatsapp_owner_number.replace(/[^\d]/g, "");
 
   return (

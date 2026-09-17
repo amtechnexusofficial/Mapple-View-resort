@@ -55,13 +55,16 @@ export default function BookingForm({ room }: { room: Room }) {
           notes,
         }),
       });
-      const data = await res.json();
+      const data = (await res.json()) as {
+        error?: string;
+        booking?: { id: string };
+      };
       if (!res.ok) {
         setError(data.error || "Something went wrong. Please try again.");
         setSubmitting(false);
         return;
       }
-      router.push(`/booking/${data.booking.id}`);
+      router.push(`/booking/${data.booking!.id}`);
     } catch {
       setError("Network error. Please check your connection and try again.");
       setSubmitting(false);

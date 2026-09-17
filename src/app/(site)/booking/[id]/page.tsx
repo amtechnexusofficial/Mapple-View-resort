@@ -11,11 +11,13 @@ export default async function BookingPaymentPage({
   params,
 }: PageProps<"/booking/[id]">) {
   const { id } = await params;
-  const booking = BookingModel.byId(id);
+  const booking = await BookingModel.byId(id);
   if (!booking) notFound();
-  const room = RoomModel.byId(booking.room_id);
+  const [room, settings] = await Promise.all([
+    RoomModel.byId(booking.room_id),
+    SettingsModel.get(),
+  ]);
   if (!room) notFound();
-  const settings = SettingsModel.get();
 
   const needsPayment =
     booking.status === "pending" || booking.status === "payment_claimed";

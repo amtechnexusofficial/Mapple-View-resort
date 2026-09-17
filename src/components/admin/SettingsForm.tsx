@@ -83,7 +83,7 @@ export default function SettingsForm({ settings }: { settings: Settings }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
-      const data = await res.json();
+      const data = (await res.json()) as { error?: string };
       if (!res.ok) {
         setMessage({ type: "error", text: data.error || "Failed to save settings" });
         setSubmitting(false);

@@ -7,12 +7,12 @@ export async function GET(
   context: RouteContext<"/api/bookings/[id]">
 ) {
   const { id } = await context.params;
-  const booking = BookingModel.byId(id);
+  const booking = await BookingModel.byId(id);
   if (!booking) {
     return NextResponse.json({ error: "Booking not found" }, { status: 404 });
   }
-  const room = RoomModel.byId(booking.room_id);
-  const settings = SettingsModel.get();
+  const room = await RoomModel.byId(booking.room_id);
+  const settings = await SettingsModel.get();
 
   let qrDataUrl: string | null = null;
   if (settings.upi_id && booking.status !== "confirmed" && booking.status !== "cancelled") {

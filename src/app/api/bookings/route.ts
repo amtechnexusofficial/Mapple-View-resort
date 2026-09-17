@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
   }
   const data = parsed.data;
 
-  const room = RoomModel.byId(data.roomId);
+  const room = await RoomModel.byId(data.roomId);
   if (!room || !room.is_active) {
     return NextResponse.json({ error: "Room not found" }, { status: 404 });
   }
@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
 
   const totalAmount = nights * room.price_per_night;
 
-  const booking = BookingModel.create({
+  const booking = await BookingModel.create({
     room_id: room.id,
     guest_name: data.guestName,
     guest_phone: data.guestPhone,

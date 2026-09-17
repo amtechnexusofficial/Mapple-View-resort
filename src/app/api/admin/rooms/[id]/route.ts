@@ -7,7 +7,7 @@ export async function GET(
   context: RouteContext<"/api/admin/rooms/[id]">
 ) {
   const { id } = await context.params;
-  const room = RoomModel.byId(id);
+  const room = await RoomModel.byId(id);
   if (!room) {
     return NextResponse.json({ error: "Room not found" }, { status: 404 });
   }
@@ -19,7 +19,7 @@ export async function PUT(
   context: RouteContext<"/api/admin/rooms/[id]">
 ) {
   const { id } = await context.params;
-  const existing = RoomModel.byId(id);
+  const existing = await RoomModel.byId(id);
   if (!existing) {
     return NextResponse.json({ error: "Room not found" }, { status: 404 });
   }
@@ -38,7 +38,7 @@ export async function PUT(
   const d = parsed.data;
 
   if (d.slug && d.slug !== existing.slug) {
-    const conflict = RoomModel.bySlug(d.slug);
+    const conflict = await RoomModel.bySlug(d.slug);
     if (conflict) {
       return NextResponse.json(
         { error: "A room with this slug already exists" },
@@ -47,7 +47,7 @@ export async function PUT(
     }
   }
 
-  const room = RoomModel.update(id, {
+  const room = await RoomModel.update(id, {
     name: d.name,
     slug: d.slug,
     summary: d.summary,
@@ -70,10 +70,10 @@ export async function DELETE(
   context: RouteContext<"/api/admin/rooms/[id]">
 ) {
   const { id } = await context.params;
-  const existing = RoomModel.byId(id);
+  const existing = await RoomModel.byId(id);
   if (!existing) {
     return NextResponse.json({ error: "Room not found" }, { status: 404 });
   }
-  RoomModel.remove(id);
+  await RoomModel.remove(id);
   return NextResponse.json({ ok: true });
 }

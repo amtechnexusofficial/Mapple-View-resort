@@ -19,8 +19,10 @@ export default async function AdminBookingsPage({
   const statusParam = typeof sp.status === "string" ? sp.status : "all";
   const status = statusParam === "all" ? undefined : (statusParam as BookingStatus);
 
-  const bookings = BookingModel.all(status);
-  const rooms = RoomModel.all(true);
+  const [bookings, rooms] = await Promise.all([
+    BookingModel.all(status),
+    RoomModel.all(true),
+  ]);
   const roomMap = new Map(rooms.map((r) => [r.id, r]));
 
   return (

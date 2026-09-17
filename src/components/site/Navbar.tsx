@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { SettingsModel } from "@/lib/models";
 
-export default function Navbar() {
-  const settings = SettingsModel.get();
+export default async function Navbar() {
+  const settings = await SettingsModel.get();
 
   const links = [
     { href: "/", label: "Home" },

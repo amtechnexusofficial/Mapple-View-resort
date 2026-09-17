@@ -3,7 +3,7 @@ import { RoomModel } from "@/lib/models";
 import { roomSchema } from "@/lib/validation";
 
 export async function GET() {
-  const rooms = RoomModel.all(true);
+  const rooms = await RoomModel.all(true);
   return NextResponse.json({ rooms });
 }
 
@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
   }
   const d = parsed.data;
 
-  const existing = RoomModel.bySlug(d.slug);
+  const existing = await RoomModel.bySlug(d.slug);
   if (existing) {
     return NextResponse.json(
       { error: "A room with this slug already exists" },
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const room = RoomModel.create({
+  const room = await RoomModel.create({
     name: d.name,
     slug: d.slug,
     summary: d.summary,

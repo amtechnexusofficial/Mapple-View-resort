@@ -9,7 +9,7 @@ export async function generateMetadata(
   { params }: PageProps<"/rooms/[slug]">
 ): Promise<Metadata> {
   const { slug } = await params;
-  const room = RoomModel.bySlug(slug);
+  const room = await RoomModel.bySlug(slug);
   return { title: room ? `${room.name} | Mapple View Resort` : "Room Not Found" };
 }
 
@@ -17,7 +17,7 @@ export default async function RoomDetailPage({
   params,
 }: PageProps<"/rooms/[slug]">) {
   const { slug } = await params;
-  const room = RoomModel.bySlug(slug);
+  const room = await RoomModel.bySlug(slug);
   if (!room || !room.is_active) {
     notFound();
   }

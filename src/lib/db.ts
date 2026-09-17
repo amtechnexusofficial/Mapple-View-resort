@@ -1,33 +1,22 @@
-import Database from "better-sqlite3";
-import path from "path";
-import fs from "fs";
+import { neon } from "@neondatabase/serverless";
 import bcrypt from "bcryptjs";
 
-const DATA_DIR = path.join(process.cwd(), "data");
-if (!fs.existsSync(DATA_DIR)) {
-  fs.mkdirSync(DATA_DIR, { recursive: true });
+const connectionString = process.env.DATABASE_URL;
+if (!connectionString) {
+  throw new Error(
+    "DATABASE_URL is not set. In Cloudflare, set it with `wrangler secret put DATABASE_URL` " +
+      "(the pooled connection string from your Neon project). Locally, put it in .env.local."
+  );
 }
 
-const DB_PATH = path.join(DATA_DIR, "mapple.db");
+export const sql = neon(connectionString);
 
 declare global {
-  var __mapple_db__: Database.Database | undefined;
+  var __mapple_migrated__: Promise<void> | undefined;
 }
 
-function createConnection() {
-  const db = new Database(DB_PATH);
-  db.pragma("journal_mode = WAL");
-  db.pragma("foreign_keys = ON");
-  return db;
-}
-
-export const db = globalThis.__mapple_db__ ?? createConnection();
-if (process.env.NODE_ENV !== "production") {
-  globalThis.__mapple_db__ = db;
-}
-
-function migrate() {
-  db.exec(`
+async function runMigration() {
+  await sql.query(`
     CREATE TABLE IF NOT EXISTS settings (
       id INTEGER PRIMARY KEY CHECK (id = 1),
       resort_name TEXT NOT NULL DEFAULT 'Mapple View Resort',
@@ -44,9 +33,11 @@ function migrate() {
       whatsapp_phone_number_id TEXT NOT NULL DEFAULT '',
       check_in_time TEXT NOT NULL DEFAULT '12:00 PM',
       check_out_time TEXT NOT NULL DEFAULT '11:00 AM',
-      updated_at TEXT NOT NULL DEFAULT (datetime('now'))
-    );
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+  `);
 
+  await sql.query(`
     CREATE TABLE IF NOT EXISTS rooms (
       id TEXT PRIMARY KEY,
       name TEXT NOT NULL,
@@ -61,10 +52,12 @@ function migrate() {
       amenities TEXT NOT NULL DEFAULT '[]',
       is_active INTEGER NOT NULL DEFAULT 1,
       sort_order INTEGER NOT NULL DEFAULT 0,
-      created_at TEXT NOT NULL DEFAULT (datetime('now')),
-      updated_at TEXT NOT NULL DEFAULT (datetime('now'))
-    );
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+  `);
 
+  await sql.query(`
     CREATE TABLE IF NOT EXISTS bookings (
       id TEXT PRIMARY KEY,
       room_id TEXT NOT NULL REFERENCES rooms(id) ON DELETE RESTRICT,
@@ -81,25 +74,28 @@ function migrate() {
       notes TEXT NOT NULL DEFAULT '',
       whatsapp_sent INTEGER NOT NULL DEFAULT 0,
       whatsapp_error TEXT NOT NULL DEFAULT '',
-      created_at TEXT NOT NULL DEFAULT (datetime('now')),
-      updated_at TEXT NOT NULL DEFAULT (datetime('now'))
-    );
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+  `);
 
+  await sql.query(`
     CREATE TABLE IF NOT EXISTS admin_users (
       id TEXT PRIMARY KEY,
       username TEXT NOT NULL UNIQUE,
       password_hash TEXT NOT NULL,
-      created_at TEXT NOT NULL DEFAULT (datetime('now'))
-    );
-
-    CREATE INDEX IF NOT EXISTS idx_bookings_room ON bookings(room_id);
-    CREATE INDEX IF NOT EXISTS idx_bookings_status ON bookings(status);
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
   `);
 
-  db.prepare(
-    `INSERT OR IGNORE INTO settings (id, resort_name, tagline, description, address, contact_phone, contact_email, hero_image, upi_id, upi_payee_name, whatsapp_owner_number)
-     VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-  ).run(
+  await sql.query(`CREATE INDEX IF NOT EXISTS idx_bookings_room ON bookings(room_id)`);
+  await sql.query(`CREATE INDEX IF NOT EXISTS idx_bookings_status ON bookings(status)`);
+
+  await sql.query(
+    `INSERT INTO settings (id, resort_name, tagline, description, address, contact_phone, contact_email, hero_image, upi_id, upi_payee_name, whatsapp_owner_number)
+     VALUES (1, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+     ON CONFLICT (id) DO NOTHING`,
+    [
       "Mapple View Resort",
       "Your Mountain Escape Awaits",
       "Nestled in the hills, Mapple View Resort offers a peaceful retreat with breathtaking views, comfortable rooms, and warm hospitality.",
@@ -109,17 +105,19 @@ function migrate() {
       "",
       "",
       "Mapple View Resort",
-      ""
-    );
+      "",
+    ]
+  );
 
-  const adminRow = db.prepare("SELECT id FROM admin_users LIMIT 1").get();
-  if (!adminRow) {
+  const adminRows = await sql.query("SELECT id FROM admin_users LIMIT 1");
+  if (adminRows.length === 0) {
     const username = process.env.ADMIN_USERNAME || "admin";
     const password = process.env.ADMIN_PASSWORD || "changeme123";
     const hash = bcrypt.hashSync(password, 10);
-    db.prepare(
-      "INSERT OR IGNORE INTO admin_users (id, username, password_hash) VALUES (?, ?, ?)"
-    ).run(crypto.randomUUID(), username, hash);
+    await sql.query(
+      "INSERT INTO admin_users (id, username, password_hash) VALUES ($1, $2, $3) ON CONFLICT (username) DO NOTHING",
+      [crypto.randomUUID(), username, hash]
+    );
     if (!process.env.ADMIN_PASSWORD) {
       console.warn(
         `\n[Mapple View Resort] No ADMIN_PASSWORD set. Created default admin user "${username}" / "${password}". Please change this immediately in Admin > Settings or via env vars.\n`
@@ -127,10 +125,10 @@ function migrate() {
     }
   }
 
-  const roomCountRow = db
-    .prepare("SELECT COUNT(*) as count FROM rooms")
-    .get() as { count: number };
-  if (roomCountRow.count === 0) {
+  const countRows = (await sql.query("SELECT COUNT(*)::int as count FROM rooms")) as {
+    count: number;
+  }[];
+  if (countRows[0]?.count === 0) {
     const sampleRooms = [
       {
         name: "Deluxe Valley View Room",
@@ -142,7 +140,7 @@ function migrate() {
         max_guests: 3,
         bed_type: "King Bed",
         size_sqft: 320,
-        images: JSON.stringify([]),
+        images: "[]",
         amenities: JSON.stringify([
           "Free Wi-Fi",
           "Valley View Balcony",
@@ -163,7 +161,7 @@ function migrate() {
         max_guests: 4,
         bed_type: "King Bed + Sofa Bed",
         size_sqft: 500,
-        images: JSON.stringify([]),
+        images: "[]",
         amenities: JSON.stringify([
           "Free Wi-Fi",
           "Living Area",
@@ -185,7 +183,7 @@ function migrate() {
         max_guests: 2,
         bed_type: "Queen Bed",
         size_sqft: 220,
-        images: JSON.stringify([]),
+        images: "[]",
         amenities: JSON.stringify([
           "Free Wi-Fi",
           "Garden View",
@@ -196,14 +194,36 @@ function migrate() {
         sort_order: 3,
       },
     ];
-    const insert = db.prepare(
-      `INSERT OR IGNORE INTO rooms (id, name, slug, summary, description, price_per_night, max_guests, bed_type, size_sqft, images, amenities, sort_order)
-       VALUES (@id, @name, @slug, @summary, @description, @price_per_night, @max_guests, @bed_type, @size_sqft, @images, @amenities, @sort_order)`
-    );
     for (const room of sampleRooms) {
-      insert.run({ id: crypto.randomUUID(), ...room });
+      await sql.query(
+        `INSERT INTO rooms (id, name, slug, summary, description, price_per_night, max_guests, bed_type, size_sqft, images, amenities, sort_order)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
+         ON CONFLICT (slug) DO NOTHING`,
+        [
+          crypto.randomUUID(),
+          room.name,
+          room.slug,
+          room.summary,
+          room.description,
+          room.price_per_night,
+          room.max_guests,
+          room.bed_type,
+          room.size_sqft,
+          room.images,
+          room.amenities,
+          room.sort_order,
+        ]
+      );
     }
   }
 }
 
-migrate();
+export function ensureMigrated(): Promise<void> {
+  if (!globalThis.__mapple_migrated__) {
+    globalThis.__mapple_migrated__ = runMigration().catch((err) => {
+      globalThis.__mapple_migrated__ = undefined;
+      throw err;
+    });
+  }
+  return globalThis.__mapple_migrated__;
+}

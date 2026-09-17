@@ -8,9 +8,9 @@ export default async function AdminBookingDetailPage({
   params,
 }: PageProps<"/admin/bookings/[id]">) {
   const { id } = await params;
-  const booking = BookingModel.byId(id);
+  const booking = await BookingModel.byId(id);
   if (!booking) notFound();
-  const room = RoomModel.byId(booking.room_id);
+  const room = await RoomModel.byId(booking.room_id);
 
   return (
     <div className="max-w-2xl">

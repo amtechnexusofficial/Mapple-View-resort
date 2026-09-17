@@ -6,8 +6,8 @@ export const metadata: Metadata = {
   title: "Rooms & Suites | Mapple View Resort",
 };
 
-export default function RoomsPage() {
-  const rooms = RoomModel.all();
+export default async function RoomsPage() {
+  const rooms = await RoomModel.all();
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">

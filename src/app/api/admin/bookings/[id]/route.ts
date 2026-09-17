@@ -7,11 +7,11 @@ export async function GET(
   context: RouteContext<"/api/admin/bookings/[id]">
 ) {
   const { id } = await context.params;
-  const booking = BookingModel.byId(id);
+  const booking = await BookingModel.byId(id);
   if (!booking) {
     return NextResponse.json({ error: "Booking not found" }, { status: 404 });
   }
-  const room = RoomModel.byId(booking.room_id);
+  const room = await RoomModel.byId(booking.room_id);
   return NextResponse.json({ booking, room });
 }
 
@@ -20,7 +20,7 @@ export async function PATCH(
   context: RouteContext<"/api/admin/bookings/[id]">
 ) {
   const { id } = await context.params;
-  const existing = BookingModel.byId(id);
+  const existing = await BookingModel.byId(id);
   if (!existing) {
     return NextResponse.json({ error: "Booking not found" }, { status: 404 });
   }
@@ -32,6 +32,6 @@ export async function PATCH(
   if (!parsed.success) {
     return NextResponse.json({ error: "Invalid status" }, { status: 400 });
   }
-  const booking = BookingModel.updateStatus(id, parsed.data.status);
+  const booking = await BookingModel.updateStatus(id, parsed.data.status);
   return NextResponse.json({ booking });
 }

@@ -3,10 +3,13 @@ import { BookingModel, RoomModel } from "@/lib/models";
 import { formatInr, formatDate } from "@/lib/format";
 import StatusBadge from "@/components/admin/StatusBadge";
 
-export default function AdminDashboardPage() {
-  const stats = BookingModel.stats();
-  const recentBookings = BookingModel.all().slice(0, 6);
-  const rooms = RoomModel.all(true);
+export default async function AdminDashboardPage() {
+  const [stats, allBookings, rooms] = await Promise.all([
+    BookingModel.stats(),
+    BookingModel.all(),
+    RoomModel.all(true),
+  ]);
+  const recentBookings = allBookings.slice(0, 6);
   const roomMap = new Map(rooms.map((r) => [r.id, r]));
 
   const cards = [

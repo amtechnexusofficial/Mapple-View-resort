@@ -1,4 +1,4 @@
-import { db } from "@/lib/db";
+import { sql, ensureMigrated } from "@/lib/db";
 import type { Room, Booking, Settings, BookingStatus } from "@/lib/types";
 
 type RoomRow = Omit<Room, "images" | "amenities"> & {
@@ -15,31 +15,26 @@ function mapRoom(row: RoomRow): Room {
 }
 
 export const RoomModel = {
-  all(includeInactive = false): Room[] {
-    const rows = includeInactive
-      ? (db
-          .prepare("SELECT * FROM rooms ORDER BY sort_order ASC, created_at ASC")
-          .all() as RoomRow[])
-      : (db
-          .prepare(
-            "SELECT * FROM rooms WHERE is_active = 1 ORDER BY sort_order ASC, created_at ASC"
-          )
-          .all() as RoomRow[]);
+  async all(includeInactive = false): Promise<Room[]> {
+    await ensureMigrated();
+    const rows = (includeInactive
+      ? await sql.query("SELECT * FROM rooms ORDER BY sort_order ASC, created_at ASC")
+      : await sql.query(
+          "SELECT * FROM rooms WHERE is_active = 1 ORDER BY sort_order ASC, created_at ASC"
+        )) as RoomRow[];
     return rows.map(mapRoom);
   },
-  bySlug(slug: string): Room | undefined {
-    const row = db.prepare("SELECT * FROM rooms WHERE slug = ?").get(slug) as
-      | RoomRow
-      | undefined;
-    return row ? mapRoom(row) : undefined;
+  async bySlug(slug: string): Promise<Room | undefined> {
+    await ensureMigrated();
+    const rows = (await sql.query("SELECT * FROM rooms WHERE slug = $1", [slug])) as RoomRow[];
+    return rows[0] ? mapRoom(rows[0]) : undefined;
   },
-  byId(id: string): Room | undefined {
-    const row = db.prepare("SELECT * FROM rooms WHERE id = ?").get(id) as
-      | RoomRow
-      | undefined;
-    return row ? mapRoom(row) : undefined;
+  async byId(id: string): Promise<Room | undefined> {
+    await ensureMigrated();
+    const rows = (await sql.query("SELECT * FROM rooms WHERE id = $1", [id])) as RoomRow[];
+    return rows[0] ? mapRoom(rows[0]) : undefined;
   },
-  create(data: {
+  async create(data: {
     name: string;
     slug: string;
     summary: string;
@@ -51,28 +46,30 @@ export const RoomModel = {
     images: string[];
     amenities: string[];
     sort_order?: number;
-  }): Room {
+  }): Promise<Room> {
+    await ensureMigrated();
     const id = crypto.randomUUID();
-    db.prepare(
+    await sql.query(
       `INSERT INTO rooms (id, name, slug, summary, description, price_per_night, max_guests, bed_type, size_sqft, images, amenities, sort_order)
-       VALUES (@id, @name, @slug, @summary, @description, @price_per_night, @max_guests, @bed_type, @size_sqft, @images, @amenities, @sort_order)`
-    ).run({
-      id,
-      name: data.name,
-      slug: data.slug,
-      summary: data.summary,
-      description: data.description,
-      price_per_night: data.price_per_night,
-      max_guests: data.max_guests,
-      bed_type: data.bed_type,
-      size_sqft: data.size_sqft,
-      images: JSON.stringify(data.images),
-      amenities: JSON.stringify(data.amenities),
-      sort_order: data.sort_order ?? 0,
-    });
-    return RoomModel.byId(id)!;
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`,
+      [
+        id,
+        data.name,
+        data.slug,
+        data.summary,
+        data.description,
+        data.price_per_night,
+        data.max_guests,
+        data.bed_type,
+        data.size_sqft,
+        JSON.stringify(data.images),
+        JSON.stringify(data.amenities),
+        data.sort_order ?? 0,
+      ]
+    );
+    return (await RoomModel.byId(id))!;
   },
-  update(
+  async update(
     id: string,
     data: Partial<{
       name: string;
@@ -88,8 +85,9 @@ export const RoomModel = {
       is_active: number;
       sort_order: number;
     }>
-  ): Room | undefined {
-    const existing = RoomModel.byId(id);
+  ): Promise<Room | undefined> {
+    await ensureMigrated();
+    const existing = await RoomModel.byId(id);
     if (!existing) return undefined;
     const merged = {
       name: data.name ?? existing.name,
@@ -105,36 +103,52 @@ export const RoomModel = {
       is_active: data.is_active ?? existing.is_active,
       sort_order: data.sort_order ?? existing.sort_order,
     };
-    db.prepare(
-      `UPDATE rooms SET name=@name, slug=@slug, summary=@summary, description=@description,
-       price_per_night=@price_per_night, max_guests=@max_guests, bed_type=@bed_type, size_sqft=@size_sqft,
-       images=@images, amenities=@amenities, is_active=@is_active, sort_order=@sort_order,
-       updated_at=datetime('now') WHERE id=@id`
-    ).run({ ...merged, id });
+    await sql.query(
+      `UPDATE rooms SET name=$1, slug=$2, summary=$3, description=$4,
+       price_per_night=$5, max_guests=$6, bed_type=$7, size_sqft=$8,
+       images=$9, amenities=$10, is_active=$11, sort_order=$12,
+       updated_at=now() WHERE id=$13`,
+      [
+        merged.name,
+        merged.slug,
+        merged.summary,
+        merged.description,
+        merged.price_per_night,
+        merged.max_guests,
+        merged.bed_type,
+        merged.size_sqft,
+        merged.images,
+        merged.amenities,
+        merged.is_active,
+        merged.sort_order,
+        id,
+      ]
+    );
     return RoomModel.byId(id);
   },
-  remove(id: string) {
-    db.prepare("DELETE FROM rooms WHERE id = ?").run(id);
+  async remove(id: string): Promise<void> {
+    await ensureMigrated();
+    await sql.query("DELETE FROM rooms WHERE id = $1", [id]);
   },
 };
 
 export const BookingModel = {
-  all(status?: BookingStatus): Booking[] {
+  async all(status?: BookingStatus): Promise<Booking[]> {
+    await ensureMigrated();
     if (status) {
-      return db
-        .prepare("SELECT * FROM bookings WHERE status = ? ORDER BY created_at DESC")
-        .all(status) as Booking[];
+      return (await sql.query(
+        "SELECT * FROM bookings WHERE status = $1 ORDER BY created_at DESC",
+        [status]
+      )) as Booking[];
     }
-    return db
-      .prepare("SELECT * FROM bookings ORDER BY created_at DESC")
-      .all() as Booking[];
+    return (await sql.query("SELECT * FROM bookings ORDER BY created_at DESC")) as Booking[];
   },
-  byId(id: string): Booking | undefined {
-    return db.prepare("SELECT * FROM bookings WHERE id = ?").get(id) as
-      | Booking
-      | undefined;
+  async byId(id: string): Promise<Booking | undefined> {
+    await ensureMigrated();
+    const rows = (await sql.query("SELECT * FROM bookings WHERE id = $1", [id])) as Booking[];
+    return rows[0];
   },
-  create(data: {
+  async create(data: {
     room_id: string;
     guest_name: string;
     guest_phone: string;
@@ -145,15 +159,29 @@ export const BookingModel = {
     nights: number;
     total_amount: number;
     notes: string;
-  }): Booking {
+  }): Promise<Booking> {
+    await ensureMigrated();
     const id = crypto.randomUUID();
-    db.prepare(
+    await sql.query(
       `INSERT INTO bookings (id, room_id, guest_name, guest_phone, guest_email, check_in, check_out, guests, nights, total_amount, notes)
-       VALUES (@id, @room_id, @guest_name, @guest_phone, @guest_email, @check_in, @check_out, @guests, @nights, @total_amount, @notes)`
-    ).run({ id, ...data });
-    return BookingModel.byId(id)!;
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`,
+      [
+        id,
+        data.room_id,
+        data.guest_name,
+        data.guest_phone,
+        data.guest_email,
+        data.check_in,
+        data.check_out,
+        data.guests,
+        data.nights,
+        data.total_amount,
+        data.notes,
+      ]
+    );
+    return (await BookingModel.byId(id))!;
   },
-  updateStatus(
+  async updateStatus(
     id: string,
     status: BookingStatus,
     extra?: Partial<{
@@ -161,8 +189,9 @@ export const BookingModel = {
       whatsapp_sent: number;
       whatsapp_error: string;
     }>
-  ): Booking | undefined {
-    const existing = BookingModel.byId(id);
+  ): Promise<Booking | undefined> {
+    await ensureMigrated();
+    const existing = await BookingModel.byId(id);
     if (!existing) return undefined;
     const merged = {
       status,
@@ -170,51 +199,70 @@ export const BookingModel = {
       whatsapp_sent: extra?.whatsapp_sent ?? existing.whatsapp_sent,
       whatsapp_error: extra?.whatsapp_error ?? existing.whatsapp_error,
     };
-    db.prepare(
-      `UPDATE bookings SET status=@status, payment_ref=@payment_ref, whatsapp_sent=@whatsapp_sent,
-       whatsapp_error=@whatsapp_error, updated_at=datetime('now') WHERE id=@id`
-    ).run({ ...merged, id });
+    await sql.query(
+      `UPDATE bookings SET status=$1, payment_ref=$2, whatsapp_sent=$3,
+       whatsapp_error=$4, updated_at=now() WHERE id=$5`,
+      [merged.status, merged.payment_ref, merged.whatsapp_sent, merged.whatsapp_error, id]
+    );
     return BookingModel.byId(id);
   },
-  stats() {
-    const total = db.prepare("SELECT COUNT(*) as c FROM bookings").get() as {
+  async stats() {
+    await ensureMigrated();
+    const [totalRow] = (await sql.query("SELECT COUNT(*)::int as c FROM bookings")) as {
       c: number;
-    };
-    const pending = db
-      .prepare("SELECT COUNT(*) as c FROM bookings WHERE status IN ('pending','payment_claimed')")
-      .get() as { c: number };
-    const confirmed = db
-      .prepare("SELECT COUNT(*) as c FROM bookings WHERE status = 'confirmed'")
-      .get() as { c: number };
-    const revenue = db
-      .prepare(
-        "SELECT COALESCE(SUM(total_amount),0) as s FROM bookings WHERE status = 'confirmed'"
-      )
-      .get() as { s: number };
+    }[];
+    const [pendingRow] = (await sql.query(
+      "SELECT COUNT(*)::int as c FROM bookings WHERE status IN ('pending','payment_claimed')"
+    )) as { c: number }[];
+    const [confirmedRow] = (await sql.query(
+      "SELECT COUNT(*)::int as c FROM bookings WHERE status = 'confirmed'"
+    )) as { c: number }[];
+    const [revenueRow] = (await sql.query(
+      "SELECT COALESCE(SUM(total_amount),0)::int as s FROM bookings WHERE status = 'confirmed'"
+    )) as { s: number }[];
     return {
-      total: total.c,
-      pending: pending.c,
-      confirmed: confirmed.c,
-      revenue: revenue.s,
+      total: totalRow.c,
+      pending: pendingRow.c,
+      confirmed: confirmedRow.c,
+      revenue: revenueRow.s,
     };
   },
 };
 
 export const SettingsModel = {
-  get(): Settings {
-    return db.prepare("SELECT * FROM settings WHERE id = 1").get() as Settings;
+  async get(): Promise<Settings> {
+    await ensureMigrated();
+    const rows = (await sql.query("SELECT * FROM settings WHERE id = 1")) as Settings[];
+    return rows[0];
   },
-  update(data: Partial<Omit<Settings, "id" | "updated_at">>): Settings {
-    const existing = SettingsModel.get();
+  async update(data: Partial<Omit<Settings, "id" | "updated_at">>): Promise<Settings> {
+    await ensureMigrated();
+    const existing = await SettingsModel.get();
     const merged = { ...existing, ...data };
-    db.prepare(
-      `UPDATE settings SET resort_name=@resort_name, tagline=@tagline, description=@description,
-       address=@address, contact_phone=@contact_phone, contact_email=@contact_email, hero_image=@hero_image,
-       upi_id=@upi_id, upi_payee_name=@upi_payee_name, whatsapp_owner_number=@whatsapp_owner_number,
-       whatsapp_api_token=@whatsapp_api_token, whatsapp_phone_number_id=@whatsapp_phone_number_id,
-       check_in_time=@check_in_time, check_out_time=@check_out_time, updated_at=datetime('now')
-       WHERE id = 1`
-    ).run(merged);
+    await sql.query(
+      `UPDATE settings SET resort_name=$1, tagline=$2, description=$3,
+       address=$4, contact_phone=$5, contact_email=$6, hero_image=$7,
+       upi_id=$8, upi_payee_name=$9, whatsapp_owner_number=$10,
+       whatsapp_api_token=$11, whatsapp_phone_number_id=$12,
+       check_in_time=$13, check_out_time=$14, updated_at=now()
+       WHERE id = 1`,
+      [
+        merged.resort_name,
+        merged.tagline,
+        merged.description,
+        merged.address,
+        merged.contact_phone,
+        merged.contact_email,
+        merged.hero_image,
+        merged.upi_id,
+        merged.upi_payee_name,
+        merged.whatsapp_owner_number,
+        merged.whatsapp_api_token,
+        merged.whatsapp_phone_number_id,
+        merged.check_in_time,
+        merged.check_out_time,
+      ]
+    );
     return SettingsModel.get();
   },
 };

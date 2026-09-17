@@ -1,15 +1,22 @@
 # Mapple View Resort
 
-A resort website with an integrated booking system and a separate admin panel, built with Next.js, TypeScript, Tailwind CSS, and a self-contained SQLite database (no external database service required).
+A resort website with an integrated booking system and a separate admin panel, built with Next.js, TypeScript, Tailwind CSS, deployed to **Cloudflare Workers**, backed by **Neon serverless Postgres** and **Cloudflare R2** (for room images).
 
 ## Features
 
 - **Public website** — home, rooms & suites, about, contact, all driven by content you manage in the admin panel.
 - **Booking flow** — a guest picks a room and dates, enters their name/phone/email, sees a UPI QR code (generated from the UPI ID you configure), and clicks **"I've Paid — Confirm Booking"**.
 - **WhatsApp notification** — on confirm, the booking is sent to the owner's WhatsApp number (configured in admin). If a WhatsApp Cloud API token is configured, it's sent automatically server-side; otherwise the guest's browser opens a pre-filled WhatsApp message to the owner as a fallback.
-- **Admin panel** (`/admin`, login-protected, separate from the live site) — manage rooms (with image upload), view and update bookings, and configure resort info, UPI payment details, and WhatsApp settings.
+- **Admin panel** (`/admin`, login-protected, separate from the live site) — manage rooms (with image upload to R2), view and update bookings, and configure resort info, UPI payment details, and WhatsApp settings.
 
-## Getting Started
+## Stack
+
+- **Framework**: Next.js 16 (App Router) + TypeScript + Tailwind CSS v4
+- **Hosting**: Cloudflare Workers, via the [`@opennextjs/cloudflare`](https://opennext.js.org/cloudflare) adapter
+- **Database**: [Neon](https://neon.tech) serverless Postgres, via `@neondatabase/serverless`
+- **File storage**: Cloudflare R2 (room images — Workers has no writable local disk)
+
+## Local development
 
 1. Install dependencies:
 
@@ -17,15 +24,12 @@ A resort website with an integrated booking system and a separate admin panel, b
    npm install
    ```
 
-2. Copy the environment file and set a real session secret:
+2. Copy `.dev.vars` if it doesn't already exist, and fill in:
+   - `DATABASE_URL` — your Neon connection string (Neon console → your project → Connection Details → pooled connection string). Local dev talks to the **same** Neon database as production unless you point it at a different Neon branch/project.
+   - `SESSION_SECRET` — a long random string (signs admin login sessions).
+   - `ADMIN_USERNAME` / `ADMIN_PASSWORD` — optional; if unset, a default `admin` / `changeme123` account is seeded on first run. **Change the password immediately** from Admin → Settings after logging in.
 
-   ```bash
-   cp .env.example .env.local
-   ```
-
-   Edit `.env.local`:
-   - `SESSION_SECRET` — a long random string (required in production; used to sign admin login sessions).
-   - `ADMIN_USERNAME` / `ADMIN_PASSWORD` — the first admin account. If left unset, a default `admin` / `changeme123` account is created on first run — **change the password immediately** from Admin → Settings after logging in.
+   `.dev.vars` is gitignored and is the file this stack's local dev tooling reads (not `.env.local`).
 
 3. Run the dev server:
 
@@ -33,9 +37,9 @@ A resort website with an integrated booking system and a separate admin panel, b
    npm run dev
    ```
 
-   Visit [http://localhost:3000](http://localhost:3000) for the website and [http://localhost:3000/admin](http://localhost:3000/admin) for the admin panel.
+   Visit [http://localhost:3000](http://localhost:3000) for the website and [http://localhost:3000/admin](http://localhost:3000/admin) for the admin panel. Local dev simulates Cloudflare bindings (R2, env vars) via Miniflare — room image uploads in dev go to a local-only simulated R2 bucket, not the real one.
 
-The database is a single SQLite file created automatically at `data/mapple.db` the first time the app runs, seeded with sample rooms and default settings.
+On first run against a fresh database, the app auto-creates its tables and seeds sample rooms + default settings — no separate migration step needed.
 
 ## Configuring payments & WhatsApp (Admin → Settings)
 
@@ -45,24 +49,67 @@ The database is a single SQLite file created automatically at `data/mapple.db` t
 
 ## Project Structure
 
-- `src/app/(site)/…` — public website pages (served at `/`, `/rooms`, `/about`, `/contact`, `/booking/[id]`).
+- `src/app/(site)/…` — public website pages (served at `/`, `/rooms`, `/about`, `/contact`, `/booking/[id]`), forced dynamic (`export const dynamic = "force-dynamic"` in its layout) since data comes from a live Postgres connection, not a build-time snapshot.
 - `src/app/admin/…` — admin panel (`/admin/login` is public; everything else under `/admin` requires login).
 - `src/app/api/…` — API routes for bookings (public) and admin management (protected).
-- `src/lib/db.ts` — SQLite connection, schema, and seed data.
-- `src/lib/models.ts` — typed data access (Rooms, Bookings, Settings).
+- `src/app/uploads/[key]/route.ts` — streams room images from the R2 bucket at request time.
+- `src/lib/db.ts` — Neon connection + idempotent schema migration (runs once per Worker isolate, on first query).
+- `src/lib/models.ts` — typed async data access (Rooms, Bookings, Settings).
 - `src/lib/upi.ts` / `src/lib/whatsapp.ts` — UPI QR generation and WhatsApp message/link building.
-- `src/proxy.ts` — protects `/admin` and `/api/admin/*` routes, redirecting unauthenticated requests to login.
+- `src/proxy.ts` — protects `/admin` and `/api/admin/*` routes, redirecting unauthenticated requests to login (Next 16 renamed `middleware.ts` to `proxy.ts`).
+- `wrangler.jsonc` / `open-next.config.ts` / `cloudflare-env.d.ts` — Cloudflare Workers + OpenNext adapter configuration (the last is generated by `npm run cf-typegen`, safe to regenerate).
 
-## Building for production
+## Deploying to Cloudflare
+
+One-time setup, in order:
+
+1. **Authenticate wrangler** (choose one):
+   ```bash
+   npx wrangler login
+   ```
+   or generate a Cloudflare API token (dashboard → Manage API Tokens) and export it as `CLOUDFLARE_API_TOKEN` instead — better for CI/non-interactive environments.
+
+2. **Create the R2 bucket** for room images (must match the `bucket_name` in `wrangler.jsonc`):
+   ```bash
+   npx wrangler r2 bucket create mapple-view-uploads
+   ```
+
+3. **Set the production secrets** (never commit these — they're stored encrypted by Cloudflare):
+   ```bash
+   npx wrangler secret put DATABASE_URL
+   npx wrangler secret put SESSION_SECRET
+   # optional, only if you want a non-default first admin account:
+   npx wrangler secret put ADMIN_USERNAME
+   npx wrangler secret put ADMIN_PASSWORD
+   ```
+
+4. **(Optional) Regenerate binding types** after any `wrangler.jsonc` change:
+   ```bash
+   npm run cf-typegen
+   ```
+
+### Build & deploy commands
 
 ```bash
-npm run build
-npm run start
+npm run deploy
 ```
 
-Deploy anywhere that runs a persistent Node.js server (a VPS, Docker container, Railway, Render, etc.) so the SQLite file and uploaded room images persist on disk. This app is **not** suited to a stateless/serverless host (like Vercel's default deployment) since the local SQLite database and `public/uploads` folder need a writable, persistent filesystem.
+This runs `opennextjs-cloudflare build && opennextjs-cloudflare deploy` — builds the Next.js app, bundles it for the Workers runtime via OpenNext, and deploys it to your Cloudflare account. Cloudflare prints the live `*.workers.dev` URL (or your custom domain, once attached) when it finishes.
+
+To build and preview locally against real Cloudflare bindings first (recommended before your first real deploy):
+
+```bash
+npm run preview
+```
+
+### Continuous deployment from GitHub
+
+Either:
+- **Cloudflare dashboard** (simplest): Workers & Pages → Create → "Connect to Git" → select this repo/branch → Cloudflare builds and deploys automatically on every push. No YAML needed.
+- **GitHub Actions**: use [`cloudflare/wrangler-action`](https://github.com/cloudflare/wrangler-action) if you want tests to run before every deploy, or more control over the pipeline.
 
 ## Notes
 
-- Room images are uploaded to `public/uploads` and referenced by URL; back up this folder along with `data/mapple.db`.
+- Room images are stored in the `mapple-view-uploads` R2 bucket and served through `/uploads/[key]`; there's nothing to back up on local disk.
 - Change the default admin password immediately after your first deploy.
+- `cloudflare-env.d.ts` is committed (it's large, ~600KB) so the project type-checks without every contributor needing to run `wrangler types` first; regenerate it with `npm run cf-typegen` whenever `wrangler.jsonc`'s bindings change.

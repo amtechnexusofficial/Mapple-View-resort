@@ -41,13 +41,17 @@ export default function ConfirmPanel({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ paymentRef }),
       });
-      const data = await res.json();
+      const data = (await res.json()) as {
+        error?: string;
+        booking?: { status: BookingStatus };
+        whatsapp?: { autoSent?: boolean; link?: string | null };
+      };
       if (!res.ok) {
         setError(data.error || "Something went wrong. Please try again.");
         setSubmitting(false);
         return;
       }
-      setStatus(data.booking.status);
+      setStatus(data.booking!.status);
       if (data.whatsapp?.autoSent) {
         setNotifyState("auto");
       } else if (data.whatsapp?.link) {

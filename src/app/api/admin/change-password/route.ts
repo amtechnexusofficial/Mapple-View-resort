@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession, verifyPassword, updateAdminPassword } from "@/lib/auth";
 import { changePasswordSchema } from "@/lib/validation";
-import { db } from "@/lib/db";
+import { sql, ensureMigrated } from "@/lib/db";
 import type { AdminUser } from "@/lib/types";
 
 export async function POST(request: NextRequest) {
@@ -20,12 +20,14 @@ export async function POST(request: NextRequest) {
       { status: 400 }
     );
   }
-  const user = db
-    .prepare("SELECT * FROM admin_users WHERE id = ?")
-    .get(session.sub) as AdminUser | undefined;
+  await ensureMigrated();
+  const rows = (await sql.query("SELECT * FROM admin_users WHERE id = $1", [
+    session.sub,
+  ])) as AdminUser[];
+  const user = rows[0];
   if (!user || !verifyPassword(parsed.data.currentPassword, user.password_hash)) {
     return NextResponse.json({ error: "Current password is incorrect" }, { status: 401 });
   }
-  updateAdminPassword(user.id, parsed.data.newPassword);
+  await updateAdminPassword(user.id, parsed.data.newPassword);
   return NextResponse.json({ ok: true });
 }

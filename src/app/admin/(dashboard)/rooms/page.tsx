@@ -3,8 +3,8 @@ import { RoomModel } from "@/lib/models";
 import { formatInr } from "@/lib/format";
 import RoomActions from "@/components/admin/RoomActions";
 
-export default function AdminRoomsPage() {
-  const rooms = RoomModel.all(true);
+export default async function AdminRoomsPage() {
+  const rooms = await RoomModel.all(true);
 
   return (
     <div>

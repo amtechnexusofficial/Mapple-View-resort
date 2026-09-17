@@ -6,7 +6,7 @@ export default async function EditRoomPage({
   params,
 }: PageProps<"/admin/rooms/[id]/edit">) {
   const { id } = await params;
-  const room = RoomModel.byId(id);
+  const room = await RoomModel.byId(id);
   if (!room) notFound();
 
   return (

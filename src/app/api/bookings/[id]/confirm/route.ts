@@ -12,7 +12,7 @@ export async function POST(
   context: RouteContext<"/api/bookings/[id]/confirm">
 ) {
   const { id } = await context.params;
-  const booking = BookingModel.byId(id);
+  const booking = await BookingModel.byId(id);
   if (!booking) {
     return NextResponse.json({ error: "Booking not found" }, { status: 404 });
   }
@@ -27,8 +27,8 @@ export async function POST(
   const parsed = confirmBookingSchema.safeParse(body);
   const paymentRef = parsed.success ? parsed.data.paymentRef : "";
 
-  const room = RoomModel.byId(booking.room_id);
-  const settings = SettingsModel.get();
+  const room = await RoomModel.byId(booking.room_id);
+  const settings = await SettingsModel.get();
   if (!room) {
     return NextResponse.json({ error: "Room not found" }, { status: 404 });
   }
@@ -39,7 +39,7 @@ export async function POST(
   const apiResult = await sendWhatsappCloudApi(settings, message);
   const waLink = buildOwnerWhatsappLink(settings, message);
 
-  const booking2 = BookingModel.updateStatus(id, "payment_claimed", {
+  const booking2 = await BookingModel.updateStatus(id, "payment_claimed", {
     payment_ref: paymentRef,
     whatsapp_sent: apiResult.ok ? 1 : 0,
     whatsapp_error: apiResult.ok ? "" : apiResult.error || "",

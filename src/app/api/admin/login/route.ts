@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Username and password are required" }, { status: 400 });
   }
 
-  const user = findAdminByUsername(parsed.data.username);
+  const user = await findAdminByUsername(parsed.data.username);
   if (!user || !verifyPassword(parsed.data.password, user.password_hash)) {
     return NextResponse.json({ error: "Invalid username or password" }, { status: 401 });
   }
