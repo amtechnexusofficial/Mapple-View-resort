@@ -7,7 +7,7 @@ import { RoomModel, SettingsModel } from "@/lib/models";
 const highlights = [
   { title: "Scenic Mountain Views", desc: "Wake up to breathtaking valley and mountain vistas every morning." },
   { title: "Free Wi-Fi", desc: "Stay connected throughout your stay with complimentary high-speed internet." },
-  { title: "Secure UPI Payments", desc: "Pay securely for your booking directly via UPI — fast and hassle-free." },
+  { title: "Secure UPI Payments", desc: "Pay securely for your booking directly via UPI, fast and hassle-free." },
   { title: "Instant Confirmation", desc: "Your booking request reaches us instantly via WhatsApp for a quick response." },
 ];
 
@@ -30,11 +30,11 @@ export default async function HomePage() {
     <div>
       <section className="relative isolate overflow-hidden text-stone">
         <MountainHero />
-        <div className="relative mx-auto flex max-w-6xl flex-col items-start px-4 py-28 sm:px-6 sm:py-36">
+        <div className="relative mx-auto flex max-w-6xl flex-col items-start px-4 pb-28 pt-20 sm:px-6 sm:pb-36 sm:pt-24">
           <span className="rounded-full bg-stone/10 px-4 py-1 text-xs font-semibold uppercase tracking-widest text-petrol-400 ring-1 ring-petrol-400/40">
             Welcome to {settings.resort_name}
           </span>
-          <h1 className="mt-6 max-w-2xl font-display text-4xl font-bold leading-tight sm:text-6xl">
+          <h1 className="mt-6 max-w-2xl font-display text-4xl font-bold leading-none tracking-tighter sm:text-6xl">
             {settings.tagline || "Your Mountain Escape Awaits"}
           </h1>
           <p className="mt-6 max-w-xl text-base text-stone/80 sm:text-lg">
