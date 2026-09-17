@@ -1,19 +1,41 @@
 import { neon } from "@neondatabase/serverless";
 import bcrypt from "bcryptjs";
 
-const connectionString = process.env.DATABASE_URL;
-if (!connectionString) {
-  throw new Error(
-    "DATABASE_URL is not set. In Cloudflare, set it with `wrangler secret put DATABASE_URL` " +
-      "(the pooled connection string from your Neon project). Locally, put it in .env.local."
-  );
-}
-
-export const sql = neon(connectionString);
+type SqlClient = ReturnType<typeof neon<false, false>>;
 
 declare global {
   var __mapple_migrated__: Promise<void> | undefined;
+  var __mapple_sql__: SqlClient | undefined;
 }
+
+// Lazy: Next.js's build-time "collecting page data" step imports every API
+// route module (including this one, transitively) just to inspect its
+// exports — it never calls into the database. Reading DATABASE_URL and
+// throwing at module scope made that build step fail even when nothing was
+// actually querying the database. Deferring the check until the client is
+// first used means the build only needs a real DATABASE_URL when a request
+// actually runs.
+function getSql(): SqlClient {
+  if (!globalThis.__mapple_sql__) {
+    const connectionString = process.env.DATABASE_URL;
+    if (!connectionString) {
+      throw new Error(
+        "DATABASE_URL is not set. In Cloudflare, set it with `wrangler secret put DATABASE_URL` " +
+          "(the pooled connection string from your Neon project). Locally, put it in .env.local."
+      );
+    }
+    globalThis.__mapple_sql__ = neon(connectionString);
+  }
+  return globalThis.__mapple_sql__;
+}
+
+export const sql: SqlClient = new Proxy({} as SqlClient, {
+  get(_target, prop) {
+    const client = getSql();
+    const value = Reflect.get(client, prop);
+    return typeof value === "function" ? value.bind(client) : value;
+  },
+});
 
 async function runMigration() {
   await sql.query(`
