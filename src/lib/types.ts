@@ -42,6 +42,16 @@ export interface Booking {
   updated_at: string;
 }
 
+export interface RoomBlock {
+  id: string;
+  room_id: string;
+  start_date: string;
+  end_date: string;
+  source: string;
+  notes: string;
+  created_at: string;
+}
+
 export interface Settings {
   id: number;
   resort_name: string;

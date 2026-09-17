@@ -102,6 +102,18 @@ async function runMigration() {
   `);
 
   await sql.query(`
+    CREATE TABLE IF NOT EXISTS room_blocks (
+      id TEXT PRIMARY KEY,
+      room_id TEXT NOT NULL REFERENCES rooms(id) ON DELETE CASCADE,
+      start_date TEXT NOT NULL,
+      end_date TEXT NOT NULL,
+      source TEXT NOT NULL DEFAULT 'Other',
+      notes TEXT NOT NULL DEFAULT '',
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+  `);
+
+  await sql.query(`
     CREATE TABLE IF NOT EXISTS admin_users (
       id TEXT PRIMARY KEY,
       username TEXT NOT NULL UNIQUE,
@@ -112,6 +124,7 @@ async function runMigration() {
 
   await sql.query(`CREATE INDEX IF NOT EXISTS idx_bookings_room ON bookings(room_id)`);
   await sql.query(`CREATE INDEX IF NOT EXISTS idx_bookings_status ON bookings(status)`);
+  await sql.query(`CREATE INDEX IF NOT EXISTS idx_room_blocks_room ON room_blocks(room_id)`);
 
   await sql.query(
     `INSERT INTO settings (id, resort_name, tagline, description, address, contact_phone, contact_email, hero_image, upi_id, upi_payee_name, whatsapp_owner_number)
