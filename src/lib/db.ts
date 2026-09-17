@@ -56,6 +56,10 @@ async function runMigration() {
       check_in_time TEXT NOT NULL DEFAULT '12:00 PM',
       check_out_time TEXT NOT NULL DEFAULT '11:00 AM',
       about_content TEXT NOT NULL DEFAULT '',
+      escape_intro TEXT NOT NULL DEFAULT '',
+      brand_story TEXT NOT NULL DEFAULT '',
+      testimonials TEXT NOT NULL DEFAULT '',
+      instagram_handle TEXT NOT NULL DEFAULT '',
       updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
     )
   `);
@@ -64,6 +68,18 @@ async function runMigration() {
   // newly added column needs its own migration step to actually land there.
   await sql.query(
     `ALTER TABLE settings ADD COLUMN IF NOT EXISTS about_content TEXT NOT NULL DEFAULT ''`
+  );
+  await sql.query(
+    `ALTER TABLE settings ADD COLUMN IF NOT EXISTS escape_intro TEXT NOT NULL DEFAULT ''`
+  );
+  await sql.query(
+    `ALTER TABLE settings ADD COLUMN IF NOT EXISTS brand_story TEXT NOT NULL DEFAULT ''`
+  );
+  await sql.query(
+    `ALTER TABLE settings ADD COLUMN IF NOT EXISTS testimonials TEXT NOT NULL DEFAULT ''`
+  );
+  await sql.query(
+    `ALTER TABLE settings ADD COLUMN IF NOT EXISTS instagram_handle TEXT NOT NULL DEFAULT ''`
   );
 
   await sql.query(`
@@ -127,8 +143,8 @@ async function runMigration() {
   await sql.query(`CREATE INDEX IF NOT EXISTS idx_bookings_status ON bookings(status)`);
 
   await sql.query(
-    `INSERT INTO settings (id, resort_name, tagline, description, address, contact_phone, contact_email, hero_image, upi_id, upi_payee_name, whatsapp_owner_number, about_content)
-     VALUES (1, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+    `INSERT INTO settings (id, resort_name, tagline, description, address, contact_phone, contact_email, hero_image, upi_id, upi_payee_name, whatsapp_owner_number, about_content, escape_intro, brand_story)
+     VALUES (1, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
      ON CONFLICT (id) DO NOTHING`,
     [
       "Mapple View Resort",
@@ -142,6 +158,8 @@ async function runMigration() {
       "Mapple View Resort",
       "",
       "Mapple View Resort sits in Lovedale, a quiet, wooded locality on the outskirts of Ooty in Tamil Nadu's Nilgiri hills, home to the historic Lawrence School and some of the region's most peaceful, untouched scenery.\n\nAt over 2,200 metres above sea level, the air here stays cool and fresh through the year, wrapped in eucalyptus and shola forest, tea gardens, and rolling grasslands. It is a landscape built for slowing down: misty mornings, long walks, and evenings by the fire.\n\nOur rooms are simple and comfortable by design, so the views outside your window do the talking. Whether you are here to explore the Nilgiris or simply to rest, we look after the details so you do not have to.",
+      "Set back from Ooty's busier lanes, Mapple View is a quiet base among the hills of Lovedale — close enough to reach everything worth seeing, far enough to hear very little besides wind in the eucalyptus.",
+      "Mapple View Resort was built around one idea: that a mountain stay should feel unhurried. Simple, comfortable rooms; a quiet hillside setting; and the kind of attentive, low-key hospitality that lets the Nilgiris do most of the talking.",
     ]
   );
 

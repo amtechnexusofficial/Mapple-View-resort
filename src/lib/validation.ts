@@ -90,6 +90,13 @@ export const settingsSchema = z.object({
   checkInTime: z.string().trim().optional().default(""),
   checkOutTime: z.string().trim().optional().default(""),
   aboutContent: z.string().trim().max(8000).optional().default(""),
+  escapeIntro: z.string().trim().max(2000).optional().default(""),
+  brandStory: z.string().trim().max(4000).optional().default(""),
+  // One guest quote per line, formatted "Quote text | Guest Name, Location".
+  // Shown on the homepage only when non-empty, so nothing fabricated ships
+  // until the resort supplies real guest feedback.
+  testimonials: z.string().trim().max(4000).optional().default(""),
+  instagramHandle: z.string().trim().max(60).optional().default(""),
 });
 
 export const loginSchema = z.object({

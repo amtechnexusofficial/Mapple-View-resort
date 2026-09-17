@@ -1,60 +1,11 @@
 import type { Metadata } from "next";
 import { LinkButton } from "@/components/ui/Button";
 import SectionLabel from "@/components/site/SectionLabel";
+import { attractions, seasons } from "@/lib/ooty";
 
 export const metadata: Metadata = {
   title: "Explore Ooty & the Nilgiris | Mapple View Resort",
 };
-
-const attractions = [
-  {
-    title: "Ooty Lake",
-    desc: "An artificial lake laid out in 1824, ringed by eucalyptus groves. Rent a boat or walk the shoreline path in the cool morning air.",
-  },
-  {
-    title: "Doddabetta Peak",
-    desc: "The highest point in the Nilgiris at about 2,637 m. On a clear day the telescope house at the summit gives sweeping views over the entire hill range.",
-  },
-  {
-    title: "Nilgiri Mountain Railway",
-    desc: "A UNESCO World Heritage mountain railway. The narrow-gauge \"toy train\" winds from Mettupalayam up through Coonoor to Ooty, one of the great train journeys in India.",
-  },
-  {
-    title: "Government Botanical Garden",
-    desc: "Laid out in 1848 in the Italian style, terraced across a hillside with a fossilised tree trunk estimated at over 20 million years old.",
-  },
-  {
-    title: "Tea Estates & Tea Museum",
-    desc: "The Nilgiris are one of India's great tea-growing regions. Estate visits and tastings around Ooty and Coonoor show the leaf from bush to cup.",
-  },
-  {
-    title: "Pykara Lake & Falls",
-    desc: "About 19 km from Ooty town, a quieter spot for boating on the lake and a short walk to the falls, framed by shola forest.",
-  },
-  {
-    title: "St. Stephen's Church",
-    desc: "Consecrated in 1830, one of the oldest churches in the Nilgiris, built with timber said to be salvaged from Tipu Sultan's palace in Seringapatam.",
-  },
-  {
-    title: "Rose Garden",
-    desc: "Terraced across a hillside near Elk Hill, one of the largest rose gardens in India with several thousand varieties.",
-  },
-];
-
-const seasons = [
-  {
-    title: "Apr - Jun",
-    desc: "Summer relief season and the busiest months, with mild days and cool evenings while the plains bake.",
-  },
-  {
-    title: "Sep - Nov",
-    desc: "Post-monsoon greenery, clearer skies, and noticeably fewer crowds than summer.",
-  },
-  {
-    title: "Dec - Feb",
-    desc: "The coolest stretch of the year, occasionally down to near-freezing at night. Crisp mornings, good visibility.",
-  },
-];
 
 export default function ExploreOotyPage() {
   return (
@@ -81,6 +32,7 @@ export default function ExploreOotyPage() {
           {attractions.map((a) => (
             <div key={a.title} className="border-t border-petrol-100 pt-4">
               <h3 className="font-display text-lg font-medium text-ink">{a.title}</h3>
+              <span className="label-caps mt-1 block text-petrol-500">{a.proximity}</span>
               <p className="mt-2 text-sm font-light leading-relaxed text-ink/70">{a.desc}</p>
             </div>
           ))}
