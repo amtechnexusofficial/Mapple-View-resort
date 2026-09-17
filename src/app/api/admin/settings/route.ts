@@ -36,6 +36,10 @@ export async function PUT(request: NextRequest) {
     check_in_time: d.checkInTime,
     check_out_time: d.checkOutTime,
     about_content: d.aboutContent,
+    escape_intro: d.escapeIntro,
+    brand_story: d.brandStory,
+    testimonials: d.testimonials,
+    instagram_handle: d.instagramHandle,
   });
   return NextResponse.json({ settings });
 }

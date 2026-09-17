@@ -60,6 +60,10 @@ export interface Settings {
   check_in_time: string;
   check_out_time: string;
   about_content: string;
+  escape_intro: string;
+  brand_story: string;
+  testimonials: string;
+  instagram_handle: string;
   updated_at: string;
 }
 

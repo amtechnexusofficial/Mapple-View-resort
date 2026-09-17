@@ -21,6 +21,10 @@ type FormState = {
   checkInTime: string;
   checkOutTime: string;
   aboutContent: string;
+  escapeIntro: string;
+  brandStory: string;
+  testimonials: string;
+  instagramHandle: string;
 };
 
 function Field({
@@ -70,6 +74,10 @@ export default function SettingsForm({ settings }: { settings: Settings }) {
     checkInTime: settings.check_in_time,
     checkOutTime: settings.check_out_time,
     aboutContent: settings.about_content,
+    escapeIntro: settings.escape_intro,
+    brandStory: settings.brand_story,
+    testimonials: settings.testimonials,
+    instagramHandle: settings.instagram_handle,
   });
   const [submitting, setSubmitting] = useState(false);
   const [uploadingHero, setUploadingHero] = useState(false);
@@ -209,6 +217,60 @@ export default function SettingsForm({ settings }: { settings: Settings }) {
             value={form.aboutContent}
             onChange={(e) => set("aboutContent", e.target.value)}
             className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm focus:border-petrol-500 focus:outline-none"
+          />
+        </div>
+      </section>
+
+      <section className="border-t border-petrol-100 pt-6">
+        <h2 className="font-sans text-lg font-semibold text-ink">Homepage Content</h2>
+        <p className="mt-1 text-xs text-ink/50">
+          Paste your own copy for these homepage sections. Each has sensible default text, but
+          anything you write here replaces it.
+        </p>
+        <div className="mt-4 space-y-4">
+          <div>
+            <label className="text-xs font-medium text-ink/60">
+              &quot;Above the Noise&quot; intro paragraph
+            </label>
+            <textarea
+              rows={3}
+              value={form.escapeIntro}
+              onChange={(e) => set("escapeIntro", e.target.value)}
+              className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm focus:border-petrol-500 focus:outline-none"
+            />
+          </div>
+          <div>
+            <label className="text-xs font-medium text-ink/60">
+              &quot;This Is Mapple View&quot; brand story
+            </label>
+            <textarea
+              rows={4}
+              value={form.brandStory}
+              onChange={(e) => set("brandStory", e.target.value)}
+              className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm focus:border-petrol-500 focus:outline-none"
+            />
+          </div>
+          <div>
+            <label className="text-xs font-medium text-ink/60">Guest Testimonials</label>
+            <p className="mt-1 text-xs text-ink/40">
+              One real guest quote per line, formatted as: Quote text | Guest name, location.
+              This section is hidden on the site until you add at least one line here — we never
+              publish invented reviews.
+            </p>
+            <textarea
+              rows={4}
+              placeholder={"A wonderfully quiet stay with beautiful views. | Priya S., Chennai"}
+              value={form.testimonials}
+              onChange={(e) => set("testimonials", e.target.value)}
+              className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm focus:border-petrol-500 focus:outline-none"
+            />
+          </div>
+          <Field
+            label="Instagram Handle (optional)"
+            field="instagramHandle"
+            hint="e.g. mapleviewresort — the social section is hidden until this is set."
+            value={form.instagramHandle}
+            onChange={set}
           />
         </div>
       </section>
