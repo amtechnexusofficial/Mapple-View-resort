@@ -17,6 +17,11 @@ export function MountainHero() {
           <stop offset="60%" stopColor="#4a938d" stopOpacity="0.18" />
           <stop offset="100%" stopColor="#4a938d" stopOpacity="0" />
         </radialGradient>
+        <radialGradient id="moonBody" cx="38%" cy="35%" r="65%">
+          <stop offset="0%" stopColor="#cdece7" />
+          <stop offset="55%" stopColor="#8fcec7" />
+          <stop offset="100%" stopColor="#5fa89f" />
+        </radialGradient>
         <linearGradient id="ridgeFar" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="#20413f" />
           <stop offset="100%" stopColor="#1a3634" />
@@ -44,26 +49,25 @@ export function MountainHero() {
 
       {/* moon with soft glow */}
       <circle cx="1000" cy="130" r="150" fill="url(#moonGlow)" />
-      <circle cx="1000" cy="130" r="64" fill="#8fcec7" opacity="0.9" />
-      <circle cx="1022" cy="112" r="64" fill="#141210" opacity="0.55" />
+      <circle cx="1000" cy="130" r="62" fill="url(#moonBody)" />
 
       {/* far ridge */}
       <path
-        d="M0,380 L140,300 L250,350 L380,270 L520,360 L660,290 L800,370 L940,280 L1080,355 L1200,300 L1200,560 L0,560 Z"
+        d="M-20,380 C80,330 160,350 260,320 C360,290 440,340 540,310 C640,280 740,330 840,300 C940,270 1040,320 1140,290 C1170,280 1200,290 1220,295 L1220,560 L-20,560 Z"
         fill="url(#ridgeFar)"
         opacity="0.75"
       />
 
       {/* mid ridge */}
       <path
-        d="M0,420 L150,320 L260,390 L400,280 L520,400 L650,310 L800,410 L950,320 L1080,400 L1200,340 L1200,560 L0,560 Z"
+        d="M-20,420 C90,355 190,390 290,340 C390,290 470,370 570,330 C670,290 760,380 860,335 C960,290 1050,360 1150,320 C1180,308 1200,315 1220,320 L1220,560 L-20,560 Z"
         fill="url(#ridgeMid)"
         opacity="0.92"
       />
 
       {/* near ridge, near-silhouette */}
       <path
-        d="M0,480 L180,380 L320,450 L480,360 L620,470 L780,380 L940,460 L1100,370 L1200,420 L1200,560 L0,560 Z"
+        d="M-20,470 C100,395 210,440 320,385 C430,330 520,430 630,375 C740,320 830,430 940,370 C1040,318 1120,400 1220,360 L1220,560 L-20,560 Z"
         fill="#141210"
       />
     </svg>

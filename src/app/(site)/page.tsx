@@ -3,6 +3,7 @@ import { LinkButton } from "@/components/ui/Button";
 import { MountainHero, MountainDivider, ContourLines } from "@/components/site/MountainArt";
 import RoomCard from "@/components/site/RoomCard";
 import FeaturedRoomCard from "@/components/site/FeaturedRoomCard";
+import Reveal from "@/components/site/Reveal";
 import { RoomModel, SettingsModel } from "@/lib/models";
 
 const highlights = [
@@ -57,29 +58,28 @@ export default async function HomePage() {
 
       <section className="border-b border-petrol-100 bg-white">
         <div className="mx-auto grid max-w-6xl gap-12 px-4 py-24 sm:px-6 sm:py-32 lg:grid-cols-12">
-          <div className="lg:col-span-4">
+          <Reveal className="lg:col-span-4">
             <span className="text-xs font-medium uppercase tracking-[0.25em] text-petrol-600">
               Why Stay With Us
             </span>
             <h2 className="mt-4 font-display text-3xl font-medium leading-[1.1] text-ink sm:text-4xl">
               Details we&apos;ve thought through, so you don&apos;t have to.
             </h2>
-          </div>
+          </Reveal>
           <div className="lg:col-span-8">
             <div className="divide-y divide-petrol-100 border-t border-petrol-100">
               {highlights.map((h, i) => (
-                <div
-                  key={h.title}
-                  className="flex flex-col gap-2 py-8 sm:flex-row sm:items-baseline sm:gap-10"
-                >
-                  <span className="font-mono-data text-sm text-petrol-500 sm:w-8 sm:shrink-0">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <h3 className="font-display text-xl font-medium text-ink sm:w-56 sm:shrink-0">
-                    {h.title}
-                  </h3>
-                  <p className="text-sm leading-relaxed text-ink/70">{h.desc}</p>
-                </div>
+                <Reveal key={h.title} delayMs={i * 80}>
+                  <div className="flex flex-col gap-2 py-8 sm:flex-row sm:items-baseline sm:gap-10">
+                    <span className="font-mono-data text-sm text-petrol-500 sm:w-8 sm:shrink-0">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <h3 className="font-display text-xl font-medium text-ink sm:w-56 sm:shrink-0">
+                      {h.title}
+                    </h3>
+                    <p className="text-sm leading-relaxed text-ink/70">{h.desc}</p>
+                  </div>
+                </Reveal>
               ))}
             </div>
           </div>
@@ -88,7 +88,7 @@ export default async function HomePage() {
 
       {rooms.length > 0 && (
         <section className="mx-auto max-w-6xl px-4 py-24 sm:px-6 sm:py-32">
-          <div className="flex flex-wrap items-end justify-between gap-4">
+          <Reveal className="flex flex-wrap items-end justify-between gap-4">
             <div>
               <span className="text-xs font-medium uppercase tracking-[0.25em] text-petrol-600">
                 Accommodation
@@ -100,13 +100,19 @@ export default async function HomePage() {
             <LinkButton href="/rooms" variant="outline">
               View All Rooms
             </LinkButton>
-          </div>
+          </Reveal>
           <div className="mt-14">
-            {featuredRoom && <FeaturedRoomCard room={featuredRoom} />}
+            {featuredRoom && (
+              <Reveal delayMs={100}>
+                <FeaturedRoomCard room={featuredRoom} />
+              </Reveal>
+            )}
             {otherRooms.length > 0 && (
               <div className="mt-8 grid gap-8 sm:grid-cols-2">
-                {otherRooms.map((room) => (
-                  <RoomCard key={room.id} room={room} />
+                {otherRooms.map((room, i) => (
+                  <Reveal key={room.id} delayMs={150 + i * 80}>
+                    <RoomCard room={room} />
+                  </Reveal>
                 ))}
               </div>
             )}
@@ -117,19 +123,19 @@ export default async function HomePage() {
       <section className="relative bg-charcoal text-stone">
         <MountainDivider className="absolute -top-1 h-10 w-full text-ink sm:h-16" />
         <div className="mx-auto max-w-6xl px-4 py-24 sm:px-6 sm:py-32">
-          <div className="text-center">
+          <Reveal className="text-center">
             <span className="text-xs font-medium uppercase tracking-[0.25em] text-petrol-400">
               Booking Made Easy
             </span>
             <h2 className="mt-4 font-display text-4xl font-medium leading-[1.05] sm:text-5xl">
               Book Your Stay in 4 Simple Steps
             </h2>
-          </div>
+          </Reveal>
           <div className="relative mt-16">
             <div className="absolute left-0 right-0 top-5 hidden h-px bg-stone/15 sm:block" />
             <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-4">
-              {steps.map((s) => (
-                <div key={s.n}>
+              {steps.map((s, i) => (
+                <Reveal key={s.n} delayMs={i * 100}>
                   <span className="relative z-10 flex h-10 w-10 items-center justify-center rounded-full bg-petrol-500 font-mono-data text-sm font-semibold text-stone">
                     {s.n}
                   </span>
@@ -137,7 +143,7 @@ export default async function HomePage() {
                     {s.title}
                   </h3>
                   <p className="mt-2 text-sm leading-relaxed text-stone/70">{s.desc}</p>
-                </div>
+                </Reveal>
               ))}
             </div>
           </div>
@@ -149,7 +155,7 @@ export default async function HomePage() {
           className="pointer-events-none absolute inset-x-0 bottom-0 h-56 w-full text-petrol-300"
           opacity={0.25}
         />
-        <div className="relative mx-auto max-w-4xl px-4 py-24 text-center sm:px-6 sm:py-32">
+        <Reveal className="relative mx-auto max-w-4xl px-4 py-24 text-center sm:px-6 sm:py-32">
           <h2 className="font-display text-4xl font-medium leading-[1.05] text-ink sm:text-5xl">
             Ready for Your Mountain Getaway?
           </h2>
@@ -161,7 +167,7 @@ export default async function HomePage() {
               Book Now
             </LinkButton>
           </div>
-        </div>
+        </Reveal>
       </section>
     </div>
   );
