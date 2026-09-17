@@ -68,6 +68,7 @@ export interface Settings {
   whatsapp_phone_number_id: string;
   check_in_time: string;
   check_out_time: string;
+  about_content: string;
   updated_at: string;
 }
 

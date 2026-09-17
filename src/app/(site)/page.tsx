@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { LinkButton } from "@/components/ui/Button";
 import { MountainHero, MountainDivider, ContourLines } from "@/components/site/MountainArt";
 import RoomCard from "@/components/site/RoomCard";
@@ -31,7 +32,21 @@ export default async function HomePage() {
   return (
     <div>
       <section className="relative isolate flex min-h-[92vh] items-end overflow-hidden text-stone">
-        <MountainHero />
+        {settings.hero_image ? (
+          <>
+            <Image
+              src={settings.hero_image}
+              alt=""
+              fill
+              priority
+              sizes="100vw"
+              className="object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-charcoal/40 to-charcoal/10" />
+          </>
+        ) : (
+          <MountainHero />
+        )}
         <div className="relative mx-auto w-full max-w-6xl px-4 pb-20 pt-32 sm:px-6 sm:pb-28 sm:pt-40">
           <span className="text-xs font-medium uppercase tracking-[0.25em] text-petrol-300">
             {settings.resort_name}

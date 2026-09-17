@@ -89,6 +89,7 @@ export const settingsSchema = z.object({
   whatsappPhoneNumberId: z.string().trim().optional().default(""),
   checkInTime: z.string().trim().optional().default(""),
   checkOutTime: z.string().trim().optional().default(""),
+  aboutContent: z.string().trim().max(8000).optional().default(""),
 });
 
 export const loginSchema = z.object({

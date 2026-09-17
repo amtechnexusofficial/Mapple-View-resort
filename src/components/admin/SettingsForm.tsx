@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import type { Settings } from "@/lib/types";
 
 type FormState = {
@@ -19,6 +20,7 @@ type FormState = {
   whatsappPhoneNumberId: string;
   checkInTime: string;
   checkOutTime: string;
+  aboutContent: string;
 };
 
 function Field({
@@ -67,12 +69,34 @@ export default function SettingsForm({ settings }: { settings: Settings }) {
     whatsappPhoneNumberId: settings.whatsapp_phone_number_id,
     checkInTime: settings.check_in_time,
     checkOutTime: settings.check_out_time,
+    aboutContent: settings.about_content,
   });
   const [submitting, setSubmitting] = useState(false);
+  const [uploadingHero, setUploadingHero] = useState(false);
   const [message, setMessage] = useState<{ type: "ok" | "error"; text: string } | null>(null);
 
   function set<K extends keyof typeof form>(key: K, value: string) {
     setForm((prev) => ({ ...prev, [key]: value }));
+  }
+
+  async function handleHeroUpload(file: File) {
+    setUploadingHero(true);
+    setMessage(null);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/admin/upload", { method: "POST", body: formData });
+      const data = (await res.json()) as { error?: string; url?: string };
+      if (!res.ok) {
+        setMessage({ type: "error", text: data.error || "Upload failed" });
+        return;
+      }
+      set("heroImage", data.url!);
+    } catch {
+      setMessage({ type: "error", text: "Upload failed. Please try again." });
+    } finally {
+      setUploadingHero(false);
+    }
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -127,6 +151,65 @@ export default function SettingsForm({ settings }: { settings: Settings }) {
             <Field label="Check-in Time" field="checkInTime" value={form.checkInTime} onChange={set} />
             <Field label="Check-out Time" field="checkOutTime" value={form.checkOutTime} onChange={set} />
           </div>
+        </div>
+      </section>
+
+      <section className="border-t border-petrol-100 pt-6">
+        <h2 className="font-sans text-lg font-semibold text-ink">Homepage Photo</h2>
+        <p className="mt-1 text-xs text-ink/50">
+          Once you upload a real photo, it replaces the illustrated hero on the homepage. Leave
+          empty to keep the illustration.
+        </p>
+        <div className="mt-4 flex flex-wrap items-center gap-4">
+          {form.heroImage ? (
+            <div className="relative h-28 w-44 overflow-hidden rounded-lg border border-line">
+              <Image src={form.heroImage} alt="" fill className="object-cover" />
+            </div>
+          ) : (
+            <div className="flex h-28 w-44 items-center justify-center rounded-lg border border-dashed border-petrol-300 text-xs text-ink/40">
+              No photo set
+            </div>
+          )}
+          <div className="flex flex-col gap-2">
+            <label className="inline-flex w-fit cursor-pointer items-center rounded-full border border-line px-4 py-2 text-sm font-medium text-ink hover:bg-petrol-50">
+              {uploadingHero ? "Uploading…" : "Upload Photo"}
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                disabled={uploadingHero}
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) handleHeroUpload(file);
+                  e.target.value = "";
+                }}
+              />
+            </label>
+            {form.heroImage && (
+              <button
+                type="button"
+                onClick={() => set("heroImage", "")}
+                className="text-xs font-medium text-red-600 hover:underline"
+              >
+                Remove photo
+              </button>
+            )}
+          </div>
+        </div>
+      </section>
+
+      <section className="border-t border-petrol-100 pt-6">
+        <h2 className="font-sans text-lg font-semibold text-ink">About Page Content</h2>
+        <p className="mt-1 text-xs text-ink/50">
+          Shown as the main text on the About page. Leave a blank line between paragraphs.
+        </p>
+        <div className="mt-4">
+          <textarea
+            rows={10}
+            value={form.aboutContent}
+            onChange={(e) => set("aboutContent", e.target.value)}
+            className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm focus:border-petrol-500 focus:outline-none"
+          />
         </div>
       </section>
 

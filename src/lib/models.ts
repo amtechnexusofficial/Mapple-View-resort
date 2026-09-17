@@ -365,7 +365,7 @@ export const SettingsModel = {
        address=$4, contact_phone=$5, contact_email=$6, hero_image=$7,
        upi_id=$8, upi_payee_name=$9, whatsapp_owner_number=$10,
        whatsapp_api_token=$11, whatsapp_phone_number_id=$12,
-       check_in_time=$13, check_out_time=$14, updated_at=now()
+       check_in_time=$13, check_out_time=$14, about_content=$15, updated_at=now()
        WHERE id = 1`,
       [
         merged.resort_name,
@@ -382,6 +382,7 @@ export const SettingsModel = {
         merged.whatsapp_phone_number_id,
         merged.check_in_time,
         merged.check_out_time,
+        merged.about_content,
       ]
     );
     return SettingsModel.get();

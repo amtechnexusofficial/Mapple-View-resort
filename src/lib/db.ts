@@ -55,9 +55,16 @@ async function runMigration() {
       whatsapp_phone_number_id TEXT NOT NULL DEFAULT '',
       check_in_time TEXT NOT NULL DEFAULT '12:00 PM',
       check_out_time TEXT NOT NULL DEFAULT '11:00 AM',
+      about_content TEXT NOT NULL DEFAULT '',
       updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
     )
   `);
+  // CREATE TABLE IF NOT EXISTS above is a no-op against an already-existing
+  // settings table (this site's already-deployed database included), so a
+  // newly added column needs its own migration step to actually land there.
+  await sql.query(
+    `ALTER TABLE settings ADD COLUMN IF NOT EXISTS about_content TEXT NOT NULL DEFAULT ''`
+  );
 
   await sql.query(`
     CREATE TABLE IF NOT EXISTS rooms (
@@ -127,20 +134,21 @@ async function runMigration() {
   await sql.query(`CREATE INDEX IF NOT EXISTS idx_room_blocks_room ON room_blocks(room_id)`);
 
   await sql.query(
-    `INSERT INTO settings (id, resort_name, tagline, description, address, contact_phone, contact_email, hero_image, upi_id, upi_payee_name, whatsapp_owner_number)
-     VALUES (1, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+    `INSERT INTO settings (id, resort_name, tagline, description, address, contact_phone, contact_email, hero_image, upi_id, upi_payee_name, whatsapp_owner_number, about_content)
+     VALUES (1, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
      ON CONFLICT (id) DO NOTHING`,
     [
       "Mapple View Resort",
       "Your Mountain Escape Awaits",
-      "Nestled in the hills, Mapple View Resort offers a peaceful retreat with breathtaking views, comfortable rooms, and warm hospitality.",
-      "Mapple View Resort, Hill Road, Mussoorie, Uttarakhand, India",
+      "Nestled in Lovedale, on the quiet edge of Ooty, Mapple View Resort offers a peaceful retreat amid the Nilgiri hills, with breathtaking views, comfortable rooms, and warm hospitality.",
+      "Mapple View Resort, Lovedale, Ooty (Udhagamandalam), Nilgiris District, Tamil Nadu, India",
       "+91 98765 43210",
       "info@mapleviewresort.com",
       "",
       "",
       "Mapple View Resort",
       "",
+      "Mapple View Resort sits in Lovedale, a quiet, wooded locality on the outskirts of Ooty in Tamil Nadu's Nilgiri hills, home to the historic Lawrence School and some of the region's most peaceful, untouched scenery.\n\nAt over 2,200 metres above sea level, the air here stays cool and fresh through the year, wrapped in eucalyptus and shola forest, tea gardens, and rolling grasslands. It is a landscape built for slowing down: misty mornings, long walks, and evenings by the fire.\n\nOur rooms are simple and comfortable by design, so the views outside your window do the talking. Whether you are here to explore the Nilgiris or simply to rest, we look after the details so you do not have to.",
     ]
   );
 
