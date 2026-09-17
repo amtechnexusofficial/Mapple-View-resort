@@ -57,54 +57,97 @@ it only exists in the previous session's container unless it was pushed.
 Check `git log` first; if the repo looks empty, the work needs to be
 redone or recovered from that earlier session before continuing.
 
-## Design task for this session: use `inspo-mcp`
+## Design: `inspo-mcp` declined — redesign already drafted instead
 
-The user wants design inspiration pulled in via **`inspo-mcp`**, a real,
-MIT-licensed MCP server (`github.com/Nutlope/inspo`) exposing 15 tools:
-search real-site designs, design systems, color palettes, reference
-components, page flows, and recommendations.
+The user **does not want `inspo-mcp`** used (explicitly declined it), so
+don't pursue that server even though it may still be connected/available.
 
-Status from the prior session: it was registered as a **local stdio** MCP
-server (works with no network access, unlike its hosted URL variant which
-hits `https://inspomcp.dev/api/mcp` — that domain is blocked by this
-sandbox's egress proxy, so stick to local stdio):
+Instead, the user rejected the original design as looking too generic /
+"AI-generated" (Playfair Display + Inter, forest-green/gold/cream, boxed
+cards — a very templated look) and asked for something unique and
+interactive. In response, two fully-designed, genuinely distinct
+directions were drafted and published as a comparison Artifact:
 
-```bash
-claude mcp add --scope user inspo -- npx -y inspo-mcp
-```
+**→ https://claude.ai/artifact/4qYti8EhEToaJHboEMUgkf ("Ridge & Maple")**
 
-This was run successfully (`File modified: /root/.claude.json`), but the
-session running at the time couldn't pick up the new tools without a
-restart. **This new session should have `inspo`'s tools available** — look
-for them (e.g. via ToolSearch with a query like "inspo design search") and
-confirm they're connected before using them.
+- **Direction A — "Contour"**: topographic/survey-map feel grounded in the
+  resort's real elevation (2,005m) and coordinates. Bricolage Grotesque
+  (display) + Newsreader (serif body) + IBM Plex Mono (data labels), warm
+  parchment ground, rust-orange as the single accent. Interactive
+  mouse-reactive contour-line canvas in the hero, animated elevation
+  counter. Booking step styled as a "trail permit."
+- **Direction B — "Maple"**: botanical/seasonal, leaning into the resort's
+  actual name. Fraunces italic serif (display) + Schibsted Grotesk (body),
+  deep maple-red/moss/amber palette. An interactive maple-leaf SVG that
+  changes color and copy across Spring/Summer/Autumn/Winter buttons.
+  Booking step styled as a wax-sealed "specimen card."
 
-**What to do with it**: pull design inspiration (palettes, layout
-patterns, component ideas — hospitality/resort-appropriate) from
-`inspo-mcp` and consider applying improvements to Mapple View Resort's
-visual design, without breaking any existing functionality. Current design
-system to compare against:
+Both use the real room names/prices from the seeded data (Cozy Garden Room
+₹3,000, Deluxe Valley View Room ₹4,500, Premium Mountain Suite ₹7,500) so
+they're concrete, not abstract mockups.
 
-- Palette: forest green family (`#2f5233` primary, darker `#1a301f`/`#10200f`
-  for depth), gold accent (`#c48c2a` family), cream background (`#faf6ef`) —
-  all defined in `src/app/globals.css`.
-- Typography: Playfair Display (serif, headings) + Inter (body) via
-  `next/font/google`, see `src/app/layout.tsx`.
-- Hero uses hand-drawn inline SVG mountain art (`src/components/site/MountainArt.tsx`)
-  rather than photos, since no real resort photography exists yet —
-  admins can upload real photos later via the room image uploader.
+**Status: awaiting the user's decision** (A, B, a mix of specific pieces
+from each, or neither). If this new session doesn't already have that
+answer from the user, ask for it before rebuilding anything — do not just
+pick one. Once they decide, rebuild the actual site
+(`src/app/globals.css`, `src/app/layout.tsx`, and the room/booking
+components) to match the chosen direction's fonts/palette/layout, keeping
+all existing functionality (booking flow, UPI QR, WhatsApp notify, admin
+panel) intact — this is a visual/UX rebuild, not a functional one.
 
-Report back to the user with concrete before/after suggestions (or just
-apply improvements directly if the direction is clear) rather than
-open-ended "here's what I found."
+## Infra research done: Cloudflare + Neon (not yet implemented)
+
+The user has Cloudflare and Neon accounts and wants to move off local
+SQLite once the design is settled. Research already done (see prior
+conversation) confirmed this is viable:
+
+- **Hosting**: `@opennextjs/cloudflare` adapter — confirmed compatible
+  with this project's Next.js version (16.3.5 satisfies its `>=16.2.11`
+  requirement).
+- **Database**: swap `better-sqlite3` for Neon's serverless driver
+  (`@neondatabase/serverless`) — no connection pooling gateway needed.
+- **Breaking change**: Cloudflare Workers has no persistent local disk, so
+  `public/uploads` (room image uploads, currently written to local disk by
+  `src/app/api/admin/upload/route.ts`) must move to **Cloudflare R2**
+  instead.
+- The whole `src/lib/db.ts` / `src/lib/models.ts` SQL layer needs
+  rewriting for Postgres syntax (`?` → `$1` placeholders, `datetime('now')`
+  → `now()`, etc.).
+- Needs the user's Neon connection string and Cloudflare account
+  credentials to actually deploy — don't invent these.
+
+**Not started yet** — the user wanted the design finalized first. Tackle
+this after the design rebuild is confirmed working, unless the user says
+otherwise.
+
+## MCP servers added this project (status varies)
+
+- `inspo` — registered `--scope user` (available in any project), but
+  **user doesn't want it used**. Ignore even if connected.
+- `playwright` — registered at **project scope** (`claude mcp add
+  playwright npx @playwright/mcp@latest`, no `--scope user`), so only
+  available when working in this repo. Intended for browser-driving/visual
+  QA of the site. This environment already has Chromium pre-installed
+  system-wide (`PLAYWRIGHT_BROWSERS_PATH`/`PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD`
+  are set), so it should connect without needing a separate browser
+  install step.
+
+Both were registered by running `claude mcp add …` from within a running
+session — this writes to `/root/.claude.json` in that session's
+**container**, which may or may not be the same container this new
+session gets. **First check whether these tools actually show up** (e.g.
+ToolSearch for "playwright" / "inspo"); if they don't, the registration
+didn't carry over and needs to be re-run (commands above) — takes seconds.
 
 ## Suggested next steps
 
 1. Confirm the repo state matches this file's description (`git log`,
-   `git status`).
-2. Confirm `inspo-mcp` tools are connected; pull relevant design
-   inspiration for a resort/hospitality site.
-3. Apply any design improvements — keep the booking flow, admin panel, and
-   all functionality intact; this is a visual/UX pass, not a rebuild.
-4. Once GitHub write access is restored, push `claude/clever-dijkstra-egffzv`
-   and let the user know.
+   `git status`) — if empty, the previous session's work needs recovering
+   before continuing (see GitHub section above).
+2. Get the user's design decision (A / B / mix) on the Ridge & Maple
+   artifact if not already given.
+3. Rebuild the site's visual layer to match — keep all functionality
+   intact.
+4. Once GitHub write access is restored, push `claude/clever-dijkstra-egffzv`.
+5. After design is confirmed working, move to the Cloudflare + Neon
+   migration described above.
