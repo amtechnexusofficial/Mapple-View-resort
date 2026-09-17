@@ -46,6 +46,34 @@ export const roomSchema = z.object({
   sortOrder: z.coerce.number().int().optional().default(0),
 });
 
+// A field with `.default()` gets that default filled in by `.partial()`
+// whenever the field is simply omitted from the request body — it does
+// NOT stay `undefined`. Using `roomSchema.partial()` for partial updates
+// (e.g. RoomActions toggling only `isActive`) would silently reset every
+// other defaulted field (summary, description, images, amenities, ...)
+// back to empty on every request. This schema has no defaults, so an
+// omitted field parses to `undefined` and RoomModel.update's `?? existing.x`
+// merge leaves it untouched.
+export const roomUpdateSchema = z.object({
+  name: z.string().trim().min(2).optional(),
+  slug: z
+    .string()
+    .trim()
+    .min(2)
+    .regex(/^[a-z0-9-]+$/, "Slug must be lowercase letters, numbers, hyphens")
+    .optional(),
+  summary: z.string().trim().max(300).optional(),
+  description: z.string().trim().max(5000).optional(),
+  pricePerNight: z.coerce.number().int().min(0).optional(),
+  maxGuests: z.coerce.number().int().min(1).max(50).optional(),
+  bedType: z.string().trim().max(100).optional(),
+  sizeSqft: z.coerce.number().int().min(0).optional(),
+  images: z.array(z.string()).optional(),
+  amenities: z.array(z.string()).optional(),
+  isActive: z.boolean().optional(),
+  sortOrder: z.coerce.number().int().optional(),
+});
+
 export const settingsSchema = z.object({
   resortName: z.string().trim().min(1),
   tagline: z.string().trim().optional().default(""),

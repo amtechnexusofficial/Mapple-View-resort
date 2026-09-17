@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { RoomModel } from "@/lib/models";
-import { roomSchema } from "@/lib/validation";
+import { roomUpdateSchema } from "@/lib/validation";
 
 export async function GET(
   _request: NextRequest,
@@ -28,7 +28,7 @@ export async function PUT(
   if (!body) {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
-  const parsed = roomSchema.partial().safeParse(body);
+  const parsed = roomUpdateSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(
       { error: "Validation failed", issues: parsed.error.flatten() },
@@ -74,6 +74,19 @@ export async function DELETE(
   if (!existing) {
     return NextResponse.json({ error: "Room not found" }, { status: 404 });
   }
-  await RoomModel.remove(id);
+  try {
+    await RoomModel.remove(id);
+  } catch (err) {
+    if (err && typeof err === "object" && "code" in err && err.code === "23503") {
+      return NextResponse.json(
+        {
+          error:
+            "This room has existing bookings and can't be deleted. Hide it instead so it no longer appears on the site.",
+        },
+        { status: 409 }
+      );
+    }
+    throw err;
+  }
   return NextResponse.json({ ok: true });
 }
