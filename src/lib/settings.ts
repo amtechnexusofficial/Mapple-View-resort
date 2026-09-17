@@ -1,5 +1,5 @@
 import "server-only";
-import { db } from "@/lib/db";
+import { sql } from "@/lib/db";
 
 export type Settings = {
   hotel_name: string;
@@ -25,8 +25,8 @@ const KEYS: (keyof Settings)[] = [
   "about_text",
 ];
 
-export function getSettings(): Settings {
-  const rows = db.prepare("SELECT key, value FROM settings").all() as { key: string; value: string }[];
+export async function getSettings(): Promise<Settings> {
+  const rows = (await sql`SELECT key, value FROM settings`) as { key: string; value: string }[];
   const map = new Map(rows.map((r) => [r.key, r.value]));
   const settings = {} as Settings;
   for (const key of KEYS) {
@@ -35,13 +35,14 @@ export function getSettings(): Settings {
   return settings;
 }
 
-export function updateSettings(input: Partial<Settings>): void {
-  const upsert = db.prepare(
-    "INSERT INTO settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value"
-  );
+export async function updateSettings(input: Partial<Settings>): Promise<void> {
   for (const key of KEYS) {
-    if (input[key] !== undefined) {
-      upsert.run(key, input[key]);
+    const value = input[key];
+    if (value !== undefined) {
+      await sql`
+        INSERT INTO settings (key, value) VALUES (${key}, ${value})
+        ON CONFLICT (key) DO UPDATE SET value = excluded.value
+      `;
     }
   }
 }

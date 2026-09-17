@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import bcrypt from "bcryptjs";
-import { db } from "@/lib/db";
+import { sql } from "@/lib/db";
 import { createAdminSession, destroyAdminSession } from "@/lib/session";
 import { LoginFormSchema } from "@/lib/validation";
 
@@ -19,9 +19,10 @@ export async function loginAction(_prevState: LoginState, formData: FormData): P
   }
 
   const { username, password } = parsed.data;
-  const row = db
-    .prepare("SELECT id, username, password_hash FROM admin_users WHERE username = ?")
-    .get(username) as { id: number; username: string; password_hash: string } | undefined;
+  const rows = (await sql`
+    SELECT id, username, password_hash FROM admin_users WHERE username = ${username}
+  `) as { id: number; username: string; password_hash: string }[];
+  const row = rows[0];
 
   if (!row || !bcrypt.compareSync(password, row.password_hash)) {
     return { error: "Invalid username or password." };

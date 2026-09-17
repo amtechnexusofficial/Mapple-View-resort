@@ -29,7 +29,7 @@ export async function createBookingAction(_prevState: BookingState, formData: Fo
   }
 
   const data = parsed.data;
-  const room = getRoomById(data.room_id);
+  const room = await getRoomById(data.room_id);
   if (!room || !room.is_active) {
     return { error: "This room is no longer available." };
   }

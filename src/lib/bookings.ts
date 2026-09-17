@@ -1,5 +1,5 @@
 import "server-only";
-import { db } from "@/lib/db";
+import { sql } from "@/lib/db";
 
 export type BookingStatus = "pending" | "confirmed" | "cancelled";
 
@@ -32,43 +32,34 @@ export type BookingInput = {
   notes: string;
 };
 
-export function createBooking(input: BookingInput): number {
-  const result = db
-    .prepare(
-      `INSERT INTO bookings
-        (room_id, guest_name, guest_phone, guest_email, check_in, check_out, guests_count, nights, total_amount, notes)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+export async function createBooking(input: BookingInput): Promise<number> {
+  const rows = await sql`
+    INSERT INTO bookings
+      (room_id, guest_name, guest_phone, guest_email, check_in, check_out, guests_count, nights, total_amount, notes)
+    VALUES (
+      ${input.room_id}, ${input.guest_name}, ${input.guest_phone}, ${input.guest_email},
+      ${input.check_in}, ${input.check_out}, ${input.guests_count}, ${input.nights},
+      ${input.total_amount}, ${input.notes}
     )
-    .run(
-      input.room_id,
-      input.guest_name,
-      input.guest_phone,
-      input.guest_email,
-      input.check_in,
-      input.check_out,
-      input.guests_count,
-      input.nights,
-      input.total_amount,
-      input.notes
-    );
-  return Number(result.lastInsertRowid);
+    RETURNING id
+  `;
+  return (rows[0] as { id: number }).id;
 }
 
-export function getBookingById(id: number): Booking | null {
-  const row = db.prepare("SELECT * FROM bookings WHERE id = ?").get(id) as Booking | undefined;
-  return row ?? null;
+export async function getBookingById(id: number): Promise<Booking | null> {
+  const rows = await sql`SELECT * FROM bookings WHERE id = ${id}`;
+  return (rows[0] as Booking | undefined) ?? null;
 }
 
-export function listBookings(): (Booking & { room_name: string })[] {
-  return db
-    .prepare(
-      `SELECT bookings.*, rooms.name as room_name
-       FROM bookings JOIN rooms ON rooms.id = bookings.room_id
-       ORDER BY bookings.created_at DESC`
-    )
-    .all() as (Booking & { room_name: string })[];
+export async function listBookings(): Promise<(Booking & { room_name: string })[]> {
+  const rows = await sql`
+    SELECT bookings.*, rooms.name as room_name
+    FROM bookings JOIN rooms ON rooms.id = bookings.room_id
+    ORDER BY bookings.created_at DESC
+  `;
+  return rows as (Booking & { room_name: string })[];
 }
 
-export function updateBookingStatus(id: number, status: BookingStatus): void {
-  db.prepare("UPDATE bookings SET status = ? WHERE id = ?").run(status, id);
+export async function updateBookingStatus(id: number, status: BookingStatus): Promise<void> {
+  await sql`UPDATE bookings SET status = ${status} WHERE id = ${id}`;
 }
