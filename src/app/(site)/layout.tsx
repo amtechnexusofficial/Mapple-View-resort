@@ -6,7 +6,7 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
   const settings = getSettings();
   return (
     <>
-      <SiteHeader hotelName={settings.hotel_name} />
+      <SiteHeader hotelName={settings.hotel_name} ownerPhone={settings.owner_phone} />
       <main className="flex-1">{children}</main>
       <SiteFooter
         hotelName={settings.hotel_name}

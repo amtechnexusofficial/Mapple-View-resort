@@ -33,6 +33,159 @@
   --font-display: var(--font-fraunces);
 }
 
+/*
+ * "Sanctuary" design system — used by the new marketing header, footer and
+ * homepage (src/components/home/*, site-header.tsx, site-footer.tsx). Kept
+ * separate from the tokens above so the older pages (rooms, about, contact,
+ * admin) are unaffected.
+ */
+@theme {
+  --color-primary: #061910;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #1b2e24;
+  --color-on-primary-container: #819689;
+  --color-primary-fixed: #d1e8d9;
+  --color-primary-fixed-dim: #b6ccbd;
+  --color-on-primary-fixed: #0c1f16;
+  --color-on-primary-fixed-variant: #374b40;
+
+  --color-secondary: #76593f;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #fdd6b5;
+  --color-on-secondary-container: #785b41;
+  --color-secondary-fixed: #ffdcc0;
+  --color-secondary-fixed-dim: #e5bfa0;
+  --color-on-secondary-fixed: #2b1704;
+  --color-on-secondary-fixed-variant: #5c4129;
+
+  --color-tertiary: #091910;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #1d2e23;
+  --color-on-tertiary-container: #839688;
+  --color-tertiary-fixed: #d4e7d7;
+  --color-tertiary-fixed-dim: #b8cbbc;
+  --color-on-tertiary-fixed: #0f1f15;
+  --color-on-tertiary-fixed-variant: #3a4b3f;
+
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #93000a;
+
+  --color-outline: #737874;
+  --color-outline-variant: #c2c8c2;
+
+  --color-surface: #fbf9f6;
+  --color-surface-dim: #dbdad7;
+  --color-surface-bright: #fbf9f6;
+  --color-surface-variant: #e4e2df;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f5f3f0;
+  --color-surface-container: #efeeeb;
+  --color-surface-container-high: #eae8e5;
+  --color-surface-container-highest: #e4e2df;
+  --color-on-surface: #1b1c1a;
+  --color-on-surface-variant: #424844;
+  --color-surface-tint: #4f6357;
+
+  --color-inverse-surface: #30312f;
+  --color-inverse-on-surface: #f2f0ed;
+  --color-inverse-primary: #b6ccbd;
+
+  --font-headline-sm: var(--font-playfair);
+  --font-headline-md: var(--font-playfair);
+  --font-headline-lg: var(--font-playfair);
+  --font-display-lg: var(--font-playfair);
+  --font-display-lg-mobile: var(--font-playfair);
+  --font-display-xl: var(--font-playfair);
+  --font-display-xl-mobile: var(--font-playfair);
+  --font-body-sm: var(--font-manrope);
+  --font-body-md: var(--font-manrope);
+  --font-body-lg: var(--font-manrope);
+  --font-label-md: var(--font-manrope);
+  --font-label-caps: var(--font-manrope);
+
+  --text-headline-sm: 1.25rem;
+  --text-headline-sm--line-height: 1.75rem;
+  --text-headline-sm--letter-spacing: 0.01em;
+  --text-headline-sm--font-weight: 500;
+
+  --text-headline-md: 1.75rem;
+  --text-headline-md--line-height: 2.25rem;
+  --text-headline-md--letter-spacing: 0em;
+  --text-headline-md--font-weight: 400;
+
+  --text-headline-lg: 2.25rem;
+  --text-headline-lg--line-height: 2.75rem;
+  --text-headline-lg--letter-spacing: -0.01em;
+  --text-headline-lg--font-weight: 400;
+
+  --text-display-lg-mobile: 2.25rem;
+  --text-display-lg-mobile--line-height: 2.75rem;
+  --text-display-lg-mobile--letter-spacing: -0.01em;
+  --text-display-lg-mobile--font-weight: 400;
+
+  --text-display-lg: 3.25rem;
+  --text-display-lg--line-height: 3.75rem;
+  --text-display-lg--letter-spacing: -0.015em;
+  --text-display-lg--font-weight: 400;
+
+  --text-display-xl-mobile: 2.75rem;
+  --text-display-xl-mobile--line-height: 3.25rem;
+  --text-display-xl-mobile--letter-spacing: -0.01em;
+  --text-display-xl-mobile--font-weight: 400;
+
+  --text-display-xl: 4.5rem;
+  --text-display-xl--line-height: 5rem;
+  --text-display-xl--letter-spacing: -0.02em;
+  --text-display-xl--font-weight: 400;
+
+  --text-body-sm: 0.8125rem;
+  --text-body-sm--line-height: 1.375rem;
+  --text-body-sm--letter-spacing: 0.015em;
+  --text-body-sm--font-weight: 400;
+
+  --text-body-md: 0.9375rem;
+  --text-body-md--line-height: 1.625rem;
+  --text-body-md--letter-spacing: 0.01em;
+  --text-body-md--font-weight: 400;
+
+  --text-body-lg: 1.125rem;
+  --text-body-lg--line-height: 1.875rem;
+  --text-body-lg--letter-spacing: 0.01em;
+  --text-body-lg--font-weight: 300;
+
+  --text-label-md: 0.875rem;
+  --text-label-md--line-height: 1.25rem;
+  --text-label-md--letter-spacing: 0.04em;
+  --text-label-md--font-weight: 500;
+
+  --text-label-caps: 0.6875rem;
+  --text-label-caps--line-height: 1rem;
+  --text-label-caps--letter-spacing: 0.18em;
+  --text-label-caps--font-weight: 600;
+
+  --spacing-space-xs: 0.5rem;
+  --spacing-space-sm: 1rem;
+  --spacing-space-md: 1.5rem;
+  --spacing-space-lg: 2.5rem;
+  --spacing-space-xl: 4rem;
+  --spacing-gutter-sm: 1rem;
+  --spacing-gutter: 2rem;
+  --spacing-gutter-lg: 3rem;
+  --spacing-margin-sm: 1.5rem;
+  --spacing-margin: 4rem;
+  --spacing-margin-lg: 6rem;
+}
+
+.material-symbols-outlined {
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 24;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
