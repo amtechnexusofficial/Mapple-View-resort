@@ -1,0 +1,268 @@
+import { sql, ensureMigrated } from "@/lib/db";
+import type { Room, Booking, Settings, BookingStatus } from "@/lib/types";
+
+type RoomRow = Omit<Room, "images" | "amenities"> & {
+  images: string;
+  amenities: string;
+};
+
+function mapRoom(row: RoomRow): Room {
+  return {
+    ...row,
+    images: JSON.parse(row.images || "[]"),
+    amenities: JSON.parse(row.amenities || "[]"),
+  };
+}
+
+export const RoomModel = {
+  async all(includeInactive = false): Promise<Room[]> {
+    await ensureMigrated();
+    const rows = (includeInactive
+      ? await sql.query("SELECT * FROM rooms ORDER BY sort_order ASC, created_at ASC")
+      : await sql.query(
+          "SELECT * FROM rooms WHERE is_active = 1 ORDER BY sort_order ASC, created_at ASC"
+        )) as RoomRow[];
+    return rows.map(mapRoom);
+  },
+  async bySlug(slug: string): Promise<Room | undefined> {
+    await ensureMigrated();
+    const rows = (await sql.query("SELECT * FROM rooms WHERE slug = $1", [slug])) as RoomRow[];
+    return rows[0] ? mapRoom(rows[0]) : undefined;
+  },
+  async byId(id: string): Promise<Room | undefined> {
+    await ensureMigrated();
+    const rows = (await sql.query("SELECT * FROM rooms WHERE id = $1", [id])) as RoomRow[];
+    return rows[0] ? mapRoom(rows[0]) : undefined;
+  },
+  async create(data: {
+    name: string;
+    slug: string;
+    summary: string;
+    description: string;
+    price_per_night: number;
+    max_guests: number;
+    bed_type: string;
+    size_sqft: number;
+    images: string[];
+    amenities: string[];
+    sort_order?: number;
+  }): Promise<Room> {
+    await ensureMigrated();
+    const id = crypto.randomUUID();
+    await sql.query(
+      `INSERT INTO rooms (id, name, slug, summary, description, price_per_night, max_guests, bed_type, size_sqft, images, amenities, sort_order)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`,
+      [
+        id,
+        data.name,
+        data.slug,
+        data.summary,
+        data.description,
+        data.price_per_night,
+        data.max_guests,
+        data.bed_type,
+        data.size_sqft,
+        JSON.stringify(data.images),
+        JSON.stringify(data.amenities),
+        data.sort_order ?? 0,
+      ]
+    );
+    return (await RoomModel.byId(id))!;
+  },
+  async update(
+    id: string,
+    data: Partial<{
+      name: string;
+      slug: string;
+      summary: string;
+      description: string;
+      price_per_night: number;
+      max_guests: number;
+      bed_type: string;
+      size_sqft: number;
+      images: string[];
+      amenities: string[];
+      is_active: number;
+      sort_order: number;
+    }>
+  ): Promise<Room | undefined> {
+    await ensureMigrated();
+    const existing = await RoomModel.byId(id);
+    if (!existing) return undefined;
+    const merged = {
+      name: data.name ?? existing.name,
+      slug: data.slug ?? existing.slug,
+      summary: data.summary ?? existing.summary,
+      description: data.description ?? existing.description,
+      price_per_night: data.price_per_night ?? existing.price_per_night,
+      max_guests: data.max_guests ?? existing.max_guests,
+      bed_type: data.bed_type ?? existing.bed_type,
+      size_sqft: data.size_sqft ?? existing.size_sqft,
+      images: JSON.stringify(data.images ?? existing.images),
+      amenities: JSON.stringify(data.amenities ?? existing.amenities),
+      is_active: data.is_active ?? existing.is_active,
+      sort_order: data.sort_order ?? existing.sort_order,
+    };
+    await sql.query(
+      `UPDATE rooms SET name=$1, slug=$2, summary=$3, description=$4,
+       price_per_night=$5, max_guests=$6, bed_type=$7, size_sqft=$8,
+       images=$9, amenities=$10, is_active=$11, sort_order=$12,
+       updated_at=now() WHERE id=$13`,
+      [
+        merged.name,
+        merged.slug,
+        merged.summary,
+        merged.description,
+        merged.price_per_night,
+        merged.max_guests,
+        merged.bed_type,
+        merged.size_sqft,
+        merged.images,
+        merged.amenities,
+        merged.is_active,
+        merged.sort_order,
+        id,
+      ]
+    );
+    return RoomModel.byId(id);
+  },
+  async remove(id: string): Promise<void> {
+    await ensureMigrated();
+    await sql.query("DELETE FROM rooms WHERE id = $1", [id]);
+  },
+};
+
+export const BookingModel = {
+  async all(status?: BookingStatus): Promise<Booking[]> {
+    await ensureMigrated();
+    if (status) {
+      return (await sql.query(
+        "SELECT * FROM bookings WHERE status = $1 ORDER BY created_at DESC",
+        [status]
+      )) as Booking[];
+    }
+    return (await sql.query("SELECT * FROM bookings ORDER BY created_at DESC")) as Booking[];
+  },
+  async byId(id: string): Promise<Booking | undefined> {
+    await ensureMigrated();
+    const rows = (await sql.query("SELECT * FROM bookings WHERE id = $1", [id])) as Booking[];
+    return rows[0];
+  },
+  async create(data: {
+    room_id: string;
+    guest_name: string;
+    guest_phone: string;
+    guest_email: string;
+    check_in: string;
+    check_out: string;
+    guests: number;
+    nights: number;
+    total_amount: number;
+    notes: string;
+  }): Promise<Booking> {
+    await ensureMigrated();
+    const id = crypto.randomUUID();
+    await sql.query(
+      `INSERT INTO bookings (id, room_id, guest_name, guest_phone, guest_email, check_in, check_out, guests, nights, total_amount, notes)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`,
+      [
+        id,
+        data.room_id,
+        data.guest_name,
+        data.guest_phone,
+        data.guest_email,
+        data.check_in,
+        data.check_out,
+        data.guests,
+        data.nights,
+        data.total_amount,
+        data.notes,
+      ]
+    );
+    return (await BookingModel.byId(id))!;
+  },
+  async updateStatus(
+    id: string,
+    status: BookingStatus,
+    extra?: Partial<{
+      payment_ref: string;
+      whatsapp_sent: number;
+      whatsapp_error: string;
+    }>
+  ): Promise<Booking | undefined> {
+    await ensureMigrated();
+    const existing = await BookingModel.byId(id);
+    if (!existing) return undefined;
+    const merged = {
+      status,
+      payment_ref: extra?.payment_ref ?? existing.payment_ref,
+      whatsapp_sent: extra?.whatsapp_sent ?? existing.whatsapp_sent,
+      whatsapp_error: extra?.whatsapp_error ?? existing.whatsapp_error,
+    };
+    await sql.query(
+      `UPDATE bookings SET status=$1, payment_ref=$2, whatsapp_sent=$3,
+       whatsapp_error=$4, updated_at=now() WHERE id=$5`,
+      [merged.status, merged.payment_ref, merged.whatsapp_sent, merged.whatsapp_error, id]
+    );
+    return BookingModel.byId(id);
+  },
+  async stats() {
+    await ensureMigrated();
+    const [totalRow] = (await sql.query("SELECT COUNT(*)::int as c FROM bookings")) as {
+      c: number;
+    }[];
+    const [pendingRow] = (await sql.query(
+      "SELECT COUNT(*)::int as c FROM bookings WHERE status IN ('pending','payment_claimed')"
+    )) as { c: number }[];
+    const [confirmedRow] = (await sql.query(
+      "SELECT COUNT(*)::int as c FROM bookings WHERE status = 'confirmed'"
+    )) as { c: number }[];
+    const [revenueRow] = (await sql.query(
+      "SELECT COALESCE(SUM(total_amount),0)::int as s FROM bookings WHERE status = 'confirmed'"
+    )) as { s: number }[];
+    return {
+      total: totalRow.c,
+      pending: pendingRow.c,
+      confirmed: confirmedRow.c,
+      revenue: revenueRow.s,
+    };
+  },
+};
+
+export const SettingsModel = {
+  async get(): Promise<Settings> {
+    await ensureMigrated();
+    const rows = (await sql.query("SELECT * FROM settings WHERE id = 1")) as Settings[];
+    return rows[0];
+  },
+  async update(data: Partial<Omit<Settings, "id" | "updated_at">>): Promise<Settings> {
+    await ensureMigrated();
+    const existing = await SettingsModel.get();
+    const merged = { ...existing, ...data };
+    await sql.query(
+      `UPDATE settings SET resort_name=$1, tagline=$2, description=$3,
+       address=$4, contact_phone=$5, contact_email=$6, hero_image=$7,
+       upi_id=$8, upi_payee_name=$9, whatsapp_owner_number=$10,
+       whatsapp_api_token=$11, whatsapp_phone_number_id=$12,
+       check_in_time=$13, check_out_time=$14, updated_at=now()
+       WHERE id = 1`,
+      [
+        merged.resort_name,
+        merged.tagline,
+        merged.description,
+        merged.address,
+        merged.contact_phone,
+        merged.contact_email,
+        merged.hero_image,
+        merged.upi_id,
+        merged.upi_payee_name,
+        merged.whatsapp_owner_number,
+        merged.whatsapp_api_token,
+        merged.whatsapp_phone_number_id,
+        merged.check_in_time,
+        merged.check_out_time,
+      ]
+    );
+    return SettingsModel.get();
+  },
+};

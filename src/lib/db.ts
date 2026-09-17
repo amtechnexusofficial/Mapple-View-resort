@@ -1,146 +1,229 @@
-import "server-only";
-import { DatabaseSync } from "node:sqlite";
-import path from "node:path";
-import fs from "node:fs";
+import { neon } from "@neondatabase/serverless";
 import bcrypt from "bcryptjs";
 
-const DB_PATH = process.env.DATABASE_PATH ?? path.join(process.cwd(), "data", "mapple-view.db");
+const connectionString = process.env.DATABASE_URL;
+if (!connectionString) {
+  throw new Error(
+    "DATABASE_URL is not set. In Cloudflare, set it with `wrangler secret put DATABASE_URL` " +
+      "(the pooled connection string from your Neon project). Locally, put it in .env.local."
+  );
+}
+
+export const sql = neon(connectionString);
 
 declare global {
-  var __mappleDb: DatabaseSync | undefined;
+  var __mapple_migrated__: Promise<void> | undefined;
 }
 
-function openDb(): DatabaseSync {
-  fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });
-  const database = new DatabaseSync(DB_PATH);
-  database.exec("PRAGMA busy_timeout = 5000;");
-  database.exec("PRAGMA journal_mode = WAL;");
-  database.exec("PRAGMA foreign_keys = ON;");
-  return database;
-}
-
-export const db = globalThis.__mappleDb ?? openDb();
-if (process.env.NODE_ENV !== "production") {
-  globalThis.__mappleDb = db;
-}
-
-function migrate() {
-  db.exec(`
-    CREATE TABLE IF NOT EXISTS admin_users (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      username TEXT NOT NULL UNIQUE,
-      password_hash TEXT NOT NULL,
-      created_at TEXT NOT NULL DEFAULT (datetime('now'))
-    );
-
-    CREATE TABLE IF NOT EXISTS rooms (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      slug TEXT NOT NULL UNIQUE,
-      name TEXT NOT NULL,
+async function runMigration() {
+  await sql.query(`
+    CREATE TABLE IF NOT EXISTS settings (
+      id INTEGER PRIMARY KEY CHECK (id = 1),
+      resort_name TEXT NOT NULL DEFAULT 'Mapple View Resort',
+      tagline TEXT NOT NULL DEFAULT 'Your Mountain Escape Awaits',
       description TEXT NOT NULL DEFAULT '',
-      price_per_night INTEGER NOT NULL,
-      capacity INTEGER NOT NULL DEFAULT 2,
+      address TEXT NOT NULL DEFAULT '',
+      contact_phone TEXT NOT NULL DEFAULT '',
+      contact_email TEXT NOT NULL DEFAULT '',
+      hero_image TEXT NOT NULL DEFAULT '',
+      upi_id TEXT NOT NULL DEFAULT '',
+      upi_payee_name TEXT NOT NULL DEFAULT '',
+      whatsapp_owner_number TEXT NOT NULL DEFAULT '',
+      whatsapp_api_token TEXT NOT NULL DEFAULT '',
+      whatsapp_phone_number_id TEXT NOT NULL DEFAULT '',
+      check_in_time TEXT NOT NULL DEFAULT '12:00 PM',
+      check_out_time TEXT NOT NULL DEFAULT '11:00 AM',
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+  `);
+
+  await sql.query(`
+    CREATE TABLE IF NOT EXISTS rooms (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      slug TEXT NOT NULL UNIQUE,
+      summary TEXT NOT NULL DEFAULT '',
+      description TEXT NOT NULL DEFAULT '',
+      price_per_night INTEGER NOT NULL DEFAULT 0,
+      max_guests INTEGER NOT NULL DEFAULT 2,
+      bed_type TEXT NOT NULL DEFAULT '',
+      size_sqft INTEGER NOT NULL DEFAULT 0,
+      images TEXT NOT NULL DEFAULT '[]',
       amenities TEXT NOT NULL DEFAULT '[]',
-      image_url TEXT NOT NULL DEFAULT '',
       is_active INTEGER NOT NULL DEFAULT 1,
       sort_order INTEGER NOT NULL DEFAULT 0,
-      created_at TEXT NOT NULL DEFAULT (datetime('now'))
-    );
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+  `);
 
+  await sql.query(`
     CREATE TABLE IF NOT EXISTS bookings (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      room_id INTEGER NOT NULL REFERENCES rooms(id),
+      id TEXT PRIMARY KEY,
+      room_id TEXT NOT NULL REFERENCES rooms(id) ON DELETE RESTRICT,
       guest_name TEXT NOT NULL,
       guest_phone TEXT NOT NULL,
       guest_email TEXT NOT NULL DEFAULT '',
       check_in TEXT NOT NULL,
       check_out TEXT NOT NULL,
-      guests_count INTEGER NOT NULL DEFAULT 1,
-      nights INTEGER NOT NULL,
-      total_amount INTEGER NOT NULL,
+      guests INTEGER NOT NULL DEFAULT 1,
+      nights INTEGER NOT NULL DEFAULT 1,
+      total_amount INTEGER NOT NULL DEFAULT 0,
       status TEXT NOT NULL DEFAULT 'pending',
+      payment_ref TEXT NOT NULL DEFAULT '',
       notes TEXT NOT NULL DEFAULT '',
-      created_at TEXT NOT NULL DEFAULT (datetime('now'))
-    );
-
-    CREATE TABLE IF NOT EXISTS settings (
-      key TEXT PRIMARY KEY,
-      value TEXT NOT NULL
-    );
+      whatsapp_sent INTEGER NOT NULL DEFAULT 0,
+      whatsapp_error TEXT NOT NULL DEFAULT '',
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
   `);
 
-  const adminHash = bcrypt.hashSync("changeme123", 10);
-  db.prepare(
-    "INSERT INTO admin_users (username, password_hash) VALUES (?, ?) ON CONFLICT(username) DO NOTHING"
-  ).run("admin", adminHash);
+  await sql.query(`
+    CREATE TABLE IF NOT EXISTS admin_users (
+      id TEXT PRIMARY KEY,
+      username TEXT NOT NULL UNIQUE,
+      password_hash TEXT NOT NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+  `);
 
-  const defaultSettings: Record<string, string> = {
-    hotel_name: "Mapple View Resort",
-    tagline: "Wake up to the mountains, every morning.",
-    address: "Mapple Valley Road, Near Pine Ridge, Himachal Pradesh, India",
-    owner_phone: "919999999999",
-    upi_id: "mapleviewresort@upi",
-    upi_payee_name: "Mapple View Resort",
-    contact_email: "stay@mappleviewresort.example",
-    hero_image: "",
-    about_text:
-      "Mapple View Resort sits on a quiet hillside with sweeping valley views, home-style dining, and rooms built for slowing down. Family-run since day one, we look after every guest like they're staying with kin.",
-  };
-  const upsert = db.prepare(
-    "INSERT INTO settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO NOTHING"
+  await sql.query(`CREATE INDEX IF NOT EXISTS idx_bookings_room ON bookings(room_id)`);
+  await sql.query(`CREATE INDEX IF NOT EXISTS idx_bookings_status ON bookings(status)`);
+
+  await sql.query(
+    `INSERT INTO settings (id, resort_name, tagline, description, address, contact_phone, contact_email, hero_image, upi_id, upi_payee_name, whatsapp_owner_number)
+     VALUES (1, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+     ON CONFLICT (id) DO NOTHING`,
+    [
+      "Mapple View Resort",
+      "Your Mountain Escape Awaits",
+      "Nestled in the hills, Mapple View Resort offers a peaceful retreat with breathtaking views, comfortable rooms, and warm hospitality.",
+      "Mapple View Resort, Hill Road, Mussoorie, Uttarakhand, India",
+      "+91 98765 43210",
+      "info@mapleviewresort.com",
+      "",
+      "",
+      "Mapple View Resort",
+      "",
+    ]
   );
-  for (const [key, value] of Object.entries(defaultSettings)) {
-    upsert.run(key, value);
+
+  const adminRows = await sql.query("SELECT id FROM admin_users LIMIT 1");
+  if (adminRows.length === 0) {
+    const username = process.env.ADMIN_USERNAME || "admin";
+    const password = process.env.ADMIN_PASSWORD || "changeme123";
+    const hash = bcrypt.hashSync(password, 10);
+    await sql.query(
+      "INSERT INTO admin_users (id, username, password_hash) VALUES ($1, $2, $3) ON CONFLICT (username) DO NOTHING",
+      [crypto.randomUUID(), username, hash]
+    );
+    if (!process.env.ADMIN_PASSWORD) {
+      console.warn(
+        `\n[Mapple View Resort] No ADMIN_PASSWORD set. Created default admin user "${username}" / "${password}". Please change this immediately in Admin > Settings or via env vars.\n`
+      );
+    }
   }
 
-  {
-    const insertRoom = db.prepare(`
-      INSERT INTO rooms (slug, name, description, price_per_night, capacity, amenities, image_url, sort_order)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-      ON CONFLICT(slug) DO NOTHING
-    `);
-    const seedRooms = [
+  const countRows = (await sql.query("SELECT COUNT(*)::int as count FROM rooms")) as {
+    count: number;
+  }[];
+  if (countRows[0]?.count === 0) {
+    const sampleRooms = [
       {
-        slug: "valley-view-deluxe",
-        name: "Valley View Deluxe",
+        name: "Deluxe Valley View Room",
+        slug: "deluxe-valley-view-room",
+        summary: "Spacious room with a private balcony overlooking the valley.",
         description:
-          "A bright, spacious room facing the valley, with a private balcony perfect for morning coffee and sunset views.",
-        price: 4500,
-        capacity: 2,
-        amenities: ["Free Wi-Fi", "Balcony", "Valley View", "Hot Water", "Breakfast Included"],
+          "Wake up to stunning valley views from your private balcony. This deluxe room features a king-size bed, modern en-suite bathroom, and thoughtful amenities for a relaxing stay.",
+        price_per_night: 4500,
+        max_guests: 3,
+        bed_type: "King Bed",
+        size_sqft: 320,
+        images: "[]",
+        amenities: JSON.stringify([
+          "Free Wi-Fi",
+          "Valley View Balcony",
+          "Air Conditioning",
+          "Complimentary Breakfast",
+          "Flat-screen TV",
+          "Hot Water",
+        ]),
+        sort_order: 1,
       },
       {
-        slug: "family-cottage",
-        name: "Family Cottage",
+        name: "Premium Mountain Suite",
+        slug: "premium-mountain-suite",
+        summary: "Our largest suite with a living area and panoramic mountain views.",
         description:
-          "A standalone cottage with two bedrooms, a sitting area, and a private garden patch — ideal for families and small groups.",
-        price: 7500,
-        capacity: 5,
-        amenities: ["Free Wi-Fi", "Private Garden", "Two Bedrooms", "Kitchenette", "Breakfast Included"],
+          "The Premium Mountain Suite offers a separate living area, panoramic mountain views, and premium furnishings — perfect for families or those seeking extra space and comfort.",
+        price_per_night: 7500,
+        max_guests: 4,
+        bed_type: "King Bed + Sofa Bed",
+        size_sqft: 500,
+        images: "[]",
+        amenities: JSON.stringify([
+          "Free Wi-Fi",
+          "Living Area",
+          "Mountain View",
+          "Air Conditioning",
+          "Complimentary Breakfast",
+          "Mini Fridge",
+          "Bathtub",
+        ]),
+        sort_order: 2,
       },
       {
-        slug: "pine-view-standard",
-        name: "Pine View Standard",
+        name: "Cozy Garden Room",
+        slug: "cozy-garden-room",
+        summary: "Comfortable and affordable room facing our landscaped gardens.",
         description:
-          "A cosy, comfortable room surrounded by pine trees — great value for couples and solo travellers.",
-        price: 2800,
-        capacity: 2,
-        amenities: ["Free Wi-Fi", "Hot Water", "Pine View", "Breakfast Included"],
+          "A warm and cozy room facing the resort's landscaped gardens. Ideal for solo travelers or couples looking for comfort at a great value.",
+        price_per_night: 3000,
+        max_guests: 2,
+        bed_type: "Queen Bed",
+        size_sqft: 220,
+        images: "[]",
+        amenities: JSON.stringify([
+          "Free Wi-Fi",
+          "Garden View",
+          "Complimentary Breakfast",
+          "Hot Water",
+          "Work Desk",
+        ]),
+        sort_order: 3,
       },
     ];
-    for (const [i, room] of seedRooms.entries()) {
-      insertRoom.run(
-        room.slug,
-        room.name,
-        room.description,
-        room.price,
-        room.capacity,
-        JSON.stringify(room.amenities),
-        "",
-        i
+    for (const room of sampleRooms) {
+      await sql.query(
+        `INSERT INTO rooms (id, name, slug, summary, description, price_per_night, max_guests, bed_type, size_sqft, images, amenities, sort_order)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
+         ON CONFLICT (slug) DO NOTHING`,
+        [
+          crypto.randomUUID(),
+          room.name,
+          room.slug,
+          room.summary,
+          room.description,
+          room.price_per_night,
+          room.max_guests,
+          room.bed_type,
+          room.size_sqft,
+          room.images,
+          room.amenities,
+          room.sort_order,
+        ]
       );
     }
   }
 }
 
-migrate();
+export function ensureMigrated(): Promise<void> {
+  if (!globalThis.__mapple_migrated__) {
+    globalThis.__mapple_migrated__ = runMigration().catch((err) => {
+      globalThis.__mapple_migrated__ = undefined;
+      throw err;
+    });
+  }
+  return globalThis.__mapple_migrated__;
+}
