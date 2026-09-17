@@ -3,7 +3,7 @@ import Image from "next/image";
 import { LinkButton } from "@/components/ui/Button";
 import Icon from "@/components/ui/Icon";
 import SectionLabel from "@/components/site/SectionLabel";
-import { MountainHero } from "@/components/site/MountainArt";
+import { stockImages, stockRoomImage } from "@/lib/stockImages";
 import HeroBookingBar from "@/components/site/HeroBookingBar";
 import RoomShowcase from "@/components/site/RoomShowcase";
 import WakeUpHereTimeline from "@/components/site/WakeUpHereTimeline";
@@ -83,39 +83,33 @@ export default async function HomePage() {
   ];
 
   const galleryItems: GalleryItem[] = [
-    ...allRooms.flatMap((r) =>
-      r.images.slice(0, 2).map((src, i) => ({
-        id: `${r.id}-${i}`,
-        category: "rooms" as const,
-        src,
-        caption: r.name,
-        span: i === 0 ? ("wide" as const) : undefined,
-      }))
-    ),
-    { id: "view-dawn", category: "views", variant: "dawn", caption: "Dawn over the Nilgiris" },
-    { id: "view-day", category: "views", variant: "day", caption: "Midday mountain light", span: "wide" },
-    { id: "view-dusk", category: "views", variant: "dusk", caption: "Dusk across the ridgeline" },
+    ...allRooms.map((r, i) => ({
+      id: `${r.id}-0`,
+      category: "rooms" as const,
+      src: r.images[0] || stockRoomImage(i),
+      caption: r.name,
+      span: i === 0 ? ("wide" as const) : undefined,
+    })),
+    { id: "view-sunbeams", category: "views" as const, src: stockImages.gallery.sunbeams, caption: "Morning light over the tea ridge" },
+    { id: "view-tub", category: "views" as const, src: stockImages.gallery.soakingTub, caption: "A quiet corner, view included" },
+    { id: "view-facade", category: "views" as const, src: stockImages.gallery.facade, caption: "The estate, from the driveway" },
+    { id: "dining-main", category: "dining" as const, src: stockImages.dining.main, caption: "A warm plate at altitude", span: "wide" },
+    { id: "dining-tea", category: "dining" as const, src: stockImages.dining.tea, caption: "Tea country, in a cup" },
   ];
 
   return (
     <div>
       {/* ============================= HERO ============================= */}
       <section className="relative isolate flex min-h-[92vh] flex-col justify-between overflow-hidden text-stone">
-        {settings.hero_image ? (
-          <>
-            <Image
-              src={settings.hero_image}
-              alt=""
-              fill
-              priority
-              sizes="100vw"
-              className="object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-charcoal/45 to-charcoal/15" />
-          </>
-        ) : (
-          <MountainHero />
-        )}
+        <Image
+          src={settings.hero_image || stockImages.heroBg}
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-charcoal/45 to-charcoal/15" />
 
         <div className="label-caps relative z-10 mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-3 border-b border-stone/20 px-4 pt-8 pb-4 text-stone/80 sm:px-6">
           <span>11.41&deg; N, 76.70&deg; E &nbsp;&middot;&nbsp; ~2,200M ELEVATION</span>
@@ -181,12 +175,24 @@ export default async function HomePage() {
           </Reveal>
           <div className="lg:col-span-7">
             <div className="grid grid-cols-12 gap-4">
-              <div className="col-span-7 h-[420px] overflow-hidden bg-petrol-100 sm:h-[520px]">
-                <MountainHero />
+              <div className="relative col-span-7 h-[420px] overflow-hidden bg-petrol-100 sm:h-[520px]">
+                <Image
+                  src={stockImages.escapeTall}
+                  alt="Morning mist over the hills near Mapple View"
+                  fill
+                  sizes="(min-width: 1024px) 40vw, 60vw"
+                  className="object-cover"
+                />
               </div>
               <div className="col-span-5 pt-16">
-                <div className="h-[300px] overflow-hidden bg-petrol-100 sm:h-[380px]">
-                  <MountainHero />
+                <div className="relative h-[300px] overflow-hidden bg-petrol-100 sm:h-[380px]">
+                  <Image
+                    src={stockImages.escapeSquare}
+                    alt="A warm, quiet corner at Mapple View"
+                    fill
+                    sizes="(min-width: 1024px) 25vw, 40vw"
+                    className="object-cover"
+                  />
                 </div>
               </div>
             </div>
@@ -320,7 +326,7 @@ export default async function HomePage() {
             Curated Estate Frames
           </h2>
           <p className="mt-3 max-w-xl text-sm font-light text-ink/70">
-            Real room photos as they&apos;re added, alongside our illustrated Nilgiri scenes in the
+            Real room photos as they&apos;re added, alongside placeholder Nilgiri imagery in the
             meantime.
           </p>
           <div className="mt-10">
@@ -330,15 +336,30 @@ export default async function HomePage() {
       </section>
 
       {/* ========================= 09 · DINING ========================= */}
-      <section className="mx-auto max-w-4xl px-4 py-24 sm:px-6 sm:py-32">
-        <SectionLabel index="09" eyebrow="Taste the Hills" />
-        <h2 className="mt-5 font-display text-3xl font-normal text-ink sm:text-4xl">
-          Dining at Mapple View
-        </h2>
-        <p className="mt-4 text-sm font-light leading-relaxed text-ink/70">
-          Full dining details and menus are coming soon. For current breakfast and meal
-          arrangements, please ask us directly when you enquire or book.
-        </p>
+      <section className="mx-auto max-w-6xl px-4 py-24 sm:px-6 sm:py-32">
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:items-center">
+          <div className="lg:col-span-6">
+            <SectionLabel index="09" eyebrow="Taste the Hills" />
+            <h2 className="mt-5 font-display text-3xl font-normal text-ink sm:text-4xl">
+              Dining at Mapple View
+            </h2>
+            <p className="mt-4 max-w-md text-sm font-light leading-relaxed text-ink/70">
+              Full dining details and menus are coming soon. For current breakfast and meal
+              arrangements, please ask us directly when you enquire or book.
+            </p>
+          </div>
+          <div className="grid grid-cols-2 gap-4 lg:col-span-6">
+            <div className="relative col-span-2 aspect-[16/9] overflow-hidden bg-petrol-100">
+              <Image src={stockImages.dining.main} alt="" fill sizes="60vw" className="object-cover" />
+            </div>
+            <div className="relative aspect-square overflow-hidden bg-petrol-100">
+              <Image src={stockImages.dining.tea} alt="" fill sizes="30vw" className="object-cover" />
+            </div>
+            <div className="relative aspect-square overflow-hidden bg-petrol-100">
+              <Image src={stockImages.dining.produce} alt="" fill sizes="30vw" className="object-cover" />
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* ========================= 10 · FAQ ========================= */}
@@ -392,11 +413,25 @@ export default async function HomePage() {
           >
             @{settings.instagram_handle.replace(/^@/, "")}
           </a>
+          <div className="mx-auto mt-8 grid max-w-2xl grid-cols-4 gap-3">
+            {stockImages.social.map((src) => (
+              <div key={src} className="relative aspect-square overflow-hidden bg-petrol-100">
+                <Image src={src} alt="" fill sizes="120px" className="object-cover" />
+              </div>
+            ))}
+          </div>
         </section>
       )}
 
       {/* =============================== FINAL CTA =============================== */}
       <section className="relative overflow-hidden bg-charcoal text-stone">
+        <Image
+          src={stockImages.timeline[4]}
+          alt=""
+          fill
+          sizes="100vw"
+          className="object-cover opacity-25 mix-blend-luminosity"
+        />
         <Reveal className="relative mx-auto max-w-4xl px-4 py-24 text-center sm:px-6 sm:py-32">
           <span className="label-caps text-petrol-300">Your Ooty Escape Starts Here</span>
           <h2 className="mt-5 font-display text-4xl font-normal leading-[1.05] sm:text-5xl">

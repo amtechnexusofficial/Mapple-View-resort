@@ -3,13 +3,11 @@
 import { useState } from "react";
 import Image from "next/image";
 import Icon from "@/components/ui/Icon";
-import { RoomViewScene } from "@/components/site/MountainArt";
 
 export type GalleryItem = {
   id: string;
-  category: "rooms" | "views";
-  src?: string;
-  variant?: "dawn" | "day" | "dusk";
+  category: "rooms" | "views" | "dining";
+  src: string;
   caption: string;
   span?: "wide" | "tall" | "normal";
 };
@@ -18,6 +16,7 @@ const categories = [
   { key: "all", label: "All" },
   { key: "rooms", label: "Rooms" },
   { key: "views", label: "Mountain Views" },
+  { key: "dining", label: "Dining" },
 ] as const;
 
 export default function GalleryGrid({ items }: { items: GalleryItem[] }) {
@@ -53,17 +52,13 @@ export default function GalleryGrid({ items }: { items: GalleryItem[] }) {
               item.span === "wide" ? "col-span-2 aspect-[16/9]" : item.span === "tall" ? "row-span-2 aspect-[3/4]" : "aspect-square"
             }`}
           >
-            {item.src ? (
-              <Image
-                src={item.src}
-                alt={item.caption}
-                fill
-                sizes="(min-width: 768px) 25vw, 50vw"
-                className="object-cover transition duration-500 group-hover:scale-105"
-              />
-            ) : (
-              <RoomViewScene variant={item.variant || "day"} className="h-full w-full transition duration-500 group-hover:scale-105" />
-            )}
+            <Image
+              src={item.src}
+              alt={item.caption}
+              fill
+              sizes="(min-width: 768px) 25vw, 50vw"
+              className="object-cover transition duration-500 group-hover:scale-105"
+            />
             <div className="absolute inset-0 bg-gradient-to-t from-charcoal/60 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
             <span className="label-caps absolute bottom-3 left-3 text-stone opacity-0 transition-opacity group-hover:opacity-100">
               View
@@ -89,11 +84,13 @@ export default function GalleryGrid({ items }: { items: GalleryItem[] }) {
         {lightbox && (
           <>
             <div className="relative max-h-[70vh] w-full max-w-4xl overflow-hidden" onClick={(e) => e.stopPropagation()}>
-              {lightbox.src ? (
-                <Image src={lightbox.src} alt={lightbox.caption} width={1200} height={800} className="h-auto max-h-[70vh] w-full object-contain" />
-              ) : (
-                <RoomViewScene variant={lightbox.variant || "day"} className="aspect-[4/3] w-full" />
-              )}
+              <Image
+                src={lightbox.src}
+                alt={lightbox.caption}
+                width={1200}
+                height={800}
+                className="h-auto max-h-[70vh] w-full object-contain"
+              />
             </div>
             <span className="font-display text-lg font-normal text-stone">{lightbox.caption}</span>
           </>
