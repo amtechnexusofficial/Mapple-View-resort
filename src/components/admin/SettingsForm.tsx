@@ -11,6 +11,7 @@ type FormState = {
   address: string;
   contactPhone: string;
   contactEmail: string;
+  heroImage: string;
   upiId: string;
   upiPayeeName: string;
   whatsappOwnerNumber: string;
@@ -58,6 +59,7 @@ export default function SettingsForm({ settings }: { settings: Settings }) {
     address: settings.address,
     contactPhone: settings.contact_phone,
     contactEmail: settings.contact_email,
+    heroImage: settings.hero_image,
     upiId: settings.upi_id,
     upiPayeeName: settings.upi_payee_name,
     whatsappOwnerNumber: settings.whatsapp_owner_number,
