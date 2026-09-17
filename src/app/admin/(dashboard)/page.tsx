@@ -21,7 +21,7 @@ export default async function AdminDashboardPage() {
 
   return (
     <div>
-      <h1 className="font-display text-2xl font-bold text-ink">
+      <h1 className="font-sans text-2xl font-bold text-ink">
         Dashboard
       </h1>
       <p className="mt-1 text-sm text-ink/60">
@@ -37,7 +37,7 @@ export default async function AdminDashboardPage() {
             <p className="text-xs font-medium uppercase tracking-wide text-ink/50">
               {c.label}
             </p>
-            <p className="mt-2 font-display text-2xl font-bold text-ink">
+            <p className="mt-2 font-sans text-2xl font-bold text-ink">
               {c.value}
             </p>
           </div>
@@ -46,7 +46,7 @@ export default async function AdminDashboardPage() {
 
       <div className="mt-8 rounded-2xl border border-petrol-100 bg-white shadow-sm">
         <div className="flex items-center justify-between border-b border-petrol-100 px-6 py-4">
-          <h2 className="font-display text-lg font-semibold text-ink">
+          <h2 className="font-sans text-lg font-semibold text-ink">
             Recent Bookings
           </h2>
           <Link href="/admin/bookings" className="text-sm font-medium text-petrol-600 hover:underline">

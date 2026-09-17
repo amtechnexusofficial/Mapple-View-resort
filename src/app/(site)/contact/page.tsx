@@ -14,7 +14,7 @@ export default async function ContactPage() {
           <span className="text-sm font-semibold uppercase tracking-widest text-petrol-400">
             Get in Touch
           </span>
-          <h1 className="mt-2 font-display text-4xl font-bold leading-none tracking-tighter sm:text-5xl">
+          <h1 className="mt-2 font-display text-4xl font-medium leading-[1.05] sm:text-5xl">
             Contact Us
           </h1>
         </div>

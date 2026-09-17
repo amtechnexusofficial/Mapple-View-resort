@@ -30,7 +30,7 @@
   --color-petrol-600: var(--color-petrol-600);
   --color-charcoal: var(--color-charcoal);
   --color-charcoal-light: var(--color-charcoal-light);
-  --font-display: var(--font-outfit);
+  --font-display: var(--font-cormorant);
   --font-sans: var(--font-jakarta);
   --font-mono: var(--font-plex-mono);
 }
@@ -56,7 +56,7 @@ body::after {
 }
 
 .font-display {
-  font-family: var(--font-display), system-ui, sans-serif;
+  font-family: var(--font-display), Georgia, serif;
 }
 
 .font-mono-data {

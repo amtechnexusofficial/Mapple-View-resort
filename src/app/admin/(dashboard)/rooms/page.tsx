@@ -10,7 +10,7 @@ export default async function AdminRoomsPage() {
     <div>
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-display text-2xl font-bold text-ink">Rooms</h1>
+          <h1 className="font-sans text-2xl font-bold text-ink">Rooms</h1>
           <p className="mt-1 text-sm text-ink/60">Manage your room listings.</p>
         </div>
         <Link
