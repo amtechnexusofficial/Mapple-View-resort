@@ -21,7 +21,7 @@ const plexMono = IBM_Plex_Mono({
 export const metadata: Metadata = {
   title: "Mapple View Resort",
   description:
-    "Mapple View Resort — a peaceful mountain retreat with breathtaking views, comfortable rooms, and warm hospitality. Book your stay today.",
+    "Mapple View Resort: a peaceful mountain retreat with breathtaking views, comfortable rooms, and warm hospitality. Book your stay today.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

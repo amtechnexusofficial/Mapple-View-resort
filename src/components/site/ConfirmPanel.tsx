@@ -183,7 +183,7 @@ export default function ConfirmPanel({
         disabled={submitting}
         className="mt-6 w-full rounded-full bg-petrol-500 px-6 py-3 text-sm font-semibold text-stone transition hover:bg-petrol-600 disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {submitting ? "Confirming..." : "I've Paid — Confirm Booking"}
+        {submitting ? "Confirming..." : "I've Paid, Confirm Booking"}
       </button>
       <p className="mt-3 text-center text-xs text-ink/50">
         Clicking confirm notifies the resort of your booking and payment via WhatsApp.

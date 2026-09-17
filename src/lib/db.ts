@@ -178,7 +178,7 @@ async function runMigration() {
         slug: "premium-mountain-suite",
         summary: "Our largest suite with a living area and panoramic mountain views.",
         description:
-          "The Premium Mountain Suite offers a separate living area, panoramic mountain views, and premium furnishings — perfect for families or those seeking extra space and comfort.",
+          "The Premium Mountain Suite offers a separate living area, panoramic mountain views, and premium furnishings, perfect for families or those seeking extra space and comfort.",
         price_per_night: 7500,
         max_guests: 4,
         bed_type: "King Bed + Sofa Bed",
