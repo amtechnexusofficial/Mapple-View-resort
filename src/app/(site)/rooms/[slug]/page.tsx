@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { RoomModel } from "@/lib/models";
 import { formatInr } from "@/lib/format";
 import BookingForm from "@/components/site/BookingForm";
+import RoomImagePlaceholder from "@/components/site/RoomImagePlaceholder";
 
 export async function generateMetadata(
   { params }: PageProps<"/rooms/[slug]">
@@ -37,9 +38,7 @@ export default async function RoomDetailPage({
                 priority
               />
             ) : (
-              <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-petrol-400 to-charcoal-light text-stone/70">
-                <span className="font-display text-2xl">{room.name}</span>
-              </div>
+              <RoomImagePlaceholder name={room.name} nameClassName="text-2xl" />
             )}
           </div>
 

@@ -1,17 +1,25 @@
 import Link from "next/link";
 import { SettingsModel } from "@/lib/models";
+import { ContourLines, MountainMark } from "@/components/site/MountainArt";
 
 export default async function Footer() {
   const settings = await SettingsModel.get();
   const year = new Date().getFullYear();
 
   return (
-    <footer className="mt-auto border-t border-petrol-100 bg-charcoal text-stone">
-      <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-3">
+    <footer className="relative mt-auto overflow-hidden border-t border-petrol-100 bg-charcoal text-stone">
+      <ContourLines
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-40 w-full text-petrol-300"
+        opacity={0.14}
+      />
+      <div className="relative mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-3">
         <div>
-          <h3 className="font-display text-xl font-semibold text-stone">
-            {settings.resort_name}
-          </h3>
+          <div className="flex items-center gap-2">
+            <MountainMark className="h-6 w-6 shrink-0 text-petrol-400" />
+            <h3 className="font-display text-2xl font-semibold text-stone">
+              {settings.resort_name}
+            </h3>
+          </div>
           <p className="mt-3 max-w-xs text-sm leading-relaxed text-stone/80">
             {settings.tagline}
           </p>

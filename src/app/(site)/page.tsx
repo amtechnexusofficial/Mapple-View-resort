@@ -1,5 +1,5 @@
 import { LinkButton } from "@/components/ui/Button";
-import { MountainHero, MountainDivider } from "@/components/site/MountainArt";
+import { MountainHero, MountainDivider, ContourLines } from "@/components/site/MountainArt";
 import RoomCard from "@/components/site/RoomCard";
 import FeaturedRoomCard from "@/components/site/FeaturedRoomCard";
 import { RoomModel, SettingsModel } from "@/lib/models";
@@ -34,7 +34,7 @@ export default async function HomePage() {
           <span className="rounded-full bg-stone/10 px-4 py-1 text-xs font-semibold uppercase tracking-widest text-petrol-400 ring-1 ring-petrol-400/40">
             Welcome to {settings.resort_name}
           </span>
-          <h1 className="mt-6 max-w-2xl font-display text-4xl font-bold leading-none tracking-tighter sm:text-6xl">
+          <h1 className="mt-6 max-w-2xl font-display text-4xl font-bold leading-none tracking-tighter sm:text-6xl lg:text-7xl">
             {settings.tagline || "Your Mountain Escape Awaits"}
           </h1>
           <p className="mt-6 max-w-xl text-base text-stone/80 sm:text-lg">
@@ -140,17 +140,23 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-4xl px-4 py-20 text-center sm:px-6">
-        <h2 className="font-display text-3xl font-bold text-ink sm:text-4xl">
-          Ready for Your Mountain Getaway?
-        </h2>
-        <p className="mx-auto mt-4 max-w-xl text-ink/70">
-          Reserve your room today and let us take care of the rest. Secure payment, instant confirmation, unforgettable memories.
-        </p>
-        <div className="mt-8 flex flex-wrap justify-center gap-4">
-          <LinkButton href="/rooms" variant="primary">
-            Book Now
-          </LinkButton>
+      <section className="relative overflow-hidden">
+        <ContourLines
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-56 w-full text-petrol-300"
+          opacity={0.25}
+        />
+        <div className="relative mx-auto max-w-4xl px-4 py-20 text-center sm:px-6">
+          <h2 className="font-display text-3xl font-bold leading-none tracking-tighter text-ink sm:text-4xl">
+            Ready for Your Mountain Getaway?
+          </h2>
+          <p className="mx-auto mt-4 max-w-xl text-ink/70">
+            Reserve your room today and let us take care of the rest. Secure payment, instant confirmation, unforgettable memories.
+          </p>
+          <div className="mt-8 flex flex-wrap justify-center gap-4">
+            <LinkButton href="/rooms" variant="primary">
+              Book Now
+            </LinkButton>
+          </div>
         </div>
       </section>
     </div>
