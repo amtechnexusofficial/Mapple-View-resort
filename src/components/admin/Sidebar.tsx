@@ -23,7 +23,7 @@ export default function Sidebar({ username }: { username: string }) {
   return (
     <aside className="flex w-full flex-col border-charcoal-light bg-charcoal text-stone md:h-screen md:w-64 md:border-r">
       <div className="px-6 py-6">
-        <p className="font-display text-lg font-semibold">Mapple View</p>
+        <p className="font-sans text-lg font-semibold">Mapple View</p>
         <p className="text-xs text-stone/50">Admin Panel</p>
       </div>
       <nav className="flex flex-1 flex-col gap-1 px-3">

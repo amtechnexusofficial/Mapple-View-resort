@@ -42,7 +42,7 @@ function LoginFormInner() {
         onSubmit={handleSubmit}
         className="w-full max-w-sm rounded-2xl bg-white p-8 shadow-xl"
       >
-        <h1 className="font-display text-2xl font-bold text-ink">
+        <h1 className="font-sans text-2xl font-bold text-ink">
           Admin Login
         </h1>
         <p className="mt-1 text-sm text-ink/60">

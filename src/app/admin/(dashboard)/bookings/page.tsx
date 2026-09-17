@@ -27,7 +27,7 @@ export default async function AdminBookingsPage({
 
   return (
     <div>
-      <h1 className="font-display text-2xl font-bold text-ink">Bookings</h1>
+      <h1 className="font-sans text-2xl font-bold text-ink">Bookings</h1>
       <p className="mt-1 text-sm text-ink/60">Manage guest booking requests.</p>
 
       <div className="mt-6 flex flex-wrap gap-2">

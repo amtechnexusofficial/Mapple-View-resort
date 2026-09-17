@@ -103,7 +103,7 @@ export default function SettingsForm({ settings }: { settings: Settings }) {
   return (
     <form onSubmit={handleSubmit} className="max-w-2xl space-y-8">
       <section>
-        <h2 className="font-display text-lg font-semibold text-ink">
+        <h2 className="font-sans text-lg font-semibold text-ink">
           Resort Information
         </h2>
         <div className="mt-4 space-y-4">
@@ -131,7 +131,7 @@ export default function SettingsForm({ settings }: { settings: Settings }) {
       </section>
 
       <section className="border-t border-petrol-100 pt-6">
-        <h2 className="font-display text-lg font-semibold text-ink">
+        <h2 className="font-sans text-lg font-semibold text-ink">
           UPI Payment
         </h2>
         <p className="mt-1 text-xs text-ink/50">
@@ -144,7 +144,7 @@ export default function SettingsForm({ settings }: { settings: Settings }) {
       </section>
 
       <section className="border-t border-petrol-100 pt-6">
-        <h2 className="font-display text-lg font-semibold text-ink">
+        <h2 className="font-sans text-lg font-semibold text-ink">
           WhatsApp Notifications
         </h2>
         <p className="mt-1 text-xs text-ink/50">

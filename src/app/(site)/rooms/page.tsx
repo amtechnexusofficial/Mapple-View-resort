@@ -15,7 +15,7 @@ export default async function RoomsPage() {
         <span className="text-sm font-semibold uppercase tracking-widest text-petrol-600">
           Accommodation
         </span>
-        <h1 className="mt-2 font-display text-4xl font-bold leading-none tracking-tighter text-ink">
+        <h1 className="mt-2 font-display text-4xl font-medium leading-[1.05] text-ink">
           Rooms &amp; Suites
         </h1>
         <p className="mx-auto mt-4 max-w-xl text-ink/70">
