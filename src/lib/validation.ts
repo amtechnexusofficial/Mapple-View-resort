@@ -101,16 +101,34 @@ export const bookingStatusSchema = z.object({
   status: z.enum(["pending", "payment_claimed", "confirmed", "cancelled"]),
 });
 
-export const roomBlockSchema = z
+// Used by the admin "Add Booking" form to both record a booking from
+// another platform (for billing/reports) and block those dates on the
+// site itself, in one step. Deliberately more lenient than the
+// guest-facing createBookingSchema: phone/email aren't always known for
+// an OTA booking, and the admin sets amount/status/source directly.
+export const adminCreateBookingSchema = z
   .object({
-    startDate: z.string().min(1, "Start date is required"),
-    endDate: z.string().min(1, "End date is required"),
-    source: z.string().trim().max(100).optional().default("Other"),
-    notes: z.string().trim().max(500).optional().default(""),
+    roomId: z.string().min(1),
+    guestName: z.string().trim().min(2, "Name is required"),
+    guestPhone: z.string().trim().max(20).optional().default(""),
+    guestEmail: z
+      .union([z.string().trim().email(), z.literal("")])
+      .optional()
+      .default(""),
+    checkIn: z.string().min(1, "Check-in date is required"),
+    checkOut: z.string().min(1, "Check-out date is required"),
+    guests: z.coerce.number().int().min(1).max(20).optional().default(1),
+    totalAmount: z.coerce.number().int().min(0),
+    status: z
+      .enum(["pending", "payment_claimed", "confirmed", "cancelled"])
+      .optional()
+      .default("confirmed"),
+    source: z.string().trim().min(1).max(50).optional().default("Other"),
+    notes: z.string().trim().max(1000).optional().default(""),
   })
-  .refine((d) => new Date(d.endDate) > new Date(d.startDate), {
-    message: "End date must be after start date",
-    path: ["endDate"],
+  .refine((data) => new Date(data.checkOut) > new Date(data.checkIn), {
+    message: "Check-out must be after check-in",
+    path: ["checkOut"],
   });
 
 export const changePasswordSchema = z.object({

@@ -1,19 +1,10 @@
 import Link from "next/link";
-import { RoomModel, RoomBlockModel } from "@/lib/models";
+import { RoomModel } from "@/lib/models";
 import { formatInr } from "@/lib/format";
 import RoomActions from "@/components/admin/RoomActions";
 
 export default async function AdminRoomsPage() {
-  const [rooms, allBlocks] = await Promise.all([
-    RoomModel.all(true),
-    RoomBlockModel.all(),
-  ]);
-  const today = new Date().toISOString().slice(0, 10);
-  const activeBlockCounts = new Map<string, number>();
-  for (const b of allBlocks) {
-    if (b.end_date < today) continue;
-    activeBlockCounts.set(b.room_id, (activeBlockCounts.get(b.room_id) ?? 0) + 1);
-  }
+  const rooms = await RoomModel.all(true);
 
   return (
     <div>
@@ -44,7 +35,6 @@ export default async function AdminRoomsPage() {
                   <th className="px-6 py-3 font-medium">Price/Night</th>
                   <th className="px-6 py-3 font-medium">Max Guests</th>
                   <th className="px-6 py-3 font-medium">Status</th>
-                  <th className="px-6 py-3 font-medium">Blocked Dates</th>
                   <th className="px-6 py-3 font-medium">Actions</th>
                 </tr>
               </thead>
@@ -67,18 +57,6 @@ export default async function AdminRoomsPage() {
                       >
                         {room.is_active ? "Active" : "Hidden"}
                       </span>
-                    </td>
-                    <td className="px-6 py-3">
-                      {activeBlockCounts.get(room.id) ? (
-                        <Link
-                          href={`/admin/rooms/${room.id}/edit`}
-                          className="inline-flex rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-800 hover:underline"
-                        >
-                          {activeBlockCounts.get(room.id)} active
-                        </Link>
-                      ) : (
-                        <span className="text-xs text-ink/40">None</span>
-                      )}
                     </td>
                     <td className="px-6 py-3">
                       <RoomActions roomId={room.id} isActive={Boolean(room.is_active)} />

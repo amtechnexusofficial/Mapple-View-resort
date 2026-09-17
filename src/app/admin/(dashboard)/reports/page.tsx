@@ -133,6 +133,7 @@ export default async function AdminReportsPage({
                   <th className="px-6 py-3 font-medium">Room</th>
                   <th className="px-6 py-3 font-medium">Dates</th>
                   <th className="px-6 py-3 font-medium">Amount</th>
+                  <th className="px-6 py-3 font-medium">Source</th>
                   <th className="px-6 py-3 font-medium">Status</th>
                   <th className="px-6 py-3 font-medium">Payment Ref</th>
                 </tr>
@@ -151,6 +152,7 @@ export default async function AdminReportsPage({
                       {formatDate(b.check_in)} → {formatDate(b.check_out)}
                     </td>
                     <td className="px-6 py-3 text-ink/70">{formatInr(b.total_amount)}</td>
+                    <td className="px-6 py-3 text-ink/70">{b.source}</td>
                     <td className="px-6 py-3">
                       <StatusBadge status={b.status} />
                     </td>

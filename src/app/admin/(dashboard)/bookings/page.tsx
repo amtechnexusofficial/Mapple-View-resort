@@ -27,8 +27,20 @@ export default async function AdminBookingsPage({
 
   return (
     <div>
-      <h1 className="font-sans text-2xl font-bold text-ink">Bookings</h1>
-      <p className="mt-1 text-sm text-ink/60">Manage guest booking requests.</p>
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h1 className="font-sans text-2xl font-bold text-ink">Bookings</h1>
+          <p className="mt-1 text-sm text-ink/60">
+            Manage guest booking requests, and record bookings taken on other platforms.
+          </p>
+        </div>
+        <Link
+          href="/admin/bookings/new"
+          className="rounded-full bg-ink px-4 py-2 text-sm font-semibold text-stone hover:bg-charcoal-light"
+        >
+          + Add Booking
+        </Link>
+      </div>
 
       <div className="mt-6 flex flex-wrap gap-2">
         {tabs.map((t) => (
@@ -60,6 +72,7 @@ export default async function AdminBookingsPage({
                   <th className="px-6 py-3 font-medium">Room</th>
                   <th className="px-6 py-3 font-medium">Dates</th>
                   <th className="px-6 py-3 font-medium">Amount</th>
+                  <th className="px-6 py-3 font-medium">Source</th>
                   <th className="px-6 py-3 font-medium">Status</th>
                 </tr>
               </thead>
@@ -79,6 +92,7 @@ export default async function AdminBookingsPage({
                       {formatDate(b.check_in)} → {formatDate(b.check_out)}
                     </td>
                     <td className="px-6 py-3 text-ink/70">{formatInr(b.total_amount)}</td>
+                    <td className="px-6 py-3 text-ink/70">{b.source}</td>
                     <td className="px-6 py-3">
                       <StatusBadge status={b.status} />
                     </td>

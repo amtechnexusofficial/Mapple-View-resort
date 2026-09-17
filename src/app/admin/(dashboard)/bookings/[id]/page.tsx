@@ -37,6 +37,7 @@ export default async function AdminBookingDetailPage({
           <div><dt className="text-ink/50">Check-out</dt><dd className="font-medium text-ink/80">{formatDate(booking.check_out)}</dd></div>
           <div><dt className="text-ink/50">Nights</dt><dd className="font-medium text-ink/80">{booking.nights}</dd></div>
           <div><dt className="text-ink/50">Total Amount</dt><dd className="font-medium text-ink/80">{formatInr(booking.total_amount)}</dd></div>
+          <div><dt className="text-ink/50">Source</dt><dd className="font-medium text-ink/80">{booking.source}</dd></div>
           {booking.payment_ref && (
             <div><dt className="text-ink/50">Payment Ref</dt><dd className="font-medium text-ink/80">{booking.payment_ref}</dd></div>
           )}
