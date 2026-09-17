@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { SettingsModel } from "@/lib/models";
 import { LinkButton } from "@/components/ui/Button";
+import SectionLabel from "@/components/site/SectionLabel";
 
 export const metadata: Metadata = { title: "About Us | Mapple View Resort" };
 
@@ -35,15 +36,13 @@ export default async function AboutPage() {
 
   return (
     <div>
-      <section className="bg-charcoal-light py-20 text-center text-stone">
+      <section className="bg-charcoal py-20 text-center text-stone">
         <div className="mx-auto max-w-3xl px-4 sm:px-6">
-          <span className="text-sm font-semibold uppercase tracking-widest text-petrol-400">
-            About Us
-          </span>
-          <h1 className="mt-2 font-display text-4xl font-medium leading-[1.05] sm:text-5xl">
+          <SectionLabel eyebrow="About Us" className="justify-center text-petrol-300" />
+          <h1 className="mt-5 font-display text-4xl font-normal leading-[1.05] sm:text-5xl">
             {settings.resort_name}
           </h1>
-          <p className="mt-3 text-sm text-stone/70">Lovedale, Ooty · The Nilgiri Hills</p>
+          <p className="label-caps mt-4 text-stone/60">Lovedale, Ooty · The Nilgiri Hills</p>
         </div>
       </section>
 
@@ -52,57 +51,55 @@ export default async function AboutPage() {
           {paragraphs.map((p, i) => (
             <p
               key={i}
-              className={i === 0 ? "text-lg leading-relaxed text-ink/80" : "leading-relaxed text-ink/70"}
+              className={i === 0 ? "text-lg font-light leading-relaxed text-ink/80" : "font-light leading-relaxed text-ink/70"}
             >
               {p}
             </p>
           ))}
         </div>
 
-        <div className="mt-14 grid gap-8 sm:grid-cols-3">
+        <div className="mt-14 grid gap-6 sm:grid-cols-3">
           {values.map((v) => (
-            <div key={v.title} className="rounded-2xl border border-petrol-100 bg-white p-6 shadow-sm">
-              <div className="h-1 w-10 rounded-full bg-petrol-500" />
-              <h3 className="mt-4 font-display text-lg font-semibold text-ink">
+            <div key={v.title} className="border border-line bg-white p-6">
+              <div className="h-1 w-10 bg-petrol-500" />
+              <h3 className="mt-4 font-display text-lg font-medium text-ink">
                 {v.title}
               </h3>
-              <p className="mt-2 text-sm text-ink/70">{v.desc}</p>
+              <p className="mt-2 text-sm font-light text-ink/70">{v.desc}</p>
             </div>
           ))}
         </div>
 
         <div className="mt-16">
-          <span className="text-sm font-semibold uppercase tracking-widest text-petrol-600">
-            Getting Here
-          </span>
-          <h2 className="mt-2 font-display text-2xl font-medium text-ink">
+          <SectionLabel eyebrow="Getting Here" />
+          <h2 className="mt-5 font-display text-2xl font-normal text-ink">
             Reaching Lovedale &amp; Ooty
           </h2>
           <div className="mt-6 grid gap-6 sm:grid-cols-3">
             {gettingHere.map((g) => (
               <div key={g.title}>
-                <h3 className="font-display text-base font-semibold text-ink">{g.title}</h3>
-                <p className="mt-1.5 text-sm leading-relaxed text-ink/70">{g.desc}</p>
+                <h3 className="font-display text-base font-medium text-ink">{g.title}</h3>
+                <p className="mt-1.5 text-sm font-light leading-relaxed text-ink/70">{g.desc}</p>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="mt-10 rounded-2xl bg-petrol-50 p-6 text-sm text-ink/70">
+        <div className="mt-10 bg-petrol-50 p-6 text-sm font-light text-ink/70">
           Curious what to see and do while you&apos;re here? Have a look at our guide to{" "}
-          <Link href="/explore-ooty" className="font-semibold text-petrol-600 hover:underline">
+          <Link href="/explore-ooty" className="font-medium text-petrol-600 hover:underline">
             Exploring Ooty &amp; the Nilgiris
           </Link>
           .
         </div>
 
         {settings.address && (
-          <div className="mt-10 rounded-2xl bg-petrol-50 p-8">
-            <h3 className="font-display text-lg font-semibold text-ink">
+          <div className="mt-10 bg-petrol-50 p-8">
+            <h3 className="font-display text-lg font-medium text-ink">
               Find Us
             </h3>
-            <p className="mt-2 text-ink/70">{settings.address}</p>
-            <p className="mt-1 text-sm text-ink/60">
+            <p className="mt-2 font-light text-ink/70">{settings.address}</p>
+            <p className="label-caps mt-2 text-ink/50">
               Check-in: {settings.check_in_time} · Check-out: {settings.check_out_time}
             </p>
           </div>
