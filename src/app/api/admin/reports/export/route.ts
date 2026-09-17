@@ -30,6 +30,7 @@ export async function GET(request: NextRequest) {
     "Guests",
     "Amount (INR)",
     "Status",
+    "Source",
     "Payment Ref",
     "Created",
   ];
@@ -45,6 +46,7 @@ export async function GET(request: NextRequest) {
     b.guests,
     b.total_amount,
     b.status,
+    b.source,
     b.payment_ref,
     formatDate(b.created_at),
   ]);

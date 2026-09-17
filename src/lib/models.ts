@@ -1,5 +1,5 @@
 import { sql, ensureMigrated } from "@/lib/db";
-import type { Room, Booking, Settings, BookingStatus, RoomBlock } from "@/lib/types";
+import type { Room, Booking, Settings, BookingStatus } from "@/lib/types";
 
 type RoomRow = Omit<Room, "images" | "amenities"> & {
   images: string;
@@ -131,9 +131,10 @@ export const RoomModel = {
     await sql.query("DELETE FROM rooms WHERE id = $1", [id]);
   },
   /**
-   * True when no active booking (any non-cancelled status) and no manual
-   * block overlaps [checkIn, checkOut). Half-open interval: a checkout on
-   * day X does not conflict with a new check-in on day X.
+   * True when no other active booking (any non-cancelled status, whatever
+   * its source — the site itself or one entered manually for another
+   * platform) overlaps [checkIn, checkOut). Half-open interval: a checkout
+   * on day X does not conflict with a new check-in on day X.
    */
   async isAvailable(
     roomId: string,
@@ -142,64 +143,14 @@ export const RoomModel = {
     excludeBookingId?: string
   ): Promise<boolean> {
     await ensureMigrated();
-    const bookingConflicts = (await sql.query(
+    const conflicts = (await sql.query(
       `SELECT id FROM bookings
        WHERE room_id = $1 AND status != 'cancelled'
          AND check_in < $3 AND check_out > $2
          AND ($4::text IS NULL OR id != $4)`,
       [roomId, checkIn, checkOut, excludeBookingId ?? null]
     )) as { id: string }[];
-    if (bookingConflicts.length > 0) return false;
-
-    const blockConflicts = (await sql.query(
-      `SELECT id FROM room_blocks WHERE room_id = $1 AND start_date < $3 AND end_date > $2`,
-      [roomId, checkIn, checkOut]
-    )) as { id: string }[];
-    return blockConflicts.length === 0;
-  },
-};
-
-export const RoomBlockModel = {
-  async byRoom(roomId: string): Promise<RoomBlock[]> {
-    await ensureMigrated();
-    return (await sql.query(
-      "SELECT * FROM room_blocks WHERE room_id = $1 ORDER BY start_date ASC",
-      [roomId]
-    )) as RoomBlock[];
-  },
-  async all(): Promise<RoomBlock[]> {
-    await ensureMigrated();
-    return (await sql.query(
-      "SELECT * FROM room_blocks ORDER BY start_date ASC"
-    )) as RoomBlock[];
-  },
-  async byId(id: string): Promise<RoomBlock | undefined> {
-    await ensureMigrated();
-    const rows = (await sql.query(
-      "SELECT * FROM room_blocks WHERE id = $1",
-      [id]
-    )) as RoomBlock[];
-    return rows[0];
-  },
-  async create(data: {
-    room_id: string;
-    start_date: string;
-    end_date: string;
-    source: string;
-    notes: string;
-  }): Promise<RoomBlock> {
-    await ensureMigrated();
-    const id = crypto.randomUUID();
-    await sql.query(
-      `INSERT INTO room_blocks (id, room_id, start_date, end_date, source, notes)
-       VALUES ($1,$2,$3,$4,$5,$6)`,
-      [id, data.room_id, data.start_date, data.end_date, data.source, data.notes]
-    );
-    return (await RoomBlockModel.byId(id))!;
-  },
-  async remove(id: string): Promise<void> {
-    await ensureMigrated();
-    await sql.query("DELETE FROM room_blocks WHERE id = $1", [id]);
+    return conflicts.length === 0;
   },
 };
 
@@ -230,12 +181,14 @@ export const BookingModel = {
     nights: number;
     total_amount: number;
     notes: string;
+    status?: BookingStatus;
+    source?: string;
   }): Promise<Booking> {
     await ensureMigrated();
     const id = crypto.randomUUID();
     await sql.query(
-      `INSERT INTO bookings (id, room_id, guest_name, guest_phone, guest_email, check_in, check_out, guests, nights, total_amount, notes)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`,
+      `INSERT INTO bookings (id, room_id, guest_name, guest_phone, guest_email, check_in, check_out, guests, nights, total_amount, notes, status, source)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)`,
       [
         id,
         data.room_id,
@@ -248,6 +201,8 @@ export const BookingModel = {
         data.nights,
         data.total_amount,
         data.notes,
+        data.status ?? "pending",
+        data.source ?? "Website",
       ]
     );
     return (await BookingModel.byId(id))!;

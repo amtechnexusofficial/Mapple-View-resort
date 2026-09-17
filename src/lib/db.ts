@@ -101,24 +101,18 @@ async function runMigration() {
       status TEXT NOT NULL DEFAULT 'pending',
       payment_ref TEXT NOT NULL DEFAULT '',
       notes TEXT NOT NULL DEFAULT '',
+      source TEXT NOT NULL DEFAULT 'Website',
       whatsapp_sent INTEGER NOT NULL DEFAULT 0,
       whatsapp_error TEXT NOT NULL DEFAULT '',
       created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
       updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
     )
   `);
-
-  await sql.query(`
-    CREATE TABLE IF NOT EXISTS room_blocks (
-      id TEXT PRIMARY KEY,
-      room_id TEXT NOT NULL REFERENCES rooms(id) ON DELETE CASCADE,
-      start_date TEXT NOT NULL,
-      end_date TEXT NOT NULL,
-      source TEXT NOT NULL DEFAULT 'Other',
-      notes TEXT NOT NULL DEFAULT '',
-      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
-    )
-  `);
+  // Same reasoning as about_content above: ALTER is needed for a database
+  // that already ran CREATE TABLE IF NOT EXISTS before this column existed.
+  await sql.query(
+    `ALTER TABLE bookings ADD COLUMN IF NOT EXISTS source TEXT NOT NULL DEFAULT 'Website'`
+  );
 
   await sql.query(`
     CREATE TABLE IF NOT EXISTS admin_users (
@@ -131,7 +125,6 @@ async function runMigration() {
 
   await sql.query(`CREATE INDEX IF NOT EXISTS idx_bookings_room ON bookings(room_id)`);
   await sql.query(`CREATE INDEX IF NOT EXISTS idx_bookings_status ON bookings(status)`);
-  await sql.query(`CREATE INDEX IF NOT EXISTS idx_room_blocks_room ON room_blocks(room_id)`);
 
   await sql.query(
     `INSERT INTO settings (id, resort_name, tagline, description, address, contact_phone, contact_email, hero_image, upi_id, upi_payee_name, whatsapp_owner_number, about_content)

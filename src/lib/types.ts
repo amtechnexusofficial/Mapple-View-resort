@@ -36,20 +36,11 @@ export interface Booking {
   status: BookingStatus;
   payment_ref: string;
   notes: string;
+  source: string;
   whatsapp_sent: number;
   whatsapp_error: string;
   created_at: string;
   updated_at: string;
-}
-
-export interface RoomBlock {
-  id: string;
-  room_id: string;
-  start_date: string;
-  end_date: string;
-  source: string;
-  notes: string;
-  created_at: string;
 }
 
 export interface Settings {
