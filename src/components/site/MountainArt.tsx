@@ -118,6 +118,95 @@ export function ContourLines({
   );
 }
 
+const sceneVariants = {
+  dawn: {
+    sky: ["#e9e3d3", "#c9dedb", "#7fb3ab"],
+    sun: "#e7d9b8",
+    sunOpacity: 0.9,
+    ridgeFar: ["#8fada7", "#6f9a92"],
+    ridgeMid: ["#4a6a63", "#37524c"],
+    ridgeNear: "#25423d",
+  },
+  day: {
+    sky: ["#dcecea", "#a9d2cc", "#4a938d"],
+    sun: "#f6f3ec",
+    sunOpacity: 0.95,
+    ridgeFar: ["#3f6b64", "#2f5b54"],
+    ridgeMid: ["#24413c", "#1c3430"],
+    ridgeNear: "#12211e",
+  },
+  dusk: {
+    sky: ["#141210", "#1c1916", "#1f5d5a"],
+    sun: "#8fcec7",
+    sunOpacity: 0.9,
+    ridgeFar: ["#20413f", "#1a3634"],
+    ridgeMid: ["#211e1a", "#2c2822"],
+    ridgeNear: "#141210",
+  },
+} as const;
+
+/**
+ * A "view from the room" scene standing in for a real window photograph:
+ * layered ridgelines at a time of day, always within the site's own
+ * palette rather than arbitrary stock-photo colors. Three variants give
+ * visual variety across a set of room cards without implying three
+ * different actual views.
+ */
+export function RoomViewScene({
+  variant = "day",
+  className = "",
+}: {
+  variant?: keyof typeof sceneVariants;
+  className?: string;
+}) {
+  const v = sceneVariants[variant];
+  const uid = variant;
+  return (
+    <svg
+      viewBox="0 0 400 300"
+      preserveAspectRatio="xMidYMid slice"
+      className={className}
+      aria-hidden="true"
+    >
+      <defs>
+        <linearGradient id={`sky-${uid}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={v.sky[0]} />
+          <stop offset="55%" stopColor={v.sky[1]} />
+          <stop offset="100%" stopColor={v.sky[2]} />
+        </linearGradient>
+        <radialGradient id={`glow-${uid}`} cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor={v.sun} stopOpacity="0.45" />
+          <stop offset="100%" stopColor={v.sun} stopOpacity="0" />
+        </radialGradient>
+        <linearGradient id={`ridgeFar-${uid}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={v.ridgeFar[0]} />
+          <stop offset="100%" stopColor={v.ridgeFar[1]} />
+        </linearGradient>
+        <linearGradient id={`ridgeMid-${uid}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={v.ridgeMid[0]} />
+          <stop offset="100%" stopColor={v.ridgeMid[1]} />
+        </linearGradient>
+      </defs>
+      <rect width="400" height="300" fill={`url(#sky-${uid})`} />
+      <circle cx="290" cy="90" r="70" fill={`url(#glow-${uid})`} />
+      <circle cx="290" cy="90" r="20" fill={v.sun} opacity={v.sunOpacity} />
+      <path
+        d="M-10,190 L60,150 L110,180 L170,130 L230,185 L290,145 L340,190 L410,155 L410,300 L-10,300 Z"
+        fill={`url(#ridgeFar-${uid})`}
+        opacity="0.85"
+      />
+      <path
+        d="M-10,215 L70,165 L130,205 L200,145 L260,210 L320,160 L410,200 L410,300 L-10,300 Z"
+        fill={`url(#ridgeMid-${uid})`}
+      />
+      <path
+        d="M-10,250 L90,195 L160,240 L240,180 L320,245 L410,205 L410,300 L-10,300 Z"
+        fill={v.ridgeNear}
+      />
+    </svg>
+  );
+}
+
 /** A minimal peak glyph used as this brand's mark, next to the wordmark. */
 export function MountainMark({ className = "" }: { className?: string }) {
   return (
