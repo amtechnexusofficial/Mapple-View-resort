@@ -42,6 +42,16 @@ export interface Booking {
   updated_at: string;
 }
 
+export interface RoomBlock {
+  id: string;
+  room_id: string;
+  start_date: string;
+  end_date: string;
+  source: string;
+  notes: string;
+  created_at: string;
+}
+
 export interface Settings {
   id: number;
   resort_name: string;
@@ -58,6 +68,7 @@ export interface Settings {
   whatsapp_phone_number_id: string;
   check_in_time: string;
   check_out_time: string;
+  about_content: string;
   updated_at: string;
 }
 

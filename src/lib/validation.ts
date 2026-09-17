@@ -89,6 +89,7 @@ export const settingsSchema = z.object({
   whatsappPhoneNumberId: z.string().trim().optional().default(""),
   checkInTime: z.string().trim().optional().default(""),
   checkOutTime: z.string().trim().optional().default(""),
+  aboutContent: z.string().trim().max(8000).optional().default(""),
 });
 
 export const loginSchema = z.object({
@@ -99,6 +100,18 @@ export const loginSchema = z.object({
 export const bookingStatusSchema = z.object({
   status: z.enum(["pending", "payment_claimed", "confirmed", "cancelled"]),
 });
+
+export const roomBlockSchema = z
+  .object({
+    startDate: z.string().min(1, "Start date is required"),
+    endDate: z.string().min(1, "End date is required"),
+    source: z.string().trim().max(100).optional().default("Other"),
+    notes: z.string().trim().max(500).optional().default(""),
+  })
+  .refine((d) => new Date(d.endDate) > new Date(d.startDate), {
+    message: "End date must be after start date",
+    path: ["endDate"],
+  });
 
 export const changePasswordSchema = z.object({
   currentPassword: z.string().min(1),

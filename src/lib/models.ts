@@ -1,5 +1,5 @@
 import { sql, ensureMigrated } from "@/lib/db";
-import type { Room, Booking, Settings, BookingStatus } from "@/lib/types";
+import type { Room, Booking, Settings, BookingStatus, RoomBlock } from "@/lib/types";
 
 type RoomRow = Omit<Room, "images" | "amenities"> & {
   images: string;
@@ -130,6 +130,77 @@ export const RoomModel = {
     await ensureMigrated();
     await sql.query("DELETE FROM rooms WHERE id = $1", [id]);
   },
+  /**
+   * True when no active booking (any non-cancelled status) and no manual
+   * block overlaps [checkIn, checkOut). Half-open interval: a checkout on
+   * day X does not conflict with a new check-in on day X.
+   */
+  async isAvailable(
+    roomId: string,
+    checkIn: string,
+    checkOut: string,
+    excludeBookingId?: string
+  ): Promise<boolean> {
+    await ensureMigrated();
+    const bookingConflicts = (await sql.query(
+      `SELECT id FROM bookings
+       WHERE room_id = $1 AND status != 'cancelled'
+         AND check_in < $3 AND check_out > $2
+         AND ($4::text IS NULL OR id != $4)`,
+      [roomId, checkIn, checkOut, excludeBookingId ?? null]
+    )) as { id: string }[];
+    if (bookingConflicts.length > 0) return false;
+
+    const blockConflicts = (await sql.query(
+      `SELECT id FROM room_blocks WHERE room_id = $1 AND start_date < $3 AND end_date > $2`,
+      [roomId, checkIn, checkOut]
+    )) as { id: string }[];
+    return blockConflicts.length === 0;
+  },
+};
+
+export const RoomBlockModel = {
+  async byRoom(roomId: string): Promise<RoomBlock[]> {
+    await ensureMigrated();
+    return (await sql.query(
+      "SELECT * FROM room_blocks WHERE room_id = $1 ORDER BY start_date ASC",
+      [roomId]
+    )) as RoomBlock[];
+  },
+  async all(): Promise<RoomBlock[]> {
+    await ensureMigrated();
+    return (await sql.query(
+      "SELECT * FROM room_blocks ORDER BY start_date ASC"
+    )) as RoomBlock[];
+  },
+  async byId(id: string): Promise<RoomBlock | undefined> {
+    await ensureMigrated();
+    const rows = (await sql.query(
+      "SELECT * FROM room_blocks WHERE id = $1",
+      [id]
+    )) as RoomBlock[];
+    return rows[0];
+  },
+  async create(data: {
+    room_id: string;
+    start_date: string;
+    end_date: string;
+    source: string;
+    notes: string;
+  }): Promise<RoomBlock> {
+    await ensureMigrated();
+    const id = crypto.randomUUID();
+    await sql.query(
+      `INSERT INTO room_blocks (id, room_id, start_date, end_date, source, notes)
+       VALUES ($1,$2,$3,$4,$5,$6)`,
+      [id, data.room_id, data.start_date, data.end_date, data.source, data.notes]
+    );
+    return (await RoomBlockModel.byId(id))!;
+  },
+  async remove(id: string): Promise<void> {
+    await ensureMigrated();
+    await sql.query("DELETE FROM room_blocks WHERE id = $1", [id]);
+  },
 };
 
 export const BookingModel = {
@@ -227,6 +298,56 @@ export const BookingModel = {
       revenue: revenueRow.s,
     };
   },
+  /** Billing/report summary for bookings whose check-in falls in [from, to] (either bound optional). */
+  async summary(filters?: { from?: string; to?: string }) {
+    await ensureMigrated();
+    const [row] = (await sql.query(
+      `SELECT
+         COUNT(*)::int as total,
+         COUNT(*) FILTER (WHERE status = 'confirmed')::int as confirmed,
+         COUNT(*) FILTER (WHERE status IN ('pending','payment_claimed'))::int as pending,
+         COUNT(*) FILTER (WHERE status = 'cancelled')::int as cancelled,
+         COALESCE(SUM(total_amount) FILTER (WHERE status = 'confirmed'), 0)::int as revenue
+       FROM bookings
+       WHERE ($1::text IS NULL OR check_in >= $1)
+         AND ($2::text IS NULL OR check_in <= $2)`,
+      [filters?.from ?? null, filters?.to ?? null]
+    )) as {
+      total: number;
+      confirmed: number;
+      pending: number;
+      cancelled: number;
+      revenue: number;
+    }[];
+    return row;
+  },
+  /** Confirmed revenue and booking count per room, for bookings whose check-in falls in [from, to]. */
+  async revenueByRoom(filters?: { from?: string; to?: string }) {
+    await ensureMigrated();
+    return (await sql.query(
+      `SELECT r.id as room_id, r.name as room_name,
+              COALESCE(SUM(b.total_amount) FILTER (WHERE b.status = 'confirmed'), 0)::int as revenue,
+              COUNT(b.id) FILTER (WHERE b.status = 'confirmed')::int as bookings
+       FROM rooms r
+       LEFT JOIN bookings b ON b.room_id = r.id
+         AND ($1::text IS NULL OR b.check_in >= $1)
+         AND ($2::text IS NULL OR b.check_in <= $2)
+       GROUP BY r.id, r.name
+       ORDER BY revenue DESC`,
+      [filters?.from ?? null, filters?.to ?? null]
+    )) as { room_id: string; room_name: string; revenue: number; bookings: number }[];
+  },
+  /** Full billing rows for the report table / CSV export, filtered by check-in date range. */
+  async billing(filters?: { from?: string; to?: string }): Promise<Booking[]> {
+    await ensureMigrated();
+    return (await sql.query(
+      `SELECT * FROM bookings
+       WHERE ($1::text IS NULL OR check_in >= $1)
+         AND ($2::text IS NULL OR check_in <= $2)
+       ORDER BY check_in DESC`,
+      [filters?.from ?? null, filters?.to ?? null]
+    )) as Booking[];
+  },
 };
 
 export const SettingsModel = {
@@ -244,7 +365,7 @@ export const SettingsModel = {
        address=$4, contact_phone=$5, contact_email=$6, hero_image=$7,
        upi_id=$8, upi_payee_name=$9, whatsapp_owner_number=$10,
        whatsapp_api_token=$11, whatsapp_phone_number_id=$12,
-       check_in_time=$13, check_out_time=$14, updated_at=now()
+       check_in_time=$13, check_out_time=$14, about_content=$15, updated_at=now()
        WHERE id = 1`,
       [
         merged.resort_name,
@@ -261,6 +382,7 @@ export const SettingsModel = {
         merged.whatsapp_phone_number_id,
         merged.check_in_time,
         merged.check_out_time,
+        merged.about_content,
       ]
     );
     return SettingsModel.get();

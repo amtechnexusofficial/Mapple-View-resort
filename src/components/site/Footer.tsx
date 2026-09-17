@@ -31,6 +31,7 @@ export default async function Footer() {
           <ul className="mt-3 space-y-2 text-sm text-stone/80">
             <li><Link href="/rooms" className="hover:text-petrol-400">Rooms &amp; Suites</Link></li>
             <li><Link href="/about" className="hover:text-petrol-400">About the Resort</Link></li>
+            <li><Link href="/explore-ooty" className="hover:text-petrol-400">Explore Ooty</Link></li>
             <li><Link href="/contact" className="hover:text-petrol-400">Contact Us</Link></li>
           </ul>
         </div>

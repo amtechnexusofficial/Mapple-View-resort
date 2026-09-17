@@ -35,6 +35,7 @@ export async function PUT(request: NextRequest) {
     whatsapp_phone_number_id: d.whatsappPhoneNumberId,
     check_in_time: d.checkInTime,
     check_out_time: d.checkOutTime,
+    about_content: d.aboutContent,
   });
   return NextResponse.json({ settings });
 }

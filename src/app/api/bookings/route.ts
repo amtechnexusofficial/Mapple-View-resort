@@ -40,6 +40,14 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  const available = await RoomModel.isAvailable(room.id, data.checkIn, data.checkOut);
+  if (!available) {
+    return NextResponse.json(
+      { error: "This room isn't available for the selected dates. Please choose different dates." },
+      { status: 409 }
+    );
+  }
+
   const totalAmount = nights * room.price_per_night;
 
   const booking = await BookingModel.create({

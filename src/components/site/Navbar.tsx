@@ -9,6 +9,7 @@ export default async function Navbar() {
     { href: "/", label: "Home" },
     { href: "/rooms", label: "Rooms" },
     { href: "/about", label: "About" },
+    { href: "/explore-ooty", label: "Explore Ooty" },
     { href: "/contact", label: "Contact" },
   ];
 
