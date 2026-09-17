@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import Icon from "@/components/ui/Icon";
-import { RoomViewScene } from "@/components/site/MountainArt";
+import { stockImages } from "@/lib/stockImages";
 
 const personas = [
   {
@@ -13,7 +14,7 @@ const personas = [
     badge: "Restorative Retreat",
     heading: "Time to switch off completely",
     body: "For anyone who just needs distance from notifications and noise. Slow mornings, long walks, and a room with a view — the Nilgiri stillness does most of the work.",
-    variant: "dawn" as const,
+    image: stockImages.personaReading,
   },
   {
     label: "02 / Romance",
@@ -22,7 +23,7 @@ const personas = [
     badge: "Shared Escape",
     heading: "A little more time together",
     body: "Misty mornings and quiet evenings, away from the usual routine. A simple, comfortable base for a couple who just want some unhurried time in the hills.",
-    variant: "dusk" as const,
+    image: stockImages.escapeSquare,
   },
   {
     label: "03 / Together",
@@ -31,7 +32,7 @@ const personas = [
     badge: "Family Sanctuary",
     heading: "Room to breathe, places to explore",
     body: "Space to relax at the resort and plenty within reach outside it — lakes, gardens, and the hill air itself. An easy base for a family trip to Ooty.",
-    variant: "day" as const,
+    image: stockImages.rooms[2],
   },
   {
     label: "04 / Discovery",
@@ -40,7 +41,7 @@ const personas = [
     badge: "Active Escape",
     heading: "Base camp for the Nilgiris",
     body: "For guests planning to see as much of the hills as possible — the mountain railway, Doddabetta, the tea estates. Come back each evening to rest and go again the next day.",
-    variant: "day" as const,
+    image: stockImages.panoramic,
   },
 ];
 
@@ -72,7 +73,7 @@ export default function ChooseYourEscape() {
       <div className="mt-4 bg-petrol-50 p-6 lg:p-10">
         <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-12">
           <div className="relative h-[280px] overflow-hidden lg:col-span-6">
-            <RoomViewScene variant={current.variant} className="h-full w-full" />
+            <Image src={current.image} alt={current.title} fill sizes="(min-width: 1024px) 50vw, 100vw" className="object-cover" />
           </div>
           <div className="space-y-4 lg:col-span-6">
             <span className="label-caps text-petrol-500">{current.badge}</span>

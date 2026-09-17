@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { RoomViewScene } from "@/components/site/MountainArt";
+import Image from "next/image";
+import { stockImages } from "@/lib/stockImages";
 
 export default function PanoramicDrag() {
   const [pan, setPan] = useState(0);
@@ -12,7 +13,7 @@ export default function PanoramicDrag() {
         className="absolute inset-0 h-full w-[170%] transition-[left] duration-100"
         style={{ left: `-${pan}%` }}
       >
-        <RoomViewScene variant="day" className="h-full w-full" />
+        <Image src={stockImages.panoramic} alt="Panoramic view of the Nilgiri hills" fill sizes="170vw" className="object-cover" />
       </div>
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-charcoal/70 via-transparent to-transparent" />
 

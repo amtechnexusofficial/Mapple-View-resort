@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { RoomModel } from "@/lib/models";
 import { formatInr } from "@/lib/format";
 import BookingForm from "@/components/site/BookingForm";
-import RoomImagePlaceholder from "@/components/site/RoomImagePlaceholder";
+import { stockRoomImage } from "@/lib/stockImages";
 
 export async function generateMetadata(
   { params }: PageProps<"/rooms/[slug]">
@@ -28,18 +28,14 @@ export default async function RoomDetailPage({
       <div className="grid gap-10 lg:grid-cols-5">
         <div className="lg:col-span-3">
           <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-petrol-100">
-            {room.images[0] ? (
-              <Image
-                src={room.images[0]}
-                alt={room.name}
-                fill
-                sizes="(min-width: 1024px) 60vw, 100vw"
-                className="object-cover"
-                priority
-              />
-            ) : (
-              <RoomImagePlaceholder name={room.name} nameClassName="text-2xl" />
-            )}
+            <Image
+              src={room.images[0] || stockRoomImage(room.sort_order)}
+              alt={room.name}
+              fill
+              sizes="(min-width: 1024px) 60vw, 100vw"
+              className="object-cover"
+              priority
+            />
           </div>
 
           {room.images.length > 1 && (

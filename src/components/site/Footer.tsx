@@ -1,6 +1,7 @@
 import Link from "next/link";
+import Image from "next/image";
 import { SettingsModel } from "@/lib/models";
-import { ContourLines, MountainMark } from "@/components/site/MountainArt";
+import { stockImages } from "@/lib/stockImages";
 
 export default async function Footer() {
   const settings = await SettingsModel.get();
@@ -8,14 +9,10 @@ export default async function Footer() {
 
   return (
     <footer className="relative mt-auto overflow-hidden border-t border-line bg-charcoal text-stone">
-      <ContourLines
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-40 w-full text-petrol-300"
-        opacity={0.12}
-      />
       <div className="relative mx-auto grid max-w-6xl gap-10 px-4 py-16 sm:px-6 md:grid-cols-12">
         <div className="md:col-span-4">
           <div className="flex items-center gap-2.5">
-            <MountainMark className="h-7 w-7 shrink-0 text-petrol-300" />
+            <Image src={stockImages.logoMark} alt="" width={28} height={28} className="h-7 w-7 shrink-0 object-contain" />
             <h3 className="font-display text-2xl font-medium text-stone">
               {settings.resort_name}
             </h3>

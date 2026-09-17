@@ -2,24 +2,20 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Room } from "@/lib/types";
 import { formatInr } from "@/lib/format";
-import RoomImagePlaceholder from "@/components/site/RoomImagePlaceholder";
+import { stockRoomImage } from "@/lib/stockImages";
 
-export default function RoomCard({ room }: { room: Room }) {
-  const image = room.images[0];
+export default function RoomCard({ room, index = 0 }: { room: Room; index?: number }) {
+  const image = room.images[0] || stockRoomImage(index);
   return (
     <div className="group flex flex-col bg-stone-dark/40 transition hover:shadow-lg">
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-petrol-100">
-        {image ? (
-          <Image
-            src={image}
-            alt={room.name}
-            fill
-            sizes="(min-width: 768px) 33vw, 100vw"
-            className="object-cover transition duration-500 group-hover:scale-105"
-          />
-        ) : (
-          <RoomImagePlaceholder name={room.name} />
-        )}
+        <Image
+          src={image}
+          alt={room.name}
+          fill
+          sizes="(min-width: 768px) 33vw, 100vw"
+          className="object-cover transition duration-500 group-hover:scale-105"
+        />
         <div className="label-caps absolute left-0 top-0 bg-charcoal/85 px-3 py-1.5 text-stone backdrop-blur-sm">
           {formatInr(room.price_per_night)} / night
         </div>

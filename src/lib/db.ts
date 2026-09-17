@@ -1,5 +1,6 @@
 import { neon } from "@neondatabase/serverless";
 import bcrypt from "bcryptjs";
+import { stockImages, stockRoomImage } from "@/lib/stockImages";
 
 type SqlClient = ReturnType<typeof neon<false, false>>;
 
@@ -194,7 +195,7 @@ async function runMigration() {
         max_guests: 3,
         bed_type: "King Bed",
         size_sqft: 320,
-        images: "[]",
+        images: JSON.stringify([stockImages.rooms[0]]),
         amenities: JSON.stringify([
           "Free Wi-Fi",
           "Valley View Balcony",
@@ -215,7 +216,7 @@ async function runMigration() {
         max_guests: 4,
         bed_type: "King Bed + Sofa Bed",
         size_sqft: 500,
-        images: "[]",
+        images: JSON.stringify([stockImages.rooms[1]]),
         amenities: JSON.stringify([
           "Free Wi-Fi",
           "Living Area",
@@ -237,7 +238,7 @@ async function runMigration() {
         max_guests: 2,
         bed_type: "Queen Bed",
         size_sqft: 220,
-        images: "[]",
+        images: JSON.stringify([stockImages.rooms[2]]),
         amenities: JSON.stringify([
           "Free Wi-Fi",
           "Garden View",
@@ -269,6 +270,19 @@ async function runMigration() {
         ]
       );
     }
+  }
+
+  // Backfill placeholder photography onto rooms from an earlier deploy that
+  // predates this image set — only touches rows that still have no images
+  // at all, so it never overwrites a real photo an admin has uploaded.
+  const bareRooms = (await sql.query(
+    "SELECT id, sort_order FROM rooms WHERE images = '[]' ORDER BY sort_order"
+  )) as { id: string; sort_order: number }[];
+  for (let i = 0; i < bareRooms.length; i++) {
+    await sql.query("UPDATE rooms SET images = $1 WHERE id = $2", [
+      JSON.stringify([stockRoomImage(i)]),
+      bareRooms[i].id,
+    ]);
   }
 }
 

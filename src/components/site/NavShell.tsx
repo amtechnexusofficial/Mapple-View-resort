@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import Icon from "@/components/ui/Icon";
-import { MountainMark } from "@/components/site/MountainArt";
+import { stockImages } from "@/lib/stockImages";
 
 type NavLink = { href: string; label: string };
 
@@ -49,7 +50,7 @@ export default function NavShell({
         }`}
       >
         <Link href="/" className="flex items-center gap-2.5">
-          <MountainMark className="h-7 w-7 shrink-0 text-charcoal" />
+          <Image src={stockImages.logoMark} alt="" width={28} height={28} className="h-7 w-7 shrink-0 object-contain" />
           <span className="flex flex-col leading-none">
             <span className="label-caps text-ink">{resortName}</span>
             <span className="label-caps mt-1 text-[0.6rem] text-ink-soft/70">

@@ -6,7 +6,7 @@ import Image from "next/image";
 import type { Room } from "@/lib/types";
 import { formatInr } from "@/lib/format";
 import Icon from "@/components/ui/Icon";
-import RoomImagePlaceholder from "@/components/site/RoomImagePlaceholder";
+import { stockRoomImage } from "@/lib/stockImages";
 
 export default function RoomShowcase({
   rooms,
@@ -16,24 +16,21 @@ export default function RoomShowcase({
   whatsappNumber: string;
 }) {
   const [active, setActive] = useState<Room | null>(null);
+  const activeIndex = active ? rooms.findIndex((r) => r.id === active.id) : -1;
 
   return (
     <>
       <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-        {rooms.map((room) => (
+        {rooms.map((room, i) => (
           <div key={room.id} className="group flex flex-col bg-stone-dark/40 transition hover:shadow-lg">
             <div className="relative aspect-[4/3] w-full overflow-hidden bg-petrol-100">
-              {room.images[0] ? (
-                <Image
-                  src={room.images[0]}
-                  alt={room.name}
-                  fill
-                  sizes="(min-width: 768px) 33vw, 100vw"
-                  className="object-cover transition duration-700 group-hover:scale-105"
-                />
-              ) : (
-                <RoomImagePlaceholder name={room.name} />
-              )}
+              <Image
+                src={room.images[0] || stockRoomImage(i)}
+                alt={room.name}
+                fill
+                sizes="(min-width: 768px) 33vw, 100vw"
+                className="object-cover transition duration-700 group-hover:scale-105"
+              />
               <div className="label-caps absolute left-0 top-0 bg-charcoal/85 px-3 py-1.5 text-stone backdrop-blur-sm">
                 {room.size_sqft > 0 ? `${room.size_sqft} sq ft` : `Up to ${room.max_guests} guests`}
               </div>
@@ -88,11 +85,13 @@ export default function RoomShowcase({
                 </div>
 
                 <div className="relative mt-6 aspect-[4/3] w-full overflow-hidden bg-petrol-100">
-                  {active.images[0] ? (
-                    <Image src={active.images[0]} alt={active.name} fill sizes="576px" className="object-cover" />
-                  ) : (
-                    <RoomImagePlaceholder name={active.name} />
-                  )}
+                  <Image
+                    src={active.images[0] || stockRoomImage(Math.max(activeIndex, 0))}
+                    alt={active.name}
+                    fill
+                    sizes="576px"
+                    className="object-cover"
+                  />
                 </div>
 
                 <h3 className="mt-6 font-display text-2xl font-medium text-ink">{active.name}</h3>
