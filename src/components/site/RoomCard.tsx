@@ -7,7 +7,7 @@ import RoomImagePlaceholder from "@/components/site/RoomImagePlaceholder";
 export default function RoomCard({ room }: { room: Room }) {
   const image = room.images[0];
   return (
-    <div className="group flex flex-col overflow-hidden rounded-2xl border border-petrol-100 bg-white shadow-sm transition hover:shadow-lg">
+    <div className="group flex flex-col bg-stone-dark/40 transition hover:shadow-lg">
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-petrol-100">
         {image ? (
           <Image
@@ -20,24 +20,24 @@ export default function RoomCard({ room }: { room: Room }) {
         ) : (
           <RoomImagePlaceholder name={room.name} />
         )}
-        <div className="absolute left-3 top-3 rounded-full bg-stone/95 px-3 py-1 text-xs font-semibold text-ink shadow">
+        <div className="label-caps absolute left-0 top-0 bg-charcoal/85 px-3 py-1.5 text-stone backdrop-blur-sm">
           {formatInr(room.price_per_night)} / night
         </div>
       </div>
       <div className="flex flex-1 flex-col p-5">
-        <h3 className="font-display text-xl font-semibold text-ink">
+        <h3 className="font-display text-xl font-medium text-ink">
           {room.name}
         </h3>
-        <p className="mt-2 line-clamp-2 flex-1 text-sm text-ink/70">
+        <p className="mt-2 line-clamp-2 flex-1 text-sm font-light text-ink/70">
           {room.summary}
         </p>
-        <div className="mt-4 flex items-center justify-between text-xs text-ink/60">
+        <div className="label-caps mt-4 flex items-center justify-between text-ink-soft/70">
           <span>Up to {room.max_guests} guests</span>
           {room.bed_type && <span>{room.bed_type}</span>}
         </div>
         <Link
           href={`/rooms/${room.slug}`}
-          className="mt-4 inline-flex items-center justify-center rounded-full bg-ink px-4 py-2.5 text-sm font-semibold text-stone transition hover:bg-charcoal-light"
+          className="label-caps mt-4 inline-flex items-center justify-center bg-ink px-4 py-3 text-stone transition hover:bg-charcoal-light"
         >
           View &amp; Book
         </Link>

@@ -6,28 +6,31 @@ export default async function Navbar() {
   const settings = await SettingsModel.get();
 
   const links = [
-    { href: "/", label: "Home" },
-    { href: "/rooms", label: "Rooms" },
+    { href: "/", label: "Stay" },
+    { href: "/rooms", label: "The Rooms" },
     { href: "/about", label: "About" },
     { href: "/explore-ooty", label: "Explore Ooty" },
     { href: "/contact", label: "Contact" },
   ];
 
   return (
-    <header className="sticky top-0 z-40 border-b border-petrol-100 bg-stone/90 backdrop-blur">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
-        <Link href="/" className="flex items-center gap-2">
-          <MountainMark className="h-6 w-6 shrink-0 text-petrol-500" />
-          <span className="font-display text-xl font-semibold text-ink sm:text-2xl">
-            {settings.resort_name}
+    <header className="sticky top-0 z-40 border-b border-line bg-stone/95 backdrop-blur">
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
+        <Link href="/" className="flex items-center gap-2.5">
+          <MountainMark className="h-7 w-7 shrink-0 text-charcoal" />
+          <span className="flex flex-col leading-none">
+            <span className="label-caps text-ink">{settings.resort_name}</span>
+            <span className="label-caps mt-1 text-[0.6rem] text-ink-soft/70">
+              Ooty · Nilgiris
+            </span>
           </span>
         </Link>
-        <nav className="hidden items-center gap-8 md:flex">
+        <nav className="hidden items-center gap-8 lg:flex">
           {links.map((l) => (
             <Link
               key={l.href}
               href={l.href}
-              className="text-sm font-medium text-ink-soft transition hover:text-petrol-600"
+              className="label-caps text-ink-soft transition hover:text-charcoal"
             >
               {l.label}
             </Link>
@@ -37,22 +40,22 @@ export default async function Navbar() {
           {settings.contact_phone && (
             <a
               href={`tel:${settings.contact_phone.replace(/\s/g, "")}`}
-              className="hidden text-sm font-medium text-ink-soft sm:block"
+              className="label-caps hidden text-ink-soft xl:block"
             >
               {settings.contact_phone}
             </a>
           )}
           <Link
             href="/rooms"
-            className="rounded-full bg-ink px-4 py-2 text-sm font-semibold text-stone shadow-sm transition hover:bg-charcoal-light"
+            className="label-caps hidden bg-charcoal px-5 py-3 text-stone transition hover:bg-charcoal-light sm:inline-flex"
           >
-            Book Now
+            Check Availability
           </Link>
         </div>
       </div>
-      <nav className="flex items-center gap-6 overflow-x-auto border-t border-petrol-100 px-4 py-2 text-sm font-medium text-ink-soft md:hidden">
+      <nav className="flex items-center gap-6 overflow-x-auto border-t border-line px-4 py-2.5 lg:hidden">
         {links.map((l) => (
-          <Link key={l.href} href={l.href} className="whitespace-nowrap">
+          <Link key={l.href} href={l.href} className="label-caps whitespace-nowrap text-ink-soft">
             {l.label}
           </Link>
         ))}
