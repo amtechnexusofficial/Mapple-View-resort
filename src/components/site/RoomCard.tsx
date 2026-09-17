@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Room } from "@/lib/types";
 import { formatInr } from "@/lib/format";
+import RoomImagePlaceholder from "@/components/site/RoomImagePlaceholder";
 
 export default function RoomCard({ room }: { room: Room }) {
   const image = room.images[0];
@@ -17,9 +18,7 @@ export default function RoomCard({ room }: { room: Room }) {
             className="object-cover transition duration-500 group-hover:scale-105"
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-petrol-400 to-charcoal-light text-stone/70">
-            <span className="font-display text-lg">{room.name}</span>
-          </div>
+          <RoomImagePlaceholder name={room.name} />
         )}
         <div className="absolute left-3 top-3 rounded-full bg-stone/95 px-3 py-1 text-xs font-semibold text-ink shadow">
           {formatInr(room.price_per_night)} / night
