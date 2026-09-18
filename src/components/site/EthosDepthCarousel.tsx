@@ -24,11 +24,11 @@ const ethosCarouselItems = [
 
 export default function EthosDepthCarousel() {
   return (
-    <div className="relative h-[340px] w-full sm:h-[440px] lg:h-[520px]">
+    <div className="relative h-[400px] w-full sm:h-[420px]">
       <DepthCarousel
         items={ethosCarouselItems}
         cardWidth={280}
-        cardHeight={360}
+        cardHeight={340}
         radius={4}
         tint="#1b1c1a"
         depth={180}

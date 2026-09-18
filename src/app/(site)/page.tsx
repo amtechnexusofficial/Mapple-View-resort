@@ -16,7 +16,7 @@ import type { GalleryItem } from "@/components/site/GalleryGrid";
 
 const EthosDepthCarousel = dynamic(() => import("@/components/site/EthosDepthCarousel"), {
   loading: () => (
-    <div className="h-[340px] w-full animate-pulse bg-petrol-100 sm:h-[440px] lg:h-[520px]" />
+    <div className="h-[400px] w-full animate-pulse bg-petrol-100 sm:h-[420px]" />
   ),
 });
 const RoomShowcase = dynamic(() => import("@/components/site/RoomShowcase"));
@@ -163,7 +163,7 @@ export default async function HomePage() {
 
       {/* ========================= 01 · THE ESCAPE ========================= */}
       <section className="bg-white">
-        <div className="mx-auto grid max-w-6xl gap-12 px-4 py-24 sm:px-6 sm:py-32 lg:grid-cols-12">
+        <div className="mx-auto grid max-w-6xl gap-10 px-4 pt-20 pb-10 sm:gap-12 sm:px-6 sm:pt-28 sm:pb-12 lg:grid-cols-12">
           <Reveal className="lg:col-span-5">
             <SectionLabel index="01" eyebrow="Sanctuary Ethos" />
             <h2 className="mt-5 font-display text-3xl font-normal leading-[1.15] text-ink sm:text-4xl">
@@ -192,12 +192,12 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* =============================== ROOMS =============================== */}
+      {/* ========================= 02 · ROOMS ========================= */}
       {rooms.length > 0 && (
-        <section id="rooms" className="mx-auto max-w-6xl scroll-mt-20 px-4 py-24 sm:px-6 sm:py-32">
+        <section id="rooms" className="mx-auto max-w-6xl scroll-mt-20 px-4 pt-10 pb-20 sm:px-6 sm:pt-12 sm:pb-28">
           <Reveal className="flex flex-wrap items-end justify-between gap-4">
             <div>
-              <SectionLabel index="03" eyebrow="Accommodation Portfolio" />
+              <SectionLabel index="02" eyebrow="Accommodation Portfolio" />
               <h2 className="mt-5 font-display text-4xl font-normal leading-[1.05] text-ink sm:text-5xl">
                 Our Rooms &amp; Suites
               </h2>
@@ -212,11 +212,11 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* ========================= 04 · WAKE UP HERE ========================= */}
+      {/* ========================= 03 · WAKE UP HERE ========================= */}
       <section className="bg-petrol-50/50 py-24 sm:py-32">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <div className="mx-auto max-w-2xl text-center">
-            <SectionLabel index="04" eyebrow="Sensory Chronology" className="justify-center" />
+            <SectionLabel index="03" eyebrow="Sensory Chronology" className="justify-center" />
             <h2 className="mt-5 font-display text-3xl font-normal text-ink sm:text-4xl">
               Wake Up Here: The Rhythm of a Day
             </h2>
@@ -230,12 +230,12 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ========================= EXPLORE OOTY ========================= */}
+      {/* ========================= 04 · EXPLORE OOTY ========================= */}
       <section className="bg-charcoal py-24 text-stone sm:py-32">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
-              <SectionLabel index="06" eyebrow="Destination Compendium" className="text-petrol-300" />
+              <SectionLabel index="04" eyebrow="Destination Compendium" className="text-petrol-300" />
               <h2 className="mt-5 font-display text-3xl font-normal text-stone sm:text-4xl">
                 Where the Mountains Slow Time Down
               </h2>
@@ -261,9 +261,9 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ========================= 07 · THE VIEW ========================= */}
+      {/* ========================= 05 · THE VIEW ========================= */}
       <section className="mx-auto max-w-6xl px-4 py-24 sm:px-6 sm:py-32">
-        <SectionLabel index="07" eyebrow="Unfiltered Perspective" />
+        <SectionLabel index="05" eyebrow="Unfiltered Perspective" />
         <h2 className="mt-5 max-w-xl font-display text-3xl font-normal text-ink sm:text-4xl">
           Some views don&apos;t need a filter.
         </h2>
@@ -272,10 +272,10 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ========================= 08 · GALLERY ========================= */}
+      {/* ========================= 06 · GALLERY ========================= */}
       <section className="bg-petrol-50/50 py-24 sm:py-32">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <SectionLabel index="08" eyebrow="The Visual Journal" />
+          <SectionLabel index="06" eyebrow="The Visual Journal" />
           <h2 className="mt-5 font-display text-3xl font-normal text-ink sm:text-4xl">
             Curated Estate Frames
           </h2>
@@ -289,10 +289,10 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ========================= 09 · FAQ ========================= */}
+      {/* ========================= 07 · FAQ ========================= */}
       <section className="bg-white py-24 sm:py-32">
         <div className="mx-auto max-w-3xl px-4 sm:px-6">
-          <SectionLabel index="09" eyebrow="Good to Know" />
+          <SectionLabel index="07" eyebrow="Good to Know" />
           <h2 className="mt-5 font-display text-3xl font-normal text-ink sm:text-4xl">
             Frequently Asked Questions
           </h2>
@@ -302,10 +302,10 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ========================= 10 · GUEST MOMENTS ========================= */}
+      {/* ========================= 08 · GUEST MOMENTS ========================= */}
       {settings.testimonials.trim() && (
         <section className="mx-auto max-w-6xl px-4 py-24 sm:px-6 sm:py-32">
-          <SectionLabel index="10" eyebrow="Guest Moments" />
+          <SectionLabel index="08" eyebrow="Guest Moments" />
           <h2 className="mt-5 font-display text-3xl font-normal text-ink sm:text-4xl">
             In Their Own Words
           </h2>
@@ -315,10 +315,10 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* ========================= 11 · LOCATION ========================= */}
+      {/* ========================= 09 · LOCATION ========================= */}
       <section className="bg-petrol-50/50 py-24 sm:py-32">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <SectionLabel index="11" eyebrow="Arrival & Access" />
+          <SectionLabel index="09" eyebrow="Arrival & Access" />
           <h2 className="mt-5 font-display text-3xl font-normal text-ink sm:text-4xl">
             Find Mapple View Resort
           </h2>
