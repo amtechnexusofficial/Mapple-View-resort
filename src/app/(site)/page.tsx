@@ -194,7 +194,7 @@ export default async function HomePage() {
 
       {/* ========================= 02 · ROOMS ========================= */}
       {rooms.length > 0 && (
-        <section id="rooms" className="mx-auto max-w-6xl scroll-mt-20 px-4 pt-10 pb-20 sm:px-6 sm:pt-12 sm:pb-28">
+        <section id="rooms" className="mx-auto max-w-6xl scroll-mt-20 px-4 pt-10 pb-16 sm:px-6 sm:pt-12 sm:pb-20">
           <Reveal className="flex flex-wrap items-end justify-between gap-4">
             <div>
               <SectionLabel index="02" eyebrow="Accommodation Portfolio" />
@@ -213,7 +213,7 @@ export default async function HomePage() {
       )}
 
       {/* ========================= 03 · WAKE UP HERE ========================= */}
-      <section className="bg-petrol-50/50 py-24 sm:py-32">
+      <section className="bg-petrol-50/50 py-16 sm:py-20">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <div className="mx-auto max-w-2xl text-center">
             <SectionLabel index="03" eyebrow="Sensory Chronology" className="justify-center" />
@@ -231,7 +231,7 @@ export default async function HomePage() {
       </section>
 
       {/* ========================= 04 · EXPLORE OOTY ========================= */}
-      <section className="bg-charcoal py-24 text-stone sm:py-32">
+      <section className="bg-charcoal py-16 text-stone sm:py-20">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
@@ -262,7 +262,7 @@ export default async function HomePage() {
       </section>
 
       {/* ========================= 05 · THE VIEW ========================= */}
-      <section className="mx-auto max-w-6xl px-4 py-24 sm:px-6 sm:py-32">
+      <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
         <SectionLabel index="05" eyebrow="Unfiltered Perspective" />
         <h2 className="mt-5 max-w-xl font-display text-3xl font-normal text-ink sm:text-4xl">
           Some views don&apos;t need a filter.
@@ -273,7 +273,7 @@ export default async function HomePage() {
       </section>
 
       {/* ========================= 06 · GALLERY ========================= */}
-      <section className="bg-petrol-50/50 py-24 sm:py-32">
+      <section className="bg-petrol-50/50 py-16 sm:py-20">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <SectionLabel index="06" eyebrow="The Visual Journal" />
           <h2 className="mt-5 font-display text-3xl font-normal text-ink sm:text-4xl">
@@ -290,7 +290,7 @@ export default async function HomePage() {
       </section>
 
       {/* ========================= 07 · FAQ ========================= */}
-      <section className="bg-white py-24 sm:py-32">
+      <section className="bg-white py-16 sm:py-20">
         <div className="mx-auto max-w-3xl px-4 sm:px-6">
           <SectionLabel index="07" eyebrow="Good to Know" />
           <h2 className="mt-5 font-display text-3xl font-normal text-ink sm:text-4xl">
@@ -304,7 +304,7 @@ export default async function HomePage() {
 
       {/* ========================= 08 · GUEST MOMENTS ========================= */}
       {settings.testimonials.trim() && (
-        <section className="mx-auto max-w-6xl px-4 py-24 sm:px-6 sm:py-32">
+        <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
           <SectionLabel index="08" eyebrow="Guest Moments" />
           <h2 className="mt-5 font-display text-3xl font-normal text-ink sm:text-4xl">
             In Their Own Words
@@ -316,7 +316,7 @@ export default async function HomePage() {
       )}
 
       {/* ========================= 09 · LOCATION ========================= */}
-      <section className="bg-petrol-50/50 py-24 sm:py-32">
+      <section className="bg-petrol-50/50 py-16 sm:py-20">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <SectionLabel index="09" eyebrow="Arrival & Access" />
           <h2 className="mt-5 font-display text-3xl font-normal text-ink sm:text-4xl">
@@ -359,7 +359,7 @@ export default async function HomePage() {
           sizes="100vw"
           className="object-cover opacity-25 mix-blend-luminosity"
         />
-        <Reveal className="relative mx-auto max-w-4xl px-4 py-24 text-center sm:px-6 sm:py-32">
+        <Reveal className="relative mx-auto max-w-4xl px-4 py-16 text-center sm:px-6 sm:py-20">
           <span className="label-caps text-petrol-300">Your Ooty Escape Starts Here</span>
           <h2 className="mt-5 font-display text-4xl font-normal leading-[1.05] sm:text-5xl">
             Come for the mountains.
