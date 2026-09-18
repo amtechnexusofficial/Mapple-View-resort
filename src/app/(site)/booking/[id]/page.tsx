@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { BookingModel, RoomModel, SettingsModel } from "@/lib/models";
+import { BookingModel, RoomModel } from "@/lib/models";
+import { getSiteSettings } from "@/lib/site-data";
 import { buildUpiQrDataUrl, buildUpiUri } from "@/lib/upi";
 import { formatInr, formatDate } from "@/lib/format";
 import ConfirmPanel from "@/components/site/ConfirmPanel";
@@ -15,7 +16,7 @@ export default async function BookingPaymentPage({
   if (!booking) notFound();
   const [room, settings] = await Promise.all([
     RoomModel.byId(booking.room_id),
-    SettingsModel.get(),
+    getSiteSettings(),
   ]);
   if (!room) notFound();
 

@@ -17,7 +17,7 @@ export default function PanoramicDrag() {
           src={stockImages.panoramic}
           alt="Panoramic view of the Nilgiri hills"
           fill
-          sizes="170vw"
+          sizes="100vw"
           className="object-cover"
         />
       </div>

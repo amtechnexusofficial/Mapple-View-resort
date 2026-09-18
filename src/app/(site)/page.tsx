@@ -1,23 +1,30 @@
 import Link from "next/link";
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import { LinkButton } from "@/components/ui/Button";
 import Icon from "@/components/ui/Icon";
 import SectionLabel from "@/components/site/SectionLabel";
 import { stockImages, stockRoomImage } from "@/lib/stockImages";
 import HeroBookingBar from "@/components/site/HeroBookingBar";
-import EthosDepthCarousel from "@/components/site/EthosDepthCarousel";
-import RoomShowcase from "@/components/site/RoomShowcase";
-import WakeUpHereTimeline from "@/components/site/WakeUpHereTimeline";
-import ExploreOotyPanel from "@/components/site/ExploreOotyPanel";
-import PanoramicDrag from "@/components/site/PanoramicDrag";
-import GalleryGrid, { type GalleryItem } from "@/components/site/GalleryGrid";
-import FaqAccordion from "@/components/site/FaqAccordion";
 import Testimonials from "@/components/site/Testimonials";
 import LocationSection from "@/components/site/LocationSection";
 import Reveal from "@/components/site/Reveal";
-import { RoomModel, SettingsModel } from "@/lib/models";
+import { getActiveRooms, getSiteSettings } from "@/lib/site-data";
 import { seasons } from "@/lib/ooty";
 import { mapsDirectionsUrl, RESORT_LOCATION } from "@/lib/location";
+import type { GalleryItem } from "@/components/site/GalleryGrid";
+
+const EthosDepthCarousel = dynamic(() => import("@/components/site/EthosDepthCarousel"), {
+  loading: () => (
+    <div className="h-[340px] w-full animate-pulse bg-petrol-100 sm:h-[440px] lg:h-[520px]" />
+  ),
+});
+const RoomShowcase = dynamic(() => import("@/components/site/RoomShowcase"));
+const WakeUpHereTimeline = dynamic(() => import("@/components/site/WakeUpHereTimeline"));
+const ExploreOotyPanel = dynamic(() => import("@/components/site/ExploreOotyPanel"));
+const PanoramicDrag = dynamic(() => import("@/components/site/PanoramicDrag"));
+const GalleryGrid = dynamic(() => import("@/components/site/GalleryGrid"));
+const FaqAccordion = dynamic(() => import("@/components/site/FaqAccordion"));
 
 const ethos = [
   {
@@ -44,8 +51,8 @@ const ethos = [
 
 export default async function HomePage() {
   const [settings, allRooms] = await Promise.all([
-    SettingsModel.get(),
-    RoomModel.all(),
+    getSiteSettings(),
+    getActiveRooms(),
   ]);
   const rooms = allRooms.slice(0, 3);
 
@@ -105,6 +112,7 @@ export default async function HomePage() {
           alt=""
           fill
           priority
+          quality={75}
           sizes="100vw"
           className="object-cover"
         />

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import RoomCard from "@/components/site/RoomCard";
 import SectionLabel from "@/components/site/SectionLabel";
-import { RoomModel } from "@/lib/models";
+import { getActiveRooms } from "@/lib/site-data";
 import { format, parseISO, isValid } from "date-fns";
 
 export const metadata: Metadata = {
@@ -24,7 +24,7 @@ export default async function RoomsPage({
   const guests = guestsRaw && guestsRaw > 0 ? guestsRaw : undefined;
   const hasRange = Boolean(checkIn && checkOut && checkIn < checkOut);
 
-  const rooms = await RoomModel.all();
+  const rooms = await getActiveRooms();
 
   const availability = await Promise.all(
     rooms.map(async (room) => {

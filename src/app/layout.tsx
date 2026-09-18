@@ -5,20 +5,23 @@ import "./globals.css";
 const fraunces = Fraunces({
   variable: "--font-fraunces",
   subsets: ["latin"],
+  display: "swap",
   style: ["normal", "italic"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "500", "600"],
 });
 
 const sourceSans = Source_Sans_3({
   variable: "--font-source-sans",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  display: "swap",
+  weight: ["300", "400", "600", "700"],
 });
 
 const plexMono = IBM_Plex_Mono({
   variable: "--font-plex-mono",
   subsets: ["latin"],
-  weight: ["400", "500"],
+  display: "swap",
+  weight: ["400"],
 });
 
 export const metadata: Metadata = {
@@ -39,15 +42,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${fraunces.variable} ${sourceSans.variable} ${plexMono.variable} h-full antialiased`}
     >
-      <head>
-        <link
-          rel="preload"
-          href="/fonts/material-symbols-outlined.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
-      </head>
       <body className="min-h-full flex flex-col bg-stone text-ink font-sans">
         {children}
       </body>

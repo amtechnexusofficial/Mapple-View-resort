@@ -20,10 +20,6 @@ const ethosCarouselItems = [
     image: stockImages.gallery.facade,
     alt: "The estate from the driveway",
   },
-  {
-    image: stockImages.timeline[0],
-    alt: "Quiet hillside views around the resort",
-  },
 ];
 
 export default function EthosDepthCarousel() {
@@ -35,16 +31,16 @@ export default function EthosDepthCarousel() {
         cardHeight={360}
         radius={4}
         tint="#1b1c1a"
-        depth={200}
-        spread={80}
-        tilt={20}
+        depth={180}
+        spread={72}
+        tilt={18}
         tiltDirection="right"
         perspective={1400}
-        visibleCards={4}
-        falloff={0.18}
-        blur={5}
+        visibleCards={3}
+        falloff={0.2}
+        blur={0}
         autoplay
-        autoplayDelay={3600}
+        autoplayDelay={4000}
         loop
         showControls
         showIndicators

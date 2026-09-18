@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import Image from "next/image";
 import gsap from "gsap";
 import "./DepthCarousel.css";
 
@@ -117,6 +118,7 @@ export default function DepthCarousel({
   const reducedRef = useRef(false);
 
   const [active, setActive] = useState(0);
+  const [loaded, setLoaded] = useState(() => new Set<number>([0, 1]));
 
   onChangeRef.current = onChange;
   cfgRef.current = {
@@ -164,15 +166,12 @@ export default function DepthCarousel({
       if (!shown) opacity = 0;
 
       const brightness = Math.max(0.15, 1 - back * cfg.falloff);
-      const blurPx =
-        cfg.blur > 0
-          ? Math.min(cfg.blur, (back / Math.max(1, cfg.visibleCards)) * cfg.blur)
-          : 0;
       const zi = Math.round(2000 - d * 20);
 
       el.style.transform = `translate(-50%, -50%) scale(${sc}) translateX(${tx.toFixed(2)}px) translateZ(${tz.toFixed(2)}px) rotateY(${ry.toFixed(3)}deg)`;
       el.style.opacity = opacity.toFixed(3);
-      el.style.filter = `brightness(${brightness.toFixed(3)}) blur(${blurPx.toFixed(2)}px)`;
+      // Brightness only — CSS blur on animated 3D layers is expensive on mobile.
+      el.style.filter = `brightness(${brightness.toFixed(3)})`;
       el.style.zIndex = String(zi);
       el.style.pointerEvents = shown && opacity > 0.05 ? "auto" : "none";
 
@@ -184,9 +183,17 @@ export default function DepthCarousel({
   const notify = useCallback(
     (idx: number) => {
       setActive(idx);
+      setLoaded((prev) => {
+        const next = new Set(prev);
+        for (let o = -1; o <= 2; o++) {
+          const j = loop && count > 0 ? ((idx + o) % count + count) % count : idx + o;
+          if (j >= 0 && j < count) next.add(j);
+        }
+        return next;
+      });
       onChangeRef.current?.(idx, data[idx]);
     },
-    [data]
+    [data, count, loop]
   );
 
   const tweenTo = useCallback(
@@ -389,7 +396,7 @@ export default function DepthCarousel({
     };
   }, [autoplay, autoplayDelay, count, navigateBy]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     layout(posRef.current);
   }, [
     layout,
@@ -444,13 +451,20 @@ export default function DepthCarousel({
             aria-hidden={active !== i}
             onClick={() => onCardClick(i)}
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              className="depth-carousel__img"
-              src={item.image}
-              alt={item.alt || ""}
-              draggable={false}
-            />
+            {loaded.has(i) ? (
+              <Image
+                src={item.image}
+                alt={item.alt || ""}
+                fill
+                sizes="(min-width: 1024px) 280px, 75vw"
+                className="depth-carousel__img"
+                priority={i === 0}
+                quality={70}
+                draggable={false}
+              />
+            ) : (
+              <span className="depth-carousel__placeholder" aria-hidden />
+            )}
             <span
               className="depth-carousel__tint"
               ref={(el) => {

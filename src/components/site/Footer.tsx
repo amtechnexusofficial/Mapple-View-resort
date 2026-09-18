@@ -1,10 +1,10 @@
 import Link from "next/link";
 import Image from "next/image";
-import { SettingsModel } from "@/lib/models";
+import { getSiteSettings } from "@/lib/site-data";
 import { stockImages } from "@/lib/stockImages";
 
 export default async function Footer() {
-  const settings = await SettingsModel.get();
+  const settings = await getSiteSettings();
   const year = new Date().getFullYear();
 
   return (

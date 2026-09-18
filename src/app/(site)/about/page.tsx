@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { SettingsModel } from "@/lib/models";
+import { getSiteSettings } from "@/lib/site-data";
 import { LinkButton } from "@/components/ui/Button";
 import SectionLabel from "@/components/site/SectionLabel";
 
@@ -28,7 +28,7 @@ const gettingHere = [
 ];
 
 export default async function AboutPage() {
-  const settings = await SettingsModel.get();
+  const settings = await getSiteSettings();
   const paragraphs = (settings.about_content || settings.description)
     .split(/\n{2,}/)
     .map((p) => p.trim())

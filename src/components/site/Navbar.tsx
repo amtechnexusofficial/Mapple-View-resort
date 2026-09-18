@@ -1,8 +1,8 @@
-import { SettingsModel } from "@/lib/models";
+import { getSiteSettings } from "@/lib/site-data";
 import NavShell from "@/components/site/NavShell";
 
 export default async function Navbar() {
-  const settings = await SettingsModel.get();
+  const settings = await getSiteSettings();
 
   const links = [
     { href: "/", label: "Stay" },

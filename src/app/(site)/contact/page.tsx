@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import { SettingsModel } from "@/lib/models";
+import { getSiteSettings } from "@/lib/site-data";
 import SectionLabel from "@/components/site/SectionLabel";
 import Icon from "@/components/ui/Icon";
 
 export const metadata: Metadata = { title: "Contact Us | Mapple View Resort" };
 
 export default async function ContactPage() {
-  const settings = await SettingsModel.get();
+  const settings = await getSiteSettings();
   const waNumber = settings.whatsapp_owner_number.replace(/[^\d]/g, "");
 
   return (
