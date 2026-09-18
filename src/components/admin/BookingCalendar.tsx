@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import {
   addDays,
@@ -76,6 +76,8 @@ export default function BookingCalendar() {
   const [showCreate, setShowCreate] = useState(false);
   const [activeBooking, setActiveBooking] = useState<Booking | null>(null);
   const [busy, setBusy] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const todayColRef = useRef<HTMLTableCellElement>(null);
 
   const from = format(startOfMonth(month), "yyyy-MM-dd");
   const to = format(addDays(endOfMonth(month), 1), "yyyy-MM-dd");
@@ -83,6 +85,8 @@ export default function BookingCalendar() {
     () => eachDayOfInterval({ start: startOfMonth(month), end: endOfMonth(month) }),
     [month]
   );
+  const monthIncludesToday =
+    month.getFullYear() === today.getFullYear() && month.getMonth() === today.getMonth();
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -103,6 +107,18 @@ export default function BookingCalendar() {
   useEffect(() => {
     void load();
   }, [load]);
+
+  useEffect(() => {
+    if (loading || !monthIncludesToday) return;
+    const id = window.requestAnimationFrame(() => {
+      todayColRef.current?.scrollIntoView({
+        inline: "center",
+        block: "nearest",
+        behavior: "smooth",
+      });
+    });
+    return () => window.cancelAnimationFrame(id);
+  }, [loading, monthIncludesToday, month]);
 
   function resetRange() {
     setRangeRoomId(null);
@@ -205,35 +221,37 @@ export default function BookingCalendar() {
   const monthLabel = format(month, "MMMM yyyy");
 
   return (
-    <div className="min-w-0 w-full max-w-full space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-wrap items-center gap-2">
+    <div className="min-w-0 w-full max-w-full space-y-3 sm:space-y-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+        <div className="flex items-center gap-1.5 sm:gap-2">
           <button
             type="button"
             onClick={() => setMonth((m) => addMonths(m, -1))}
-            className="rounded-lg border border-line px-3 py-2 text-sm hover:bg-petrol-50"
+            className="min-h-10 min-w-10 rounded-lg border border-line px-2.5 py-2 text-sm hover:bg-petrol-50 sm:px-3"
+            aria-label="Previous month"
           >
             Prev
           </button>
-          <h2 className="min-w-[10rem] text-center font-sans text-lg font-semibold text-ink">
+          <h2 className="min-w-0 flex-1 truncate text-center font-sans text-base font-semibold text-ink sm:min-w-[10rem] sm:flex-none sm:text-lg">
             {monthLabel}
           </h2>
           <button
             type="button"
             onClick={() => setMonth((m) => addMonths(m, 1))}
-            className="rounded-lg border border-line px-3 py-2 text-sm hover:bg-petrol-50"
+            className="min-h-10 min-w-10 rounded-lg border border-line px-2.5 py-2 text-sm hover:bg-petrol-50 sm:px-3"
+            aria-label="Next month"
           >
             Next
           </button>
           <button
             type="button"
             onClick={() => setMonth(startOfMonth(today))}
-            className="rounded-lg bg-petrol-50 px-3 py-2 text-sm font-medium text-ink hover:bg-petrol-100"
+            className="min-h-10 rounded-lg bg-petrol-50 px-2.5 py-2 text-sm font-medium text-ink hover:bg-petrol-100 sm:px-3"
           >
             Today
           </button>
         </div>
-        <div className="flex flex-wrap gap-3 text-xs text-ink/60">
+        <div className="flex flex-wrap gap-x-3 gap-y-1.5 text-[11px] text-ink/60 sm:text-xs">
           <span className="inline-flex items-center gap-1.5">
             <span className="h-3 w-3 rounded-sm bg-emerald-200" /> Confirmed
           </span>
@@ -241,10 +259,13 @@ export default function BookingCalendar() {
             <span className="h-3 w-3 rounded-sm bg-amber-200" /> Pending
           </span>
           <span className="inline-flex items-center gap-1.5">
-            <span className="h-3 w-3 rounded-sm bg-blue-200" /> Payment claimed
+            <span className="h-3 w-3 rounded-sm bg-blue-200" /> Payment
           </span>
           <span className="inline-flex items-center gap-1.5">
             <span className="h-3 w-3 rounded-sm border border-line bg-white" /> Free
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <span className="h-3 w-3 rounded-sm bg-rose-200 ring-1 ring-rose-300/80" /> Past
           </span>
         </div>
       </div>
@@ -274,90 +295,106 @@ export default function BookingCalendar() {
       ) : rooms.length === 0 ? (
         <p className="py-12 text-center text-sm text-ink/50">No active rooms. Add rooms first.</p>
       ) : (
-        <div className="max-w-full overflow-x-auto rounded-2xl border border-petrol-100 bg-white shadow-sm">
-          <table className="w-max min-w-full border-collapse text-sm">
-            <thead>
-              <tr className="border-b border-petrol-100">
-                <th className="sticky left-0 z-10 bg-white px-3 py-2 text-left text-xs font-medium uppercase text-ink/50">
-                  Room
-                </th>
-                {days.map((d) => {
-                  const key = nightKey(d);
-                  const isToday = isSameDay(d, today);
-                  return (
-                    <th key={key} className="p-0.5">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setDayZoom(key);
-                          resetRange();
-                          setActiveBooking(null);
-                        }}
-                        className={`flex w-8 flex-col items-center rounded-md px-0.5 py-1 text-[10px] font-medium transition hover:bg-petrol-50 sm:w-9 ${
-                          isToday ? "bg-charcoal text-stone" : "text-ink/70"
-                        }`}
-                        title={`Zoom ${key}`}
-                      >
-                        <span>{format(d, "EEE")}</span>
-                        <span className="text-xs">{format(d, "d")}</span>
-                      </button>
-                    </th>
-                  );
-                })}
-              </tr>
-            </thead>
-            <tbody>
-              {rooms.map((room) => (
-                <tr key={room.id} className="border-b border-petrol-50 last:border-0">
-                  <td className="sticky left-0 z-10 w-36 max-w-[9rem] truncate bg-white px-3 py-2 text-xs font-semibold text-ink shadow-[2px_0_4px_rgba(0,0,0,0.04)]">
-                    {room.name}
-                  </td>
+        <div className="min-w-0">
+          <p className="mb-1.5 text-[11px] text-ink/45 sm:hidden">Swipe sideways to see more days →</p>
+          <div
+            ref={scrollRef}
+            className="max-w-full overflow-x-auto overscroll-x-contain rounded-xl border border-petrol-100 bg-white shadow-sm [-webkit-overflow-scrolling:touch] sm:rounded-2xl"
+          >
+            <table className="w-max min-w-full border-collapse text-sm">
+              <thead>
+                <tr className="border-b border-petrol-100">
+                  <th className="sticky left-0 z-10 bg-white px-2 py-2 text-left text-[10px] font-medium uppercase text-ink/50 sm:px-3 sm:text-xs">
+                    Room
+                  </th>
                   {days.map((d) => {
                     const key = nightKey(d);
-                    const b = bookingOnNight(bookings, room.id, key);
-                    const pending = isInPendingRange(room.id, key);
-                    const past = !b && isPastNight(key, todayKey);
-                    let cls =
-                      "h-8 w-8 rounded-md border border-transparent transition focus:outline-none focus:ring-2 focus:ring-petrol-400 sm:h-9 sm:w-9";
-                    if (b && b.status !== "cancelled") {
-                      cls += ` ${cellStatusClass[b.status as Exclude<BookingStatus, "cancelled">]}`;
-                    } else if (pending) {
-                      cls += " bg-petrol-400/40 ring-2 ring-petrol-500";
-                    } else if (past) {
-                      cls += " cursor-not-allowed border-line/40 bg-petrol-50/60 opacity-45";
-                    } else {
-                      cls += " border-line/60 bg-stone hover:bg-petrol-50";
-                    }
+                    const isToday = isSameDay(d, today);
+                    const past = isPastNight(key, todayKey);
                     return (
-                      <td key={key} className="p-0.5">
+                      <th
+                        key={key}
+                        ref={isToday ? todayColRef : undefined}
+                        className="p-0.5"
+                      >
                         <button
                           type="button"
-                          disabled={past}
-                          className={cls}
-                          title={
-                            b
-                              ? `${b.guest_name} (${b.status})`
+                          onClick={() => {
+                            setDayZoom(key);
+                            resetRange();
+                            setActiveBooking(null);
+                          }}
+                          className={`flex w-7 flex-col items-center rounded-md px-0.5 py-1 text-[9px] font-medium transition sm:w-9 sm:text-[10px] ${
+                            isToday
+                              ? "bg-charcoal text-stone"
                               : past
-                                ? "Past night — cannot book"
-                                : pending
-                                  ? "In selection"
-                                  : `Book ${room.name} from ${key}`
-                          }
-                          onClick={() => onCellClick(room.id, key)}
-                        />
-                      </td>
+                                ? "bg-rose-50 text-rose-400 hover:bg-rose-100"
+                                : "text-ink/70 hover:bg-petrol-50"
+                          }`}
+                          title={`Zoom ${key}`}
+                        >
+                          <span className="hidden sm:inline">{format(d, "EEE")}</span>
+                          <span className="text-[10px] sm:text-xs">{format(d, "d")}</span>
+                        </button>
+                      </th>
                     );
                   })}
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {rooms.map((room) => (
+                  <tr key={room.id} className="border-b border-petrol-50 last:border-0">
+                    <td className="sticky left-0 z-10 w-24 max-w-[6rem] truncate bg-white px-2 py-1.5 text-[11px] font-semibold text-ink shadow-[2px_0_4px_rgba(0,0,0,0.04)] sm:w-36 sm:max-w-[9rem] sm:px-3 sm:py-2 sm:text-xs">
+                      {room.name}
+                    </td>
+                    {days.map((d) => {
+                      const key = nightKey(d);
+                      const b = bookingOnNight(bookings, room.id, key);
+                      const pending = isInPendingRange(room.id, key);
+                      const past = !b && isPastNight(key, todayKey);
+                      let cls =
+                        "h-8 w-7 touch-manipulation rounded-md border border-transparent transition focus:outline-none focus:ring-2 focus:ring-petrol-400 sm:h-9 sm:w-9";
+                      if (b && b.status !== "cancelled") {
+                        cls += ` ${cellStatusClass[b.status as Exclude<BookingStatus, "cancelled">]}`;
+                      } else if (pending) {
+                        cls += " bg-petrol-400/40 ring-2 ring-petrol-500";
+                      } else if (past) {
+                        cls +=
+                          " cursor-not-allowed border-rose-200/70 bg-rose-100 opacity-90";
+                      } else {
+                        cls += " border-line/60 bg-stone hover:bg-petrol-50";
+                      }
+                      return (
+                        <td key={key} className="p-0.5">
+                          <button
+                            type="button"
+                            disabled={past}
+                            className={cls}
+                            title={
+                              b
+                                ? `${b.guest_name} (${b.status})`
+                                : past
+                                  ? "Past night — cannot book"
+                                  : pending
+                                    ? "In selection"
+                                    : `Book ${room.name} from ${key}`
+                            }
+                            onClick={() => onCellClick(room.id, key)}
+                          />
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 
-      <p className="text-xs text-ink/50">
-        Tip: click a free cell to start a stay, then click the last night. Click a coloured cell to
-        view or cancel. Click a day number to zoom into that date.
+      <p className="text-[11px] text-ink/50 sm:text-xs">
+        Tip: tap a free cell to start a stay, then tap the last night. Tap a coloured cell to view
+        or cancel. Tap a day number to zoom into that date.
       </p>
 
       {dayZoom && (
@@ -453,14 +490,14 @@ function DayZoomPanel({
   const label = format(parseISO(day), "EEEE, d MMMM yyyy");
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-charcoal/50 p-4 sm:items-center">
-      <div className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-white p-5 shadow-xl">
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-charcoal/50 p-3 sm:items-center sm:p-4">
+      <div className="max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-t-2xl bg-white p-4 shadow-xl sm:max-h-[90vh] sm:rounded-2xl sm:p-5">
         <div className="flex items-start justify-between gap-3">
-          <div>
+          <div className="min-w-0">
             <p className="text-xs font-medium uppercase tracking-wide text-ink/50">Day view</p>
-            <h3 className="font-sans text-lg font-semibold text-ink">{label}</h3>
+            <h3 className="font-sans text-base font-semibold text-ink sm:text-lg">{label}</h3>
             {isPast && (
-              <p className="mt-1 text-xs text-ink/50">Past date — new bookings are disabled.</p>
+              <p className="mt-1 text-xs text-rose-600">Past date — new bookings are disabled.</p>
             )}
           </div>
           <button

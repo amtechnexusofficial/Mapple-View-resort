@@ -31,7 +31,7 @@ export default function BookingForm({
   const [checkIn, setCheckIn] = useState(defaultCheckIn);
   const [checkOut, setCheckOut] = useState(defaultCheckOut);
   const [guests, setGuests] = useState(
-    Math.min(Math.max(initialGuests || 1, 1), room.max_guests)
+    Math.min(Math.max(initialGuests || 2, 1), room.max_guests)
   );
   const [guestName, setGuestName] = useState("");
   const [guestPhone, setGuestPhone] = useState("");
@@ -164,15 +164,29 @@ export default function BookingForm({
 
       <div className="mt-4">
         <label className="text-xs font-medium text-ink/60">Guests</label>
-        <input
-          type="number"
-          required
-          min={1}
-          max={room.max_guests}
-          value={guests}
-          onChange={(e) => setGuests(Number(e.target.value))}
-          className="mt-1 min-h-11 w-full rounded-lg border border-line px-3 py-2.5 text-base focus:border-petrol-500 focus:outline-none"
-        />
+        <div className="mt-1 flex min-h-11 items-center gap-3">
+          <button
+            type="button"
+            aria-label="Decrease guests"
+            disabled={guests <= 1}
+            onClick={() => setGuests((g) => Math.max(1, g - 1))}
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-line text-lg text-ink transition hover:bg-petrol-50 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            −
+          </button>
+          <span className="min-w-[5rem] text-center text-base font-medium text-ink" aria-live="polite">
+            {guests} {guests === 1 ? "guest" : "guests"}
+          </span>
+          <button
+            type="button"
+            aria-label="Increase guests"
+            disabled={guests >= room.max_guests}
+            onClick={() => setGuests((g) => Math.min(room.max_guests, g + 1))}
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-line text-lg text-ink transition hover:bg-petrol-50 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            +
+          </button>
+        </div>
         <p className="mt-1 text-xs text-ink/50">Max {room.max_guests} guests</p>
       </div>
 
