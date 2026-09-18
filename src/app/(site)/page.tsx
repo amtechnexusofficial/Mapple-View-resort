@@ -7,7 +7,6 @@ import { stockImages, stockRoomImage } from "@/lib/stockImages";
 import HeroBookingBar from "@/components/site/HeroBookingBar";
 import RoomShowcase from "@/components/site/RoomShowcase";
 import WakeUpHereTimeline from "@/components/site/WakeUpHereTimeline";
-import ChooseYourEscape from "@/components/site/ChooseYourEscape";
 import ExploreOotyPanel from "@/components/site/ExploreOotyPanel";
 import PanoramicDrag from "@/components/site/PanoramicDrag";
 import GalleryGrid, { type GalleryItem } from "@/components/site/GalleryGrid";
@@ -205,27 +204,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ========================= 02 · BRAND STORY ========================= */}
-      <section className="border-y border-petrol-100 bg-petrol-50/50 py-24 sm:py-32">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <SectionLabel index="02" eyebrow="This Is Mapple View" />
-          <h2 className="mt-5 max-w-2xl font-display text-3xl font-normal text-ink sm:text-4xl">
-            The Mapple View Story
-          </h2>
-          <div className="mt-10 grid grid-cols-1 gap-8 lg:grid-cols-12">
-            <div className="lg:col-span-4">
-              <p className="font-display text-2xl font-light italic leading-snug text-ink">
-                &ldquo;{settings.description}&rdquo;
-              </p>
-            </div>
-            <div className="space-y-4 text-sm font-light leading-relaxed text-ink/70 lg:col-span-8">
-              <p>{settings.brand_story}</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* =============================== 03 · ROOMS =============================== */}
+      {/* =============================== ROOMS =============================== */}
       {rooms.length > 0 && (
         <section id="rooms" className="mx-auto max-w-6xl scroll-mt-20 px-4 py-24 sm:px-6 sm:py-32">
           <Reveal className="flex flex-wrap items-end justify-between gap-4">
@@ -263,25 +242,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ========================= 05 · CHOOSE YOUR ESCAPE ========================= */}
-      <section className="bg-white py-24 sm:py-32">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <div className="max-w-2xl">
-            <SectionLabel index="05" eyebrow="Curated Stays" />
-            <h2 className="mt-5 font-display text-3xl font-normal text-ink sm:text-4xl">
-              What Brings You to Ooty?
-            </h2>
-            <p className="mt-3 text-sm font-light text-ink/70">
-              Pick what you&apos;re here for and we&apos;ll point you toward the right room.
-            </p>
-          </div>
-          <div className="mt-10">
-            <ChooseYourEscape />
-          </div>
-        </div>
-      </section>
-
-      {/* ========================= 06 · EXPLORE OOTY ========================= */}
+      {/* ========================= EXPLORE OOTY ========================= */}
       <section className="bg-charcoal py-24 text-stone sm:py-32">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <div className="flex flex-wrap items-end justify-between gap-4">

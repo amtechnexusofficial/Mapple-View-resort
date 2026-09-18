@@ -8,10 +8,15 @@ import Icon from "@/components/ui/Icon";
 const MIN_GUESTS = 1;
 const MAX_GUESTS = 20;
 
+/** Full-field tap target for native date pickers (especially iOS/Android). */
 const dateInputClass =
-  "w-full min-w-0 appearance-none bg-transparent font-display text-base leading-none text-ink outline-none " +
-  "[&::-webkit-calendar-picker-indicator]:ml-0 [&::-webkit-calendar-picker-indicator]:cursor-pointer " +
-  "[&::-webkit-calendar-picker-indicator]:opacity-70";
+  "relative min-h-11 w-full min-w-0 cursor-pointer rounded-lg border border-line bg-white px-3 py-2.5 " +
+  "font-display text-base leading-none text-ink outline-none transition " +
+  "focus:border-petrol-500 focus:ring-2 focus:ring-petrol-500/20 " +
+  "[&::-webkit-date-and-time-value]:text-left " +
+  "[&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 " +
+  "[&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:w-full " +
+  "[&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-0";
 
 export default function HeroBookingBar() {
   const router = useRouter();
@@ -53,7 +58,7 @@ export default function HeroBookingBar() {
                   setCheckOut(format(addDays(new Date(e.target.value), 1), "yyyy-MM-dd"));
                 }
               }}
-              className={`min-h-10 ${dateInputClass}`}
+              className={dateInputClass}
             />
           </label>
 
@@ -65,19 +70,19 @@ export default function HeroBookingBar() {
               value={checkOut}
               min={checkIn}
               onChange={(e) => setCheckOut(e.target.value)}
-              className={`min-h-10 ${dateInputClass}`}
+              className={dateInputClass}
             />
           </label>
 
           <div className="col-span-2 flex min-w-0 flex-col gap-2 sm:col-span-1 sm:pl-6 lg:pl-8">
             <span className="label-caps text-ink-soft/70">Guests</span>
-            <div className="flex min-h-10 items-center gap-2.5">
+            <div className="flex min-h-11 items-center justify-between gap-2 rounded-lg border border-line bg-white px-2 py-1.5 sm:justify-start sm:gap-2.5 sm:border-0 sm:bg-transparent sm:px-0">
               <button
                 type="button"
                 aria-label="Decrease guests"
                 disabled={guests <= MIN_GUESTS}
                 onClick={() => setGuests((g) => Math.max(MIN_GUESTS, g - 1))}
-                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-line text-lg leading-none text-ink transition hover:bg-petrol-50 disabled:cursor-not-allowed disabled:opacity-40"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-line text-lg leading-none text-ink transition hover:bg-petrol-50 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 −
               </button>
@@ -92,7 +97,7 @@ export default function HeroBookingBar() {
                 aria-label="Increase guests"
                 disabled={guests >= MAX_GUESTS}
                 onClick={() => setGuests((g) => Math.min(MAX_GUESTS, g + 1))}
-                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-line text-lg leading-none text-ink transition hover:bg-petrol-50 disabled:cursor-not-allowed disabled:opacity-40"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-line text-lg leading-none text-ink transition hover:bg-petrol-50 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 +
               </button>
