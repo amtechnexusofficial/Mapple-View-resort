@@ -2,31 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { differenceInCalendarDays, format, startOfToday } from "date-fns";
 import { BookingModel, RoomModel } from "@/lib/models";
 import { adminCreateBookingSchema } from "@/lib/validation";
-import type { BookingStatus } from "@/lib/types";
-
-export async function GET(request: NextRequest) {
-  const status = request.nextUrl.searchParams.get("status") as
-    | BookingStatus
-    | null;
-  const [bookings, rooms, stats] = await Promise.all([
-    BookingModel.all(status || undefined),
-    RoomModel.all(true),
-    BookingModel.stats(),
-  ]);
-  const roomMap = new Map(rooms.map((r) => [r.id, r]));
-  const withRoom = bookings.map((b) => ({
-    ...b,
-    room: roomMap.get(b.room_id) || null,
-  }));
-  return NextResponse.json({ bookings: withRoom, stats });
-}
 
 /**
- * Manually record a booking taken on another platform (Booking.com,
- * Airbnb, walk-in, phone, ...). This both blocks the dates against
- * further site bookings (RoomModel.isAvailable checks all non-cancelled
- * bookings regardless of source) and gives it revenue tracking in
- * Reports & Billing, unlike a bare availability block would.
+ * Create a booking from the admin calendar (OTA walk-in, phone, maintenance
+ * block, etc.). Blocks those dates for the public site and tracks revenue
+ * in Reports & Billing.
  */
 export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => null);

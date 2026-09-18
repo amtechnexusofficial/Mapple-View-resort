@@ -1,3 +1,4 @@
+import { endOfMonth, format, startOfMonth, startOfToday } from "date-fns";
 import { BookingModel, RoomModel } from "@/lib/models";
 import { formatInr, formatDate } from "@/lib/format";
 import StatusBadge from "@/components/admin/StatusBadge";
@@ -6,21 +7,35 @@ export default async function AdminReportsPage({
   searchParams,
 }: PageProps<"/admin/reports">) {
   const sp = await searchParams;
-  const from = typeof sp.from === "string" && sp.from ? sp.from : undefined;
-  const to = typeof sp.to === "string" && sp.to ? sp.to : undefined;
+  const today = startOfToday();
+  const defaultFrom = format(startOfMonth(today), "yyyy-MM-dd");
+  const defaultTo = format(endOfMonth(today), "yyyy-MM-dd");
+  const from =
+    typeof sp.from === "string" && sp.from
+      ? sp.from
+      : typeof sp.to === "string" && sp.to
+        ? undefined
+        : defaultFrom;
+  const to =
+    typeof sp.to === "string" && sp.to
+      ? sp.to
+      : typeof sp.from === "string" && sp.from
+        ? undefined
+        : defaultTo;
   const filters = { from, to };
 
   const [summary, revenueByRoom, billing, rooms] = await Promise.all([
     BookingModel.summary(filters),
     BookingModel.revenueByRoom(filters),
     BookingModel.billing(filters),
-    RoomModel.all(true),
+    RoomModel.idNames(),
   ]);
   const roomMap = new Map(rooms.map((r) => [r.id, r]));
 
-  const exportHref = `/api/admin/reports/export${
-    from || to ? `?${new URLSearchParams({ ...(from ? { from } : {}), ...(to ? { to } : {}) })}` : ""
-  }`;
+  const exportHref = `/api/admin/reports/export?${new URLSearchParams({
+    ...(from ? { from } : {}),
+    ...(to ? { to } : {}),
+  })}`;
 
   const cards = [
     { label: "Bookings", value: summary.total },
@@ -72,9 +87,9 @@ export default async function AdminReportsPage({
         >
           Apply Filter
         </button>
-        {(from || to) && (
+        {(from !== defaultFrom || to !== defaultTo) && (
           <a href="/admin/reports" className="text-sm font-medium text-ink-soft hover:underline">
-            Clear
+            This month
           </a>
         )}
       </form>

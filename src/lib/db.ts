@@ -10,6 +10,9 @@ declare global {
   var __mapple_sql__: SqlClient | undefined;
 }
 
+/** Bump when runMigration gains new required steps (indexes, columns, etc.). */
+const SCHEMA_VERSION = 2;
+
 // Lazy: Next.js's build-time "collecting page data" step imports every API
 // route module (including this one, transitively) just to inspect its
 // exports — it never calls into the database. Reading DATABASE_URL and
@@ -38,6 +41,31 @@ export const sql: SqlClient = new Proxy({} as SqlClient, {
     return typeof value === "function" ? value.bind(client) : value;
   },
 });
+
+async function getSchemaVersion(): Promise<number> {
+  try {
+    const rows = (await sql.query(
+      "SELECT version FROM schema_meta WHERE id = 1"
+    )) as { version: number }[];
+    return rows[0]?.version ?? 0;
+  } catch {
+    return 0;
+  }
+}
+
+async function setSchemaVersion(version: number) {
+  await sql.query(`
+    CREATE TABLE IF NOT EXISTS schema_meta (
+      id INTEGER PRIMARY KEY CHECK (id = 1),
+      version INTEGER NOT NULL
+    )
+  `);
+  await sql.query(
+    `INSERT INTO schema_meta (id, version) VALUES (1, $1)
+     ON CONFLICT (id) DO UPDATE SET version = EXCLUDED.version`,
+    [version]
+  );
+}
 
 async function runMigration() {
   await sql.query(`
@@ -143,6 +171,11 @@ async function runMigration() {
 
   await sql.query(`CREATE INDEX IF NOT EXISTS idx_bookings_room ON bookings(room_id)`);
   await sql.query(`CREATE INDEX IF NOT EXISTS idx_bookings_status ON bookings(status)`);
+  await sql.query(`
+    CREATE INDEX IF NOT EXISTS idx_bookings_active_range
+    ON bookings (check_in, check_out)
+    WHERE status <> 'cancelled'
+  `);
 
   await sql.query(
     `INSERT INTO settings (id, resort_name, tagline, description, address, contact_phone, contact_email, hero_image, upi_id, upi_payee_name, whatsapp_owner_number, about_content, escape_intro, brand_story)
@@ -300,11 +333,17 @@ async function runMigration() {
        )`,
     [RESORT_LOCATION.address]
   );
+
+  await setSchemaVersion(SCHEMA_VERSION);
 }
 
 export function ensureMigrated(): Promise<void> {
   if (!globalThis.__mapple_migrated__) {
-    globalThis.__mapple_migrated__ = runMigration().catch((err) => {
+    globalThis.__mapple_migrated__ = (async () => {
+      const version = await getSchemaVersion();
+      if (version >= SCHEMA_VERSION) return;
+      await runMigration();
+    })().catch((err) => {
       globalThis.__mapple_migrated__ = undefined;
       throw err;
     });

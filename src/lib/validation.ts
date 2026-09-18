@@ -108,11 +108,11 @@ export const bookingStatusSchema = z.object({
   status: z.enum(["pending", "payment_claimed", "confirmed", "cancelled"]),
 });
 
-// Used by the admin "Add Booking" form to both record a booking from
-// another platform (for billing/reports) and block those dates on the
-// site itself, in one step. Deliberately more lenient than the
-// guest-facing createBookingSchema: phone/email aren't always known for
-// an OTA booking, and the admin sets amount/status/source directly.
+// Used by the admin calendar create-booking flow to record a booking from
+// another platform (for billing/reports) and block those dates on the site
+// in one step. Deliberately more lenient than the guest-facing
+// createBookingSchema: phone/email aren't always known for an OTA booking,
+// and the admin sets amount/status/source directly.
 export const adminCreateBookingSchema = z
   .object({
     roomId: z.string().min(1),

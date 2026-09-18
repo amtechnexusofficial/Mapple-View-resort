@@ -3,7 +3,8 @@ import { BookingModel, RoomModel } from "@/lib/models";
 
 /**
  * Occupancy for the admin calendar: active rooms + non-cancelled bookings
- * overlapping [from, to).
+ * overlapping [from, to). Slim columns only.
+ * Pass includeRooms=0 when the client already has the room list.
  */
 export async function GET(request: NextRequest) {
   const from = request.nextUrl.searchParams.get("from");
@@ -15,15 +16,16 @@ export async function GET(request: NextRequest) {
     );
   }
 
+  const includeRooms = request.nextUrl.searchParams.get("includeRooms") !== "0";
   const [rooms, bookings] = await Promise.all([
-    RoomModel.all(false),
-    BookingModel.inRange(from, to),
+    includeRooms ? RoomModel.forCalendar() : Promise.resolve(undefined),
+    BookingModel.forCalendar(from, to),
   ]);
 
   return NextResponse.json({
     from,
     to,
-    rooms,
+    ...(rooms ? { rooms } : {}),
     bookings,
   });
 }

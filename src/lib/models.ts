@@ -24,6 +24,22 @@ export const RoomModel = {
         )) as RoomRow[];
     return rows.map(mapRoom);
   },
+  /** Lightweight rows for the admin calendar grid. */
+  async forCalendar(): Promise<Pick<Room, "id" | "name" | "price_per_night">[]> {
+    await ensureMigrated();
+    return (await sql.query(
+      `SELECT id, name, price_per_night FROM rooms
+       WHERE is_active = 1
+       ORDER BY sort_order ASC, created_at ASC`
+    )) as Pick<Room, "id" | "name" | "price_per_night">[];
+  },
+  /** id → name map for admin tables that only need labels. */
+  async idNames(): Promise<{ id: string; name: string }[]> {
+    await ensureMigrated();
+    return (await sql.query(
+      "SELECT id, name FROM rooms ORDER BY sort_order ASC, created_at ASC"
+    )) as { id: string; name: string }[];
+  },
   async bySlug(slug: string): Promise<Room | undefined> {
     await ensureMigrated();
     const rows = (await sql.query("SELECT * FROM rooms WHERE slug = $1", [slug])) as RoomRow[];
@@ -165,10 +181,51 @@ export const BookingModel = {
     }
     return (await sql.query("SELECT * FROM bookings ORDER BY created_at DESC")) as Booking[];
   },
+  async recent(limit = 6): Promise<Booking[]> {
+    await ensureMigrated();
+    return (await sql.query(
+      "SELECT * FROM bookings ORDER BY created_at DESC LIMIT $1",
+      [limit]
+    )) as Booking[];
+  },
   async byId(id: string): Promise<Booking | undefined> {
     await ensureMigrated();
     const rows = (await sql.query("SELECT * FROM bookings WHERE id = $1", [id])) as Booking[];
     return rows[0];
+  },
+  /** Slim booking rows for the admin calendar. */
+  async forCalendar(from: string, to: string): Promise<
+    Pick<
+      Booking,
+      | "id"
+      | "room_id"
+      | "guest_name"
+      | "check_in"
+      | "check_out"
+      | "status"
+      | "source"
+      | "total_amount"
+    >[]
+  > {
+    await ensureMigrated();
+    return (await sql.query(
+      `SELECT id, room_id, guest_name, check_in, check_out, status, source, total_amount
+       FROM bookings
+       WHERE status != 'cancelled'
+         AND check_in < $2 AND check_out > $1
+       ORDER BY check_in ASC`,
+      [from, to]
+    )) as Pick<
+      Booking,
+      | "id"
+      | "room_id"
+      | "guest_name"
+      | "check_in"
+      | "check_out"
+      | "status"
+      | "source"
+      | "total_amount"
+    >[];
   },
   async inRange(
     from: string,
@@ -276,23 +333,24 @@ export const BookingModel = {
   },
   async stats() {
     await ensureMigrated();
-    const [totalRow] = (await sql.query("SELECT COUNT(*)::int as c FROM bookings")) as {
-      c: number;
+    const [row] = (await sql.query(
+      `SELECT
+         COUNT(*)::int as total,
+         COUNT(*) FILTER (WHERE status IN ('pending','payment_claimed'))::int as pending,
+         COUNT(*) FILTER (WHERE status = 'confirmed')::int as confirmed,
+         COALESCE(SUM(total_amount) FILTER (WHERE status = 'confirmed'), 0)::int as revenue
+       FROM bookings`
+    )) as {
+      total: number;
+      pending: number;
+      confirmed: number;
+      revenue: number;
     }[];
-    const [pendingRow] = (await sql.query(
-      "SELECT COUNT(*)::int as c FROM bookings WHERE status IN ('pending','payment_claimed')"
-    )) as { c: number }[];
-    const [confirmedRow] = (await sql.query(
-      "SELECT COUNT(*)::int as c FROM bookings WHERE status = 'confirmed'"
-    )) as { c: number }[];
-    const [revenueRow] = (await sql.query(
-      "SELECT COALESCE(SUM(total_amount),0)::int as s FROM bookings WHERE status = 'confirmed'"
-    )) as { s: number }[];
     return {
-      total: totalRow.c,
-      pending: pendingRow.c,
-      confirmed: confirmedRow.c,
-      revenue: revenueRow.s,
+      total: row.total,
+      pending: row.pending,
+      confirmed: row.confirmed,
+      revenue: row.revenue,
     };
   },
   /** Billing/report summary for bookings whose check-in falls in [from, to] (either bound optional). */

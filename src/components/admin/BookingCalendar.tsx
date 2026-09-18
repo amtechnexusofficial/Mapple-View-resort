@@ -29,9 +29,22 @@ const SOURCE_OPTIONS = [
   "Other",
 ];
 
+type CalendarRoom = Pick<Room, "id" | "name" | "price_per_night">;
+type CalendarBooking = Pick<
+  Booking,
+  | "id"
+  | "room_id"
+  | "guest_name"
+  | "check_in"
+  | "check_out"
+  | "status"
+  | "source"
+  | "total_amount"
+>;
+
 type OccupancyResponse = {
-  rooms: Room[];
-  bookings: Booking[];
+  rooms?: CalendarRoom[];
+  bookings: CalendarBooking[];
 };
 
 function nightKey(d: Date | string) {
@@ -43,14 +56,14 @@ function isPastNight(night: string, todayKey: string) {
 }
 
 /** Booking that occupies this night (check_in <= night < check_out). */
-function bookingOnNight(bookings: Booking[], roomId: string, night: string) {
-  return bookings.find(
-    (b) =>
-      b.room_id === roomId &&
-      b.status !== "cancelled" &&
-      b.check_in <= night &&
-      b.check_out > night
-  );
+function bookingOnNight(
+  byRoom: Map<string, CalendarBooking[]>,
+  roomId: string,
+  night: string
+) {
+  const list = byRoom.get(roomId);
+  if (!list) return undefined;
+  return list.find((b) => b.check_in <= night && b.check_out > night);
 }
 
 const cellStatusClass: Record<Exclude<BookingStatus, "cancelled">, string> = {
@@ -59,13 +72,24 @@ const cellStatusClass: Record<Exclude<BookingStatus, "cancelled">, string> = {
   confirmed: "bg-emerald-200 hover:bg-emerald-300",
 };
 
-export default function BookingCalendar() {
+export default function BookingCalendar({
+  initialRooms,
+  initialBookings,
+  initialMonth,
+}: {
+  initialRooms?: CalendarRoom[];
+  initialBookings?: CalendarBooking[];
+  /** First day of the preloaded month as yyyy-MM-dd */
+  initialMonth?: string;
+} = {}) {
   const today = startOfToday();
   const todayKey = format(today, "yyyy-MM-dd");
-  const [month, setMonth] = useState(() => startOfMonth(today));
-  const [rooms, setRooms] = useState<Room[]>([]);
-  const [bookings, setBookings] = useState<Booking[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [month, setMonth] = useState(() =>
+    initialMonth ? startOfMonth(parseISO(initialMonth)) : startOfMonth(today)
+  );
+  const [rooms, setRooms] = useState<CalendarRoom[]>(initialRooms ?? []);
+  const [bookings, setBookings] = useState<CalendarBooking[]>(initialBookings ?? []);
+  const [loading, setLoading] = useState(!(initialRooms && initialBookings));
   const [error, setError] = useState<string | null>(null);
 
   const [dayZoom, setDayZoom] = useState<string | null>(null);
@@ -74,10 +98,11 @@ export default function BookingCalendar() {
   const [rangeCheckOut, setRangeCheckOut] = useState<string | null>(null);
   const [pickingCheckout, setPickingCheckout] = useState(false);
   const [showCreate, setShowCreate] = useState(false);
-  const [activeBooking, setActiveBooking] = useState<Booking | null>(null);
+  const [activeBooking, setActiveBooking] = useState<CalendarBooking | null>(null);
   const [busy, setBusy] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const todayColRef = useRef<HTMLTableCellElement>(null);
+  const hasRooms = useRef((initialRooms?.length ?? 0) > 0);
 
   const from = format(startOfMonth(month), "yyyy-MM-dd");
   const to = format(addDays(endOfMonth(month), 1), "yyyy-MM-dd");
@@ -88,23 +113,50 @@ export default function BookingCalendar() {
   const monthIncludesToday =
     month.getFullYear() === today.getFullYear() && month.getMonth() === today.getMonth();
 
-  const load = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await fetch(`/api/admin/bookings/occupancy?from=${from}&to=${to}`);
-      const data = (await res.json()) as OccupancyResponse & { error?: string };
-      if (!res.ok) throw new Error(data.error || "Failed to load calendar");
-      setRooms(data.rooms);
-      setBookings(data.bookings);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Failed to load calendar");
-    } finally {
-      setLoading(false);
+  const bookingsByRoom = useMemo(() => {
+    const map = new Map<string, CalendarBooking[]>();
+    for (const b of bookings) {
+      const list = map.get(b.room_id);
+      if (list) list.push(b);
+      else map.set(b.room_id, [b]);
     }
-  }, [from, to]);
+    return map;
+  }, [bookings]);
+
+  const load = useCallback(
+    async (opts?: { forceRooms?: boolean }) => {
+      setLoading(true);
+      setError(null);
+      try {
+        const needRooms = opts?.forceRooms || !hasRooms.current;
+        const qs = new URLSearchParams({ from, to });
+        if (!needRooms) qs.set("includeRooms", "0");
+        const res = await fetch(`/api/admin/bookings/occupancy?${qs}`);
+        const data = (await res.json()) as OccupancyResponse & { error?: string };
+        if (!res.ok) throw new Error(data.error || "Failed to load calendar");
+        if (data.rooms) {
+          setRooms(data.rooms);
+          hasRooms.current = data.rooms.length > 0;
+        }
+        setBookings(data.bookings);
+      } catch (e) {
+        setError(e instanceof Error ? e.message : "Failed to load calendar");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [from, to]
+  );
+
+  const skipNextFetch = useRef(
+    Boolean(initialRooms && initialBookings && initialMonth)
+  );
 
   useEffect(() => {
+    if (skipNextFetch.current) {
+      skipNextFetch.current = false;
+      return;
+    }
     void load();
   }, [load]);
 
@@ -142,7 +194,7 @@ export default function BookingCalendar() {
   }
 
   function onCellClick(roomId: string, night: string) {
-    const existing = bookingOnNight(bookings, roomId, night);
+    const existing = bookingOnNight(bookingsByRoom, roomId, night);
     if (existing) {
       setActiveBooking(existing);
       resetRange();
@@ -175,7 +227,7 @@ export default function BookingCalendar() {
     const end = parseISO(checkOut);
     while (cursor < end) {
       const key = format(cursor, "yyyy-MM-dd");
-      if (bookingOnNight(bookings, roomId, key)) {
+      if (bookingOnNight(bookingsByRoom, roomId, key)) {
         setError("That range overlaps an existing booking. Pick free nights only.");
         resetRange();
         return;
@@ -290,16 +342,23 @@ export default function BookingCalendar() {
         </p>
       )}
 
-      {loading ? (
+      {loading && rooms.length === 0 ? (
         <p className="py-12 text-center text-sm text-ink/50">Loading calendar…</p>
       ) : rooms.length === 0 ? (
         <p className="py-12 text-center text-sm text-ink/50">No active rooms. Add rooms first.</p>
       ) : (
         <div className="min-w-0">
-          <p className="mb-1.5 text-[11px] text-ink/45 sm:hidden">Swipe sideways to see more days →</p>
+          <div className="mb-1.5 flex items-center justify-between gap-2">
+            <p className="text-[11px] text-ink/45 sm:hidden">Swipe sideways to see more days →</p>
+            {loading && (
+              <p className="ml-auto text-[11px] text-ink/45 sm:text-xs">Updating…</p>
+            )}
+          </div>
           <div
             ref={scrollRef}
-            className="max-w-full overflow-x-auto overscroll-x-contain rounded-xl border border-petrol-100 bg-white shadow-sm [-webkit-overflow-scrolling:touch] sm:rounded-2xl"
+            className={`max-w-full overflow-x-auto overscroll-x-contain rounded-xl border border-petrol-100 bg-white shadow-sm [-webkit-overflow-scrolling:touch] sm:rounded-2xl ${
+              loading ? "opacity-70" : ""
+            }`}
           >
             <table className="w-max min-w-full border-collapse text-sm">
               <thead>
@@ -349,7 +408,7 @@ export default function BookingCalendar() {
                     </td>
                     {days.map((d) => {
                       const key = nightKey(d);
-                      const b = bookingOnNight(bookings, room.id, key);
+                      const b = bookingOnNight(bookingsByRoom, room.id, key);
                       const pending = isInPendingRange(room.id, key);
                       const past = !b && isPastNight(key, todayKey);
                       let cls =
@@ -401,7 +460,7 @@ export default function BookingCalendar() {
         <DayZoomPanel
           day={dayZoom}
           rooms={rooms}
-          bookings={bookings}
+          bookingsByRoom={bookingsByRoom}
           isPast={isPastNight(dayZoom, todayKey)}
           onClose={() => setDayZoom(null)}
           onBook={(roomId) => {
@@ -471,7 +530,7 @@ export default function BookingCalendar() {
 function DayZoomPanel({
   day,
   rooms,
-  bookings,
+  bookingsByRoom,
   isPast,
   onClose,
   onBook,
@@ -479,13 +538,13 @@ function DayZoomPanel({
   onSelectBooking,
 }: {
   day: string;
-  rooms: Room[];
-  bookings: Booking[];
+  rooms: CalendarRoom[];
+  bookingsByRoom: Map<string, CalendarBooking[]>;
   isPast: boolean;
   onClose: () => void;
   onBook: (roomId: string) => void;
   onExtend: (roomId: string, checkIn: string) => void;
-  onSelectBooking: (b: Booking) => void;
+  onSelectBooking: (b: CalendarBooking) => void;
 }) {
   const label = format(parseISO(day), "EEEE, d MMMM yyyy");
 
@@ -510,7 +569,7 @@ function DayZoomPanel({
         </div>
         <ul className="mt-5 space-y-3">
           {rooms.map((room) => {
-            const b = bookingOnNight(bookings, room.id, day);
+            const b = bookingOnNight(bookingsByRoom, room.id, day);
             return (
               <li key={room.id} className="rounded-xl border border-petrol-100 p-4">
                 <div className="flex items-start justify-between gap-3">
@@ -575,8 +634,8 @@ function BookingDetailModal({
   onClose,
   onCancel,
 }: {
-  booking: Booking;
-  room?: Room;
+  booking: CalendarBooking;
+  room?: CalendarRoom;
   busy: boolean;
   onClose: () => void;
   onCancel: () => void;
@@ -652,7 +711,7 @@ function CreateBookingModal({
   onClose,
   onCreated,
 }: {
-  room: Room;
+  room: CalendarRoom;
   checkIn: string;
   checkOut: string;
   todayKey: string;

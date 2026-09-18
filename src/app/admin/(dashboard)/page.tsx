@@ -4,12 +4,11 @@ import { formatInr, formatDate } from "@/lib/format";
 import StatusBadge from "@/components/admin/StatusBadge";
 
 export default async function AdminDashboardPage() {
-  const [stats, allBookings, rooms] = await Promise.all([
+  const [stats, recentBookings, rooms] = await Promise.all([
     BookingModel.stats(),
-    BookingModel.all(),
-    RoomModel.all(true),
+    BookingModel.recent(6),
+    RoomModel.idNames(),
   ]);
-  const recentBookings = allBookings.slice(0, 6);
   const roomMap = new Map(rooms.map((r) => [r.id, r]));
 
   const cards = [
