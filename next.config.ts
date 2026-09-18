@@ -1,5 +1,4 @@
 import type { NextConfig } from "next";
-import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
 
 const nextConfig: NextConfig = {
   images: {
@@ -12,5 +11,10 @@ const nextConfig: NextConfig = {
 
 export default nextConfig;
 
-// Lets `next dev` simulate Cloudflare bindings (R2, env vars) locally via Miniflare.
-initOpenNextCloudflareForDev();
+// Local Cloudflare bindings (Miniflare/workerd) — only for `next dev`.
+// Skip during build/deploy: workerd requires macOS 13.5+, and this Mac is older.
+if (process.env.NODE_ENV === "development") {
+  void import("@opennextjs/cloudflare").then(({ initOpenNextCloudflareForDev }) => {
+    initOpenNextCloudflareForDev();
+  });
+}

@@ -1,9 +1,13 @@
 import Link from "next/link";
 import Icon from "@/components/ui/Icon";
+import {
+  mapsDirectionsUrl,
+  mapsEmbedUrl,
+  RESORT_LOCATION,
+} from "@/lib/location";
 import type { Settings } from "@/lib/types";
 
 export default function LocationSection({ settings }: { settings: Settings }) {
-  const query = encodeURIComponent(settings.address || "Mapple View Resort, Lovedale, Ooty, Tamil Nadu, India");
   const waNumber = settings.whatsapp_owner_number.replace(/\D/g, "");
 
   return (
@@ -11,7 +15,7 @@ export default function LocationSection({ settings }: { settings: Settings }) {
       <div className="aspect-[4/3] w-full overflow-hidden bg-petrol-100 lg:aspect-auto lg:h-full">
         <iframe
           title="Mapple View Resort location map"
-          src={`https://www.google.com/maps?q=${query}&output=embed`}
+          src={mapsEmbedUrl()}
           className="h-full min-h-[320px] w-full border-0"
           loading="lazy"
           referrerPolicy="no-referrer-when-downgrade"
@@ -21,12 +25,12 @@ export default function LocationSection({ settings }: { settings: Settings }) {
         <div>
           <span className="label-caps text-petrol-500">Mapple View Resort</span>
           <h3 className="mt-2 font-display text-2xl font-normal text-ink">
-            {settings.address || "Lovedale, Ooty, Tamil Nadu, India"}
+            {settings.address || RESORT_LOCATION.address}
           </h3>
         </div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <a
-            href={`https://www.google.com/maps/dir/?api=1&destination=${query}`}
+            href={mapsDirectionsUrl()}
             target="_blank"
             rel="noopener noreferrer"
             className="label-caps flex items-center justify-center gap-2 bg-charcoal px-5 py-3.5 text-stone transition hover:bg-charcoal-light"

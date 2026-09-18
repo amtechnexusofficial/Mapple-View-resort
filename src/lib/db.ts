@@ -1,6 +1,7 @@
 import { neon } from "@neondatabase/serverless";
 import bcrypt from "bcryptjs";
 import { stockImages, stockRoomImage } from "@/lib/stockImages";
+import { RESORT_LOCATION } from "@/lib/location";
 
 type SqlClient = ReturnType<typeof neon<false, false>>;
 
@@ -151,7 +152,7 @@ async function runMigration() {
       "Mapple View Resort",
       "Your Mountain Escape Awaits",
       "Nestled in Lovedale, on the quiet edge of Ooty, Mapple View Resort offers a peaceful retreat amid the Nilgiri hills, with breathtaking views, comfortable rooms, and warm hospitality.",
-      "Mapple View Resort, Lovedale, Ooty (Udhagamandalam), Nilgiris District, Tamil Nadu, India",
+      RESORT_LOCATION.address,
       "+91 98765 43210",
       "info@mapleviewresort.com",
       "",
@@ -284,6 +285,21 @@ async function runMigration() {
       bareRooms[i].id,
     ]);
   }
+
+  // Correct known-wrong placeholder addresses (e.g. Mussoorie) and align
+  // the seeded Lovedale address with the Google Maps listing.
+  await sql.query(
+    `UPDATE settings
+     SET address = $1
+     WHERE id = 1
+       AND (
+         address ILIKE '%Mussoorie%'
+         OR address ILIKE '%Uttarakhand%'
+         OR address ILIKE '%Hill Road%'
+         OR address = 'Mapple View Resort, Lovedale, Ooty (Udhagamandalam), Nilgiris District, Tamil Nadu, India'
+       )`,
+    [RESORT_LOCATION.address]
+  );
 }
 
 export function ensureMigrated(): Promise<void> {

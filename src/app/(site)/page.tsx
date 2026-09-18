@@ -17,6 +17,7 @@ import LocationSection from "@/components/site/LocationSection";
 import Reveal from "@/components/site/Reveal";
 import { RoomModel, SettingsModel } from "@/lib/models";
 import { seasons } from "@/lib/ooty";
+import { mapsDirectionsUrl, RESORT_LOCATION } from "@/lib/location";
 
 const ethos = [
   {
@@ -112,7 +113,7 @@ export default async function HomePage() {
         <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-charcoal/45 to-charcoal/15" />
 
         <div className="label-caps relative z-10 mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-3 border-b border-stone/20 px-4 pt-8 pb-4 text-stone/80 sm:px-6">
-          <span>11.41&deg; N, 76.70&deg; E &nbsp;&middot;&nbsp; ~2,200M ELEVATION</span>
+          <span>{RESORT_LOCATION.coordsLabel} &nbsp;&middot;&nbsp; ~2,200M ELEVATION</span>
           <span>LOVEDALE &middot; OOTY, NILGIRIS</span>
         </div>
 
@@ -458,9 +459,7 @@ export default async function HomePage() {
               </a>
             )}
             <a
-              href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
-                settings.address || "Mapple View Resort, Lovedale, Ooty"
-              )}`}
+              href={mapsDirectionsUrl()}
               target="_blank"
               rel="noopener noreferrer"
               className="label-caps inline-flex items-center justify-center gap-2 border border-stone/40 px-7 py-3.5 text-stone transition hover:bg-stone hover:text-ink"
