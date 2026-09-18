@@ -170,6 +170,48 @@ export const BookingModel = {
     const rows = (await sql.query("SELECT * FROM bookings WHERE id = $1", [id])) as Booking[];
     return rows[0];
   },
+  async inRange(
+    from: string,
+    to: string,
+    options?: { includeCancelled?: boolean; roomId?: string }
+  ): Promise<Booking[]> {
+    await ensureMigrated();
+    const includeCancelled = options?.includeCancelled ?? false;
+    const roomId = options?.roomId;
+
+    if (roomId && includeCancelled) {
+      return (await sql.query(
+        `SELECT * FROM bookings
+         WHERE room_id = $1 AND check_in < $3 AND check_out > $2
+         ORDER BY check_in ASC`,
+        [roomId, from, to]
+      )) as Booking[];
+    }
+    if (roomId) {
+      return (await sql.query(
+        `SELECT * FROM bookings
+         WHERE room_id = $1 AND status != 'cancelled'
+           AND check_in < $3 AND check_out > $2
+         ORDER BY check_in ASC`,
+        [roomId, from, to]
+      )) as Booking[];
+    }
+    if (includeCancelled) {
+      return (await sql.query(
+        `SELECT * FROM bookings
+         WHERE check_in < $2 AND check_out > $1
+         ORDER BY check_in ASC`,
+        [from, to]
+      )) as Booking[];
+    }
+    return (await sql.query(
+      `SELECT * FROM bookings
+       WHERE status != 'cancelled'
+         AND check_in < $2 AND check_out > $1
+       ORDER BY check_in ASC`,
+      [from, to]
+    )) as Booking[];
+  },
   async create(data: {
     room_id: string;
     guest_name: string;

@@ -16,12 +16,21 @@ export async function generateMetadata(
 
 export default async function RoomDetailPage({
   params,
+  searchParams,
 }: PageProps<"/rooms/[slug]">) {
   const { slug } = await params;
+  const sp = await searchParams;
   const room = await RoomModel.bySlug(slug);
   if (!room || !room.is_active) {
     notFound();
   }
+
+  const checkIn = typeof sp.checkIn === "string" ? sp.checkIn : undefined;
+  const checkOut = typeof sp.checkOut === "string" ? sp.checkOut : undefined;
+  const guests =
+    typeof sp.guests === "string" && Number(sp.guests) > 0
+      ? Number(sp.guests)
+      : undefined;
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
@@ -107,7 +116,12 @@ export default async function RoomDetailPage({
 
         <div className="lg:col-span-2">
           <div className="lg:sticky lg:top-24">
-            <BookingForm room={room} />
+            <BookingForm
+              room={room}
+              initialCheckIn={checkIn}
+              initialCheckOut={checkOut}
+              initialGuests={guests}
+            />
           </div>
         </div>
       </div>
