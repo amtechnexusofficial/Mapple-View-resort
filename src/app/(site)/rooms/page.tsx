@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import RoomCard from "@/components/site/RoomCard";
 import SectionLabel from "@/components/site/SectionLabel";
+import { RoomModel } from "@/lib/models";
 import { getActiveRooms } from "@/lib/site-data";
 import { format, parseISO, isValid } from "date-fns";
 
