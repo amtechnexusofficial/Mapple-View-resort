@@ -1,16 +1,16 @@
 import type { Metadata } from "next";
-import { Playfair_Display, Manrope, IBM_Plex_Mono } from "next/font/google";
+import { Fraunces, Source_Sans_3, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 
-const playfair = Playfair_Display({
-  variable: "--font-playfair",
+const fraunces = Fraunces({
+  variable: "--font-fraunces",
   subsets: ["latin"],
   style: ["normal", "italic"],
   weight: ["400", "500", "600", "700"],
 });
 
-const manrope = Manrope({
-  variable: "--font-manrope",
+const sourceSans = Source_Sans_3({
+  variable: "--font-source-sans",
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
 });
@@ -37,7 +37,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${playfair.variable} ${manrope.variable} ${plexMono.variable} h-full antialiased`}
+      className={`${fraunces.variable} ${sourceSans.variable} ${plexMono.variable} h-full antialiased`}
     >
       <head>
         <link

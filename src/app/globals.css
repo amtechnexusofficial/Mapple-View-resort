@@ -41,8 +41,8 @@
   --color-petrol-600: var(--color-petrol-600);
   --color-charcoal: var(--color-charcoal);
   --color-charcoal-light: var(--color-charcoal-light);
-  --font-display: var(--font-playfair);
-  --font-sans: var(--font-manrope);
+  --font-display: var(--font-fraunces);
+  --font-sans: var(--font-source-sans);
   --font-mono: var(--font-plex-mono);
 }
 
