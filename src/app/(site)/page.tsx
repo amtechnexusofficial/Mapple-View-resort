@@ -5,6 +5,7 @@ import Icon from "@/components/ui/Icon";
 import SectionLabel from "@/components/site/SectionLabel";
 import { stockImages, stockRoomImage } from "@/lib/stockImages";
 import HeroBookingBar from "@/components/site/HeroBookingBar";
+import EthosDepthCarousel from "@/components/site/EthosDepthCarousel";
 import RoomShowcase from "@/components/site/RoomShowcase";
 import WakeUpHereTimeline from "@/components/site/WakeUpHereTimeline";
 import ExploreOotyPanel from "@/components/site/ExploreOotyPanel";
@@ -178,28 +179,7 @@ export default async function HomePage() {
             </div>
           </Reveal>
           <div className="lg:col-span-7">
-            <div className="grid grid-cols-12 gap-4">
-              <div className="relative col-span-7 h-[260px] overflow-hidden bg-petrol-100 sm:h-[420px] lg:h-[520px]">
-                <Image
-                  src={stockImages.escapeTall}
-                  alt="Morning mist over the hills near Mapple View"
-                  fill
-                  sizes="(min-width: 1024px) 40vw, 60vw"
-                  className="object-cover"
-                />
-              </div>
-              <div className="col-span-5 pt-8 sm:pt-16">
-                <div className="relative h-[180px] overflow-hidden bg-petrol-100 sm:h-[300px] lg:h-[380px]">
-                  <Image
-                    src={stockImages.escapeSquare}
-                    alt="A warm, quiet corner at Mapple View"
-                    fill
-                    sizes="(min-width: 1024px) 25vw, 40vw"
-                    className="object-cover"
-                  />
-                </div>
-              </div>
-            </div>
+            <EthosDepthCarousel />
           </div>
         </div>
       </section>
