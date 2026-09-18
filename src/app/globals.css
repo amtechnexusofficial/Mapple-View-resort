@@ -86,8 +86,18 @@ body::after {
   font-variant-numeric: tabular-nums;
 }
 
-.material-symbols-outlined {
+/* Self-hosted so icons never flash as raw names (calendar_today, etc.)
+   when Google Fonts is slow or blocked. */
+@font-face {
   font-family: "Material Symbols Outlined";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("/fonts/material-symbols-outlined.woff2") format("woff2");
+}
+
+.material-symbols-outlined {
+  font-family: "Material Symbols Outlined", sans-serif;
   font-weight: normal;
   font-style: normal;
   line-height: 1;
@@ -98,6 +108,8 @@ body::after {
   word-wrap: normal;
   direction: ltr;
   -webkit-font-smoothing: antialiased;
+  font-feature-settings: "liga";
+  -webkit-font-feature-settings: "liga";
   font-variation-settings:
     "FILL" 0,
     "wght" 400,

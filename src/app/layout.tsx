@@ -34,13 +34,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${playfair.variable} ${manrope.variable} ${plexMono.variable} h-full antialiased`}
     >
       <head>
-        {/* App Router serves fonts from the root layout's own head; the
-            no-page-custom-font rule is written for the Pages Router and
-            doesn't apply here. */}
-        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
         <link
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,300..600,0..1,-25..0&display=swap"
-          rel="stylesheet"
+          rel="preload"
+          href="/fonts/material-symbols-outlined.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
         />
       </head>
       <body className="min-h-full flex flex-col bg-stone text-ink font-sans">
