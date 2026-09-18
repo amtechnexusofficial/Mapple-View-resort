@@ -8,6 +8,11 @@ import Icon from "@/components/ui/Icon";
 const MIN_GUESTS = 1;
 const MAX_GUESTS = 20;
 
+const dateInputClass =
+  "w-full min-w-0 appearance-none bg-transparent font-display text-base leading-none text-ink outline-none " +
+  "[&::-webkit-calendar-picker-indicator]:ml-0 [&::-webkit-calendar-picker-indicator]:cursor-pointer " +
+  "[&::-webkit-calendar-picker-indicator]:opacity-70";
+
 export default function HeroBookingBar() {
   const router = useRouter();
   const today = format(new Date(), "yyyy-MM-dd");
@@ -30,14 +35,13 @@ export default function HeroBookingBar() {
   return (
     <form
       onSubmit={handleReserve}
-      className="relative z-10 w-full bg-stone/95 p-4 shadow-2xl backdrop-blur-md sm:p-5 lg:p-6"
+      className="relative z-10 w-full bg-stone/95 px-4 py-4 shadow-2xl backdrop-blur-md sm:px-5 sm:py-4 lg:px-6"
       id="quick-booking"
     >
-      <div className="grid grid-cols-1 items-end gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
-        <label className="space-y-1">
-          <span className="label-caps block text-ink-soft/70">Arrival</span>
-          <div className="flex min-h-11 items-center gap-2">
-            <Icon name="calendar_today" className="shrink-0 text-lg text-petrol-500" />
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-stretch lg:gap-5">
+        <div className="grid min-w-0 flex-1 grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-0 sm:divide-x sm:divide-line">
+          <label className="flex min-w-0 flex-col gap-2 sm:pr-5">
+            <span className="label-caps text-ink-soft/70">Arrival</span>
             <input
               type="date"
               required
@@ -49,39 +53,38 @@ export default function HeroBookingBar() {
                   setCheckOut(format(addDays(new Date(e.target.value), 1), "yyyy-MM-dd"));
                 }
               }}
-              className="w-full min-w-0 bg-transparent font-display text-base text-ink focus:outline-none"
+              className={`min-h-10 ${dateInputClass}`}
             />
-          </div>
-        </label>
-        <label className="space-y-1">
-          <span className="label-caps block text-ink-soft/70">Departure</span>
-          <div className="flex min-h-11 items-center gap-2">
-            <Icon name="calendar_month" className="shrink-0 text-lg text-petrol-500" />
+          </label>
+
+          <label className="flex min-w-0 flex-col gap-2 sm:px-5">
+            <span className="label-caps text-ink-soft/70">Departure</span>
             <input
               type="date"
               required
               value={checkOut}
               min={checkIn}
               onChange={(e) => setCheckOut(e.target.value)}
-              className="w-full min-w-0 bg-transparent font-display text-base text-ink focus:outline-none"
+              className={`min-h-10 ${dateInputClass}`}
             />
-          </div>
-        </label>
-        <div className="space-y-1">
-          <span className="label-caps block text-ink-soft/70">Guests</span>
-          <div className="flex min-h-11 items-center gap-3">
-            <Icon name="group" className="shrink-0 text-lg text-petrol-500" />
-            <div className="flex items-center gap-2">
+          </label>
+
+          <div className="flex min-w-0 flex-col gap-2 sm:pl-5">
+            <span className="label-caps text-ink-soft/70">Guests</span>
+            <div className="flex min-h-10 items-center gap-2.5">
               <button
                 type="button"
                 aria-label="Decrease guests"
                 disabled={guests <= MIN_GUESTS}
                 onClick={() => setGuests((g) => Math.max(MIN_GUESTS, g - 1))}
-                className="flex h-9 w-9 items-center justify-center rounded-full border border-line text-ink transition hover:bg-petrol-50 disabled:cursor-not-allowed disabled:opacity-40"
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-line text-lg leading-none text-ink transition hover:bg-petrol-50 disabled:cursor-not-allowed disabled:opacity-40"
               >
-                <Icon name="remove" className="text-base" />
+                −
               </button>
-              <span className="min-w-[4.5rem] text-center text-base font-medium text-ink" aria-live="polite">
+              <span
+                className="min-w-[4.25rem] text-center text-base font-medium tabular-nums text-ink"
+                aria-live="polite"
+              >
                 {guests} {guests === 1 ? "Guest" : "Guests"}
               </span>
               <button
@@ -89,22 +92,21 @@ export default function HeroBookingBar() {
                 aria-label="Increase guests"
                 disabled={guests >= MAX_GUESTS}
                 onClick={() => setGuests((g) => Math.min(MAX_GUESTS, g + 1))}
-                className="flex h-9 w-9 items-center justify-center rounded-full border border-line text-ink transition hover:bg-petrol-50 disabled:cursor-not-allowed disabled:opacity-40"
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-line text-lg leading-none text-ink transition hover:bg-petrol-50 disabled:cursor-not-allowed disabled:opacity-40"
               >
-                <Icon name="add" className="text-base" />
+                +
               </button>
             </div>
           </div>
         </div>
-        <div className="sm:col-span-2 lg:col-span-1">
-          <button
-            type="submit"
-            className="label-caps flex min-h-12 w-full items-center justify-center gap-2 bg-charcoal px-4 py-4 text-stone transition hover:bg-charcoal-light"
-          >
-            <span>See Rooms</span>
-            <Icon name="arrow_forward" className="text-sm" />
-          </button>
-        </div>
+
+        <button
+          type="submit"
+          className="label-caps flex min-h-12 w-full shrink-0 items-center justify-center gap-2 bg-charcoal px-6 py-3.5 text-stone transition hover:bg-charcoal-light lg:w-44 lg:self-center"
+        >
+          <span>See Rooms</span>
+          <Icon name="arrow_forward" className="text-sm" />
+        </button>
       </div>
     </form>
   );
