@@ -189,7 +189,7 @@ export default function BookingCalendar() {
   const monthLabel = format(month, "MMMM yyyy");
 
   return (
-    <div className="space-y-4">
+    <div className="min-w-0 w-full max-w-full space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-2">
           <button
@@ -258,8 +258,8 @@ export default function BookingCalendar() {
       ) : rooms.length === 0 ? (
         <p className="py-12 text-center text-sm text-ink/50">No active rooms. Add rooms first.</p>
       ) : (
-        <div className="overflow-x-auto rounded-2xl border border-petrol-100 bg-white shadow-sm">
-          <table className="min-w-full border-collapse text-sm">
+        <div className="max-w-full overflow-x-auto rounded-2xl border border-petrol-100 bg-white shadow-sm">
+          <table className="w-max min-w-full border-collapse text-sm">
             <thead>
               <tr className="border-b border-petrol-100">
                 <th className="sticky left-0 z-10 bg-white px-3 py-2 text-left text-xs font-medium uppercase text-ink/50">
@@ -277,7 +277,7 @@ export default function BookingCalendar() {
                           resetRange();
                           setActiveBooking(null);
                         }}
-                        className={`flex w-9 flex-col items-center rounded-md px-0.5 py-1 text-[10px] font-medium transition hover:bg-petrol-50 ${
+                        className={`flex w-8 flex-col items-center rounded-md px-0.5 py-1 text-[10px] font-medium transition hover:bg-petrol-50 sm:w-9 ${
                           isToday ? "bg-charcoal text-stone" : "text-ink/70"
                         }`}
                         title={`Zoom ${key}`}
@@ -293,7 +293,7 @@ export default function BookingCalendar() {
             <tbody>
               {rooms.map((room) => (
                 <tr key={room.id} className="border-b border-petrol-50 last:border-0">
-                  <td className="sticky left-0 z-10 max-w-[9rem] truncate bg-white px-3 py-2 text-xs font-semibold text-ink">
+                  <td className="sticky left-0 z-10 w-36 max-w-[9rem] truncate bg-white px-3 py-2 text-xs font-semibold text-ink shadow-[2px_0_4px_rgba(0,0,0,0.04)]">
                     {room.name}
                   </td>
                   {days.map((d) => {
@@ -301,7 +301,7 @@ export default function BookingCalendar() {
                     const b = bookingOnNight(bookings, room.id, key);
                     const pending = isInPendingRange(room.id, key);
                     let cls =
-                      "h-9 w-9 rounded-md border border-transparent transition focus:outline-none focus:ring-2 focus:ring-petrol-400";
+                      "h-8 w-8 rounded-md border border-transparent transition focus:outline-none focus:ring-2 focus:ring-petrol-400 sm:h-9 sm:w-9";
                     if (b && b.status !== "cancelled") {
                       cls += ` ${cellStatusClass[b.status as Exclude<BookingStatus, "cancelled">]}`;
                     } else if (pending) {

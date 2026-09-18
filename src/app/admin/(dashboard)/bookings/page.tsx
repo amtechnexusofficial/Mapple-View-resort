@@ -28,9 +28,9 @@ export default async function AdminBookingsPage({
   const roomMap = new Map(rooms.map((r) => [r.id, r]));
 
   return (
-    <div>
+    <div className="min-w-0 w-full max-w-full">
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <div>
+        <div className="min-w-0">
           <h1 className="font-sans text-2xl font-bold text-ink">Bookings</h1>
           <p className="mt-1 text-sm text-ink/60">
             {isList
@@ -65,7 +65,7 @@ export default async function AdminBookingsPage({
       </div>
 
       {!isList ? (
-        <div className="mt-6">
+        <div className="mt-6 min-w-0">
           <BookingCalendar />
         </div>
       ) : (
