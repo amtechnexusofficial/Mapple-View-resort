@@ -108,37 +108,37 @@ export default async function HomePage() {
           sizes="100vw"
           className="object-cover"
         />
-        {/* Stronger dual-direction wash so misty sky and midtones don't erase type */}
-        <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-charcoal/55 to-charcoal/40" />
-        <div className="absolute inset-0 bg-gradient-to-r from-charcoal/50 via-charcoal/20 to-transparent" />
+        {/* Lighter wash on mobile so the landscape reads; deepen from sm up for type */}
+        <div className="absolute inset-0 bg-gradient-to-t from-charcoal/85 via-charcoal/25 to-charcoal/10 sm:from-charcoal sm:via-charcoal/55 sm:to-charcoal/40" />
+        <div className="absolute inset-0 hidden bg-gradient-to-r from-charcoal/50 via-charcoal/20 to-transparent sm:block" />
 
-        <div className="label-caps relative z-10 mx-auto flex w-full max-w-6xl flex-col gap-1 border-b border-stone/35 px-4 pt-6 pb-3 text-stone drop-shadow-[0_1px_2px_rgba(0,0,0,0.65)] sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-3 sm:px-6 sm:pt-8 sm:pb-4">
-          <span className="text-[0.65rem] sm:text-[0.6875rem]">
+        <div className="label-caps relative z-10 mx-auto hidden w-full max-w-6xl flex-wrap items-center justify-between gap-3 border-b border-stone/35 px-4 pt-8 pb-4 text-stone drop-shadow-[0_1px_2px_rgba(0,0,0,0.65)] sm:flex sm:px-6">
+          <span>
             {RESORT_LOCATION.coordsLabel} &nbsp;&middot;&nbsp; ~2,200M ELEVATION
           </span>
-          <span className="text-[0.65rem] sm:text-[0.6875rem]">LOVEDALE &middot; OOTY, NILGIRIS</span>
+          <span>LOVEDALE &middot; OOTY, NILGIRIS</span>
         </div>
 
-        <div className="relative z-10 mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-14">
-          <span className="label-caps text-petrol-200 drop-shadow-[0_1px_2px_rgba(0,0,0,0.55)]">
+        <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-1 flex-col justify-end px-4 pb-6 pt-24 sm:flex-none sm:justify-center sm:px-6 sm:py-14">
+          <span className="label-caps hidden text-petrol-200 drop-shadow-[0_1px_2px_rgba(0,0,0,0.55)] sm:inline">
             {settings.resort_name}
           </span>
-          <h1 className="mt-4 max-w-3xl font-display text-4xl font-normal leading-[1.08] text-stone drop-shadow-[0_2px_12px_rgba(0,0,0,0.45)] sm:mt-5 sm:text-7xl sm:leading-[1.05] lg:text-8xl">
+          <h1 className="max-w-3xl font-display text-[2.75rem] font-normal leading-[1.05] text-stone drop-shadow-[0_2px_16px_rgba(0,0,0,0.55)] sm:mt-5 sm:text-7xl lg:text-8xl">
             {settings.tagline || "A quiet escape in the Nilgiris."}
           </h1>
-          <p className="mt-4 max-w-md text-base font-normal leading-relaxed text-stone drop-shadow-[0_1px_6px_rgba(0,0,0,0.5)] sm:mt-6 sm:text-lg">
+          <p className="mt-6 hidden max-w-md text-base font-normal leading-relaxed text-stone drop-shadow-[0_1px_6px_rgba(0,0,0,0.5)] sm:block sm:text-lg">
             {settings.description}
           </p>
-          <div className="mt-7 flex flex-col gap-3 sm:mt-10 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
+          <div className="mt-8 flex items-stretch gap-2.5 sm:mt-10 sm:gap-4">
             <a
               href="#rooms"
-              className="label-caps inline-flex min-h-11 items-center justify-center bg-petrol-500 px-7 py-3.5 text-center text-stone transition hover:bg-petrol-600"
+              className="label-caps inline-flex min-h-12 flex-1 items-center justify-center bg-petrol-500 px-5 py-3.5 text-center text-stone transition hover:bg-petrol-600 sm:flex-none sm:px-7"
             >
               Explore the Resort
             </a>
             <a
               href="#quick-booking"
-              className="label-caps inline-flex min-h-11 items-center justify-center border border-stone/80 bg-charcoal/55 px-7 py-3.5 text-center text-stone shadow-[0_1px_8px_rgba(0,0,0,0.35)] backdrop-blur-sm transition hover:bg-stone hover:text-ink"
+              className="label-caps inline-flex min-h-12 flex-1 items-center justify-center border border-stone/70 bg-stone/10 px-5 py-3.5 text-center text-stone backdrop-blur-[2px] transition hover:bg-stone hover:text-ink sm:flex-none sm:border-stone/80 sm:bg-charcoal/55 sm:px-7 sm:shadow-[0_1px_8px_rgba(0,0,0,0.35)] sm:backdrop-blur-sm"
             >
               Check Availability
             </a>
