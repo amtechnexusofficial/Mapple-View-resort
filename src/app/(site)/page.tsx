@@ -94,8 +94,6 @@ export default async function HomePage() {
     { id: "view-sunbeams", category: "views" as const, src: stockImages.gallery.sunbeams, caption: "Morning light over the tea ridge" },
     { id: "view-tub", category: "views" as const, src: stockImages.gallery.soakingTub, caption: "A quiet corner, view included" },
     { id: "view-facade", category: "views" as const, src: stockImages.gallery.facade, caption: "The estate, from the driveway" },
-    { id: "dining-main", category: "dining" as const, src: stockImages.dining.main, caption: "A warm plate at altitude", span: "wide" },
-    { id: "dining-tea", category: "dining" as const, src: stockImages.dining.tea, caption: "Tea country, in a cup" },
   ];
 
   return (
@@ -340,37 +338,10 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ========================= 09 · DINING ========================= */}
-      <section className="mx-auto max-w-6xl px-4 py-24 sm:px-6 sm:py-32">
-        <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:items-center">
-          <div className="lg:col-span-6">
-            <SectionLabel index="09" eyebrow="Taste the Hills" />
-            <h2 className="mt-5 font-display text-3xl font-normal text-ink sm:text-4xl">
-              Dining at Mapple View
-            </h2>
-            <p className="mt-4 max-w-md text-sm font-light leading-relaxed text-ink/70">
-              Full dining details and menus are coming soon. For current breakfast and meal
-              arrangements, please ask us directly when you enquire or book.
-            </p>
-          </div>
-          <div className="grid grid-cols-2 gap-4 lg:col-span-6">
-            <div className="relative col-span-2 aspect-[16/9] overflow-hidden bg-petrol-100">
-              <Image src={stockImages.dining.main} alt="" fill sizes="60vw" className="object-cover" />
-            </div>
-            <div className="relative aspect-square overflow-hidden bg-petrol-100">
-              <Image src={stockImages.dining.tea} alt="" fill sizes="30vw" className="object-cover" />
-            </div>
-            <div className="relative aspect-square overflow-hidden bg-petrol-100">
-              <Image src={stockImages.dining.produce} alt="" fill sizes="30vw" className="object-cover" />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ========================= 10 · FAQ ========================= */}
+      {/* ========================= 09 · FAQ ========================= */}
       <section className="bg-white py-24 sm:py-32">
         <div className="mx-auto max-w-3xl px-4 sm:px-6">
-          <SectionLabel index="10" eyebrow="Good to Know" />
+          <SectionLabel index="09" eyebrow="Good to Know" />
           <h2 className="mt-5 font-display text-3xl font-normal text-ink sm:text-4xl">
             Frequently Asked Questions
           </h2>
@@ -380,10 +351,10 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ========================= 11 · GUEST MOMENTS ========================= */}
+      {/* ========================= 10 · GUEST MOMENTS ========================= */}
       {settings.testimonials.trim() && (
         <section className="mx-auto max-w-6xl px-4 py-24 sm:px-6 sm:py-32">
-          <SectionLabel index="11" eyebrow="Guest Moments" />
+          <SectionLabel index="10" eyebrow="Guest Moments" />
           <h2 className="mt-5 font-display text-3xl font-normal text-ink sm:text-4xl">
             In Their Own Words
           </h2>
@@ -393,10 +364,10 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* ========================= 12 · LOCATION ========================= */}
+      {/* ========================= 11 · LOCATION ========================= */}
       <section className="bg-petrol-50/50 py-24 sm:py-32">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <SectionLabel index="12" eyebrow="Arrival & Access" />
+          <SectionLabel index="11" eyebrow="Arrival & Access" />
           <h2 className="mt-5 font-display text-3xl font-normal text-ink sm:text-4xl">
             Find Mapple View Resort
           </h2>

@@ -6,7 +6,7 @@ import Icon from "@/components/ui/Icon";
 
 export type GalleryItem = {
   id: string;
-  category: "rooms" | "views" | "dining";
+  category: "rooms" | "views";
   src: string;
   caption: string;
   span?: "wide" | "tall" | "normal";
@@ -16,7 +16,6 @@ const categories = [
   { key: "all", label: "All" },
   { key: "rooms", label: "Rooms" },
   { key: "views", label: "Mountain Views" },
-  { key: "dining", label: "Dining" },
 ] as const;
 
 export default function GalleryGrid({ items }: { items: GalleryItem[] }) {
