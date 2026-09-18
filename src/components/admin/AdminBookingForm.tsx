@@ -54,6 +54,10 @@ export default function AdminBookingForm({ rooms }: { rooms: Room[] }) {
     e.preventDefault();
     setError(null);
 
+    if (checkIn < today) {
+      setError("Check-in cannot be in the past.");
+      return;
+    }
     if (nights < 1) {
       setError("Check-out date must be after check-in date.");
       return;
@@ -152,6 +156,7 @@ export default function AdminBookingForm({ rooms }: { rooms: Room[] }) {
           <input
             type="date"
             required
+            min={today}
             value={checkIn}
             onChange={(e) => {
               setCheckIn(e.target.value);
@@ -167,6 +172,7 @@ export default function AdminBookingForm({ rooms }: { rooms: Room[] }) {
           <input
             type="date"
             required
+            min={format(addDays(new Date(checkIn), 1), "yyyy-MM-dd")}
             value={checkOut}
             onChange={(e) => setCheckOut(e.target.value)}
             className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm focus:border-petrol-500 focus:outline-none"

@@ -38,6 +38,10 @@ function nightKey(d: Date | string) {
   return typeof d === "string" ? d : format(d, "yyyy-MM-dd");
 }
 
+function isPastNight(night: string, todayKey: string) {
+  return night < todayKey;
+}
+
 /** Booking that occupies this night (check_in <= night < check_out). */
 function bookingOnNight(bookings: Booking[], roomId: string, night: string) {
   return bookings.find(
@@ -57,6 +61,7 @@ const cellStatusClass: Record<Exclude<BookingStatus, "cancelled">, string> = {
 
 export default function BookingCalendar() {
   const today = startOfToday();
+  const todayKey = format(today, "yyyy-MM-dd");
   const [month, setMonth] = useState(() => startOfMonth(today));
   const [rooms, setRooms] = useState<Room[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -107,6 +112,11 @@ export default function BookingCalendar() {
   }
 
   function openCreate(roomId: string, checkIn: string, checkOut: string) {
+    if (isPastNight(checkIn, todayKey)) {
+      setError("Cannot book nights that are already in the past.");
+      resetRange();
+      return;
+    }
     setRangeRoomId(roomId);
     setRangeCheckIn(checkIn);
     setRangeCheckOut(checkOut);
@@ -119,6 +129,12 @@ export default function BookingCalendar() {
     const existing = bookingOnNight(bookings, roomId, night);
     if (existing) {
       setActiveBooking(existing);
+      resetRange();
+      return;
+    }
+
+    if (isPastNight(night, todayKey)) {
+      setError("Cannot book nights that are already in the past.");
       resetRange();
       return;
     }
@@ -300,12 +316,15 @@ export default function BookingCalendar() {
                     const key = nightKey(d);
                     const b = bookingOnNight(bookings, room.id, key);
                     const pending = isInPendingRange(room.id, key);
+                    const past = !b && isPastNight(key, todayKey);
                     let cls =
                       "h-8 w-8 rounded-md border border-transparent transition focus:outline-none focus:ring-2 focus:ring-petrol-400 sm:h-9 sm:w-9";
                     if (b && b.status !== "cancelled") {
                       cls += ` ${cellStatusClass[b.status as Exclude<BookingStatus, "cancelled">]}`;
                     } else if (pending) {
                       cls += " bg-petrol-400/40 ring-2 ring-petrol-500";
+                    } else if (past) {
+                      cls += " cursor-not-allowed border-line/40 bg-petrol-50/60 opacity-45";
                     } else {
                       cls += " border-line/60 bg-stone hover:bg-petrol-50";
                     }
@@ -313,13 +332,16 @@ export default function BookingCalendar() {
                       <td key={key} className="p-0.5">
                         <button
                           type="button"
+                          disabled={past}
                           className={cls}
                           title={
                             b
                               ? `${b.guest_name} (${b.status})`
-                              : pending
-                                ? "In selection"
-                                : `Book ${room.name} from ${key}`
+                              : past
+                                ? "Past night — cannot book"
+                                : pending
+                                  ? "In selection"
+                                  : `Book ${room.name} from ${key}`
                           }
                           onClick={() => onCellClick(room.id, key)}
                         />
@@ -343,12 +365,17 @@ export default function BookingCalendar() {
           day={dayZoom}
           rooms={rooms}
           bookings={bookings}
+          isPast={isPastNight(dayZoom, todayKey)}
           onClose={() => setDayZoom(null)}
           onBook={(roomId) => {
             const checkOut = format(addDays(parseISO(dayZoom), 1), "yyyy-MM-dd");
             openCreate(roomId, dayZoom, checkOut);
           }}
           onExtend={(roomId, checkIn) => {
+            if (isPastNight(checkIn, todayKey)) {
+              setError("Cannot book nights that are already in the past.");
+              return;
+            }
             setRangeRoomId(roomId);
             setRangeCheckIn(checkIn);
             setRangeCheckOut(null);
@@ -377,7 +404,12 @@ export default function BookingCalendar() {
           room={rooms.find((r) => r.id === rangeRoomId)!}
           checkIn={rangeCheckIn}
           checkOut={rangeCheckOut}
+          todayKey={todayKey}
           onCheckInChange={(v) => {
+            if (isPastNight(v, todayKey)) {
+              setError("Cannot book nights that are already in the past.");
+              return;
+            }
             setRangeCheckIn(v);
             if (v >= (rangeCheckOut || "")) {
               setRangeCheckOut(format(addDays(parseISO(v), 1), "yyyy-MM-dd"));
@@ -403,6 +435,7 @@ function DayZoomPanel({
   day,
   rooms,
   bookings,
+  isPast,
   onClose,
   onBook,
   onExtend,
@@ -411,6 +444,7 @@ function DayZoomPanel({
   day: string;
   rooms: Room[];
   bookings: Booking[];
+  isPast: boolean;
   onClose: () => void;
   onBook: (roomId: string) => void;
   onExtend: (roomId: string, checkIn: string) => void;
@@ -425,6 +459,9 @@ function DayZoomPanel({
           <div>
             <p className="text-xs font-medium uppercase tracking-wide text-ink/50">Day view</p>
             <h3 className="font-sans text-lg font-semibold text-ink">{label}</h3>
+            {isPast && (
+              <p className="mt-1 text-xs text-ink/50">Past date — new bookings are disabled.</p>
+            )}
           </div>
           <button
             type="button"
@@ -452,6 +489,8 @@ function DayZoomPanel({
                         </p>
                         <StatusBadge status={b.status} />
                       </div>
+                    ) : isPast ? (
+                      <p className="mt-1 text-sm text-ink/50">Past night</p>
                     ) : (
                       <p className="mt-1 text-sm text-emerald-700">Available</p>
                     )}
@@ -464,7 +503,7 @@ function DayZoomPanel({
                     >
                       Manage
                     </button>
-                  ) : (
+                  ) : !isPast ? (
                     <div className="flex shrink-0 flex-col gap-1.5">
                       <button
                         type="button"
@@ -481,7 +520,7 @@ function DayZoomPanel({
                         Pick range
                       </button>
                     </div>
-                  )}
+                  ) : null}
                 </div>
               </li>
             );
@@ -570,6 +609,7 @@ function CreateBookingModal({
   room,
   checkIn,
   checkOut,
+  todayKey,
   onCheckInChange,
   onCheckOutChange,
   onClose,
@@ -578,6 +618,7 @@ function CreateBookingModal({
   room: Room;
   checkIn: string;
   checkOut: string;
+  todayKey: string;
   onCheckInChange: (v: string) => void;
   onCheckOutChange: (v: string) => void;
   onClose: () => void;
@@ -610,6 +651,10 @@ function CreateBookingModal({
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+    if (isPastNight(checkIn, todayKey)) {
+      setError("Check-in cannot be in the past.");
+      return;
+    }
     if (nights < 1) {
       setError("Check-out must be after check-in.");
       return;
@@ -668,6 +713,7 @@ function CreateBookingModal({
             <input
               type="date"
               required
+              min={todayKey}
               value={checkIn}
               onChange={(e) => onCheckInChange(e.target.value)}
               className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm"

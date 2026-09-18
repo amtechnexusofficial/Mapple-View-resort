@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { differenceInCalendarDays } from "date-fns";
+import { differenceInCalendarDays, format, startOfToday } from "date-fns";
 import { BookingModel, RoomModel } from "@/lib/models";
 import { adminCreateBookingSchema } from "@/lib/validation";
 import type { BookingStatus } from "@/lib/types";
@@ -45,6 +45,14 @@ export async function POST(request: NextRequest) {
   const room = await RoomModel.byId(d.roomId);
   if (!room) {
     return NextResponse.json({ error: "Room not found" }, { status: 404 });
+  }
+
+  const todayKey = format(startOfToday(), "yyyy-MM-dd");
+  if (d.checkIn < todayKey) {
+    return NextResponse.json(
+      { error: "Check-in cannot be in the past" },
+      { status: 400 }
+    );
   }
 
   const nights = differenceInCalendarDays(new Date(d.checkOut), new Date(d.checkIn));
