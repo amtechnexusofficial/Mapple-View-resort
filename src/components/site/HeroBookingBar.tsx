@@ -35,12 +35,12 @@ export default function HeroBookingBar() {
   return (
     <form
       onSubmit={handleReserve}
-      className="relative z-10 w-full bg-stone/95 px-4 py-4 shadow-2xl backdrop-blur-md sm:px-5 sm:py-4 lg:px-6"
+      className="relative z-10 w-full bg-stone/95 py-4 shadow-2xl backdrop-blur-md sm:py-5"
       id="quick-booking"
     >
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-stretch lg:gap-5">
-        <div className="grid min-w-0 flex-1 grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-0 sm:divide-x sm:divide-line">
-          <label className="flex min-w-0 flex-col gap-2 sm:pr-5">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 sm:px-6 lg:flex-row lg:items-stretch lg:gap-6">
+        <div className="grid min-w-0 flex-1 grid-cols-2 gap-x-3 gap-y-4 sm:grid-cols-3 sm:gap-0 sm:divide-x sm:divide-line">
+          <label className="flex min-w-0 flex-col gap-2 border-r border-line pr-3 sm:border-r-0 sm:pr-6 lg:pr-8">
             <span className="label-caps text-ink-soft/70">Arrival</span>
             <input
               type="date"
@@ -57,7 +57,7 @@ export default function HeroBookingBar() {
             />
           </label>
 
-          <label className="flex min-w-0 flex-col gap-2 sm:px-5">
+          <label className="flex min-w-0 flex-col gap-2 sm:px-6 lg:px-8">
             <span className="label-caps text-ink-soft/70">Departure</span>
             <input
               type="date"
@@ -69,7 +69,7 @@ export default function HeroBookingBar() {
             />
           </label>
 
-          <div className="flex min-w-0 flex-col gap-2 sm:pl-5">
+          <div className="col-span-2 flex min-w-0 flex-col gap-2 sm:col-span-1 sm:pl-6 lg:pl-8">
             <span className="label-caps text-ink-soft/70">Guests</span>
             <div className="flex min-h-10 items-center gap-2.5">
               <button
