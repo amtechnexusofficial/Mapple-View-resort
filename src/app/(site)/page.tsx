@@ -110,19 +110,23 @@ export default async function HomePage() {
           sizes="100vw"
           className="object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-charcoal/45 to-charcoal/15" />
+        {/* Stronger dual-direction wash so misty sky and midtones don't erase type */}
+        <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-charcoal/55 to-charcoal/40" />
+        <div className="absolute inset-0 bg-gradient-to-r from-charcoal/50 via-charcoal/20 to-transparent" />
 
-        <div className="label-caps relative z-10 mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-3 border-b border-stone/20 px-4 pt-8 pb-4 text-stone/80 sm:px-6">
+        <div className="label-caps relative z-10 mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-3 border-b border-stone/35 px-4 pt-8 pb-4 text-stone drop-shadow-[0_1px_2px_rgba(0,0,0,0.65)] sm:px-6">
           <span>{RESORT_LOCATION.coordsLabel} &nbsp;&middot;&nbsp; ~2,200M ELEVATION</span>
           <span>LOVEDALE &middot; OOTY, NILGIRIS</span>
         </div>
 
         <div className="relative z-10 mx-auto w-full max-w-6xl px-4 py-14 sm:px-6">
-          <span className="label-caps text-petrol-300">{settings.resort_name}</span>
-          <h1 className="mt-5 max-w-3xl font-display text-5xl font-normal leading-[1.05] sm:text-7xl lg:text-8xl">
+          <span className="label-caps text-petrol-200 drop-shadow-[0_1px_2px_rgba(0,0,0,0.55)]">
+            {settings.resort_name}
+          </span>
+          <h1 className="mt-5 max-w-3xl font-display text-5xl font-normal leading-[1.05] text-stone drop-shadow-[0_2px_12px_rgba(0,0,0,0.45)] sm:text-7xl lg:text-8xl">
             {settings.tagline || "A quiet escape in the Nilgiris."}
           </h1>
-          <p className="mt-6 max-w-md text-base font-light leading-relaxed text-stone/80 sm:text-lg">
+          <p className="mt-6 max-w-md text-base font-normal leading-relaxed text-stone drop-shadow-[0_1px_6px_rgba(0,0,0,0.5)] sm:text-lg">
             {settings.description}
           </p>
           <div className="mt-10 flex flex-wrap items-center gap-4">
@@ -134,7 +138,7 @@ export default async function HomePage() {
             </a>
             <a
               href="#quick-booking"
-              className="label-caps border border-stone/40 px-7 py-3.5 text-stone/90 transition hover:bg-stone hover:text-ink"
+              className="label-caps border border-stone/80 bg-charcoal/55 px-7 py-3.5 text-stone shadow-[0_1px_8px_rgba(0,0,0,0.35)] backdrop-blur-sm transition hover:bg-stone hover:text-ink"
             >
               Check Availability
             </a>
@@ -143,7 +147,7 @@ export default async function HomePage() {
 
         <HeroBookingBar />
 
-        <div className="label-caps relative z-10 mx-auto flex w-full max-w-6xl items-center justify-between px-4 pb-6 pt-3 text-stone/60 sm:px-6">
+        <div className="label-caps relative z-10 mx-auto flex w-full max-w-6xl items-center justify-between px-4 pb-6 pt-3 text-stone/85 drop-shadow-[0_1px_2px_rgba(0,0,0,0.55)] sm:px-6">
           <span>Scroll to Discover</span>
           <Icon name="south" className="animate-bounce text-base" />
         </div>
