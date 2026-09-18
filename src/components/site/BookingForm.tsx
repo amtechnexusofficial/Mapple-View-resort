@@ -53,8 +53,8 @@ export default function BookingForm({
     const to = format(addDays(parseISO(today), 365), "yyyy-MM-dd");
     let cancelled = false;
     fetch(`/api/availability?roomId=${encodeURIComponent(room.id)}&from=${from}&to=${to}`)
-      .then((r) => r.json())
-      .then((data: { bookedNights?: string[] }) => {
+      .then((r) => r.json() as Promise<{ bookedNights?: string[] }>)
+      .then((data) => {
         if (!cancelled) setBookedNights(new Set(data.bookedNights ?? []));
       })
       .catch(() => {
