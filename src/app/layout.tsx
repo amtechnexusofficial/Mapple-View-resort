@@ -27,6 +27,12 @@ export const metadata: Metadata = {
     "Mapple View Resort: a peaceful mountain retreat with breathtaking views, comfortable rooms, and warm hospitality. Book your stay today.",
 };
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover" as const,
+};
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html

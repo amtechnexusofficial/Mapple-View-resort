@@ -99,7 +99,7 @@ export default async function HomePage() {
   return (
     <div>
       {/* ============================= HERO ============================= */}
-      <section className="relative isolate flex min-h-[92vh] flex-col justify-between overflow-hidden text-stone">
+      <section className="relative isolate flex min-h-[100svh] flex-col justify-between overflow-hidden text-stone md:min-h-[92vh]">
         <Image
           src={settings.hero_image || stockImages.heroBg}
           alt=""
@@ -112,31 +112,33 @@ export default async function HomePage() {
         <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-charcoal/55 to-charcoal/40" />
         <div className="absolute inset-0 bg-gradient-to-r from-charcoal/50 via-charcoal/20 to-transparent" />
 
-        <div className="label-caps relative z-10 mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-3 border-b border-stone/35 px-4 pt-8 pb-4 text-stone drop-shadow-[0_1px_2px_rgba(0,0,0,0.65)] sm:px-6">
-          <span>{RESORT_LOCATION.coordsLabel} &nbsp;&middot;&nbsp; ~2,200M ELEVATION</span>
-          <span>LOVEDALE &middot; OOTY, NILGIRIS</span>
+        <div className="label-caps relative z-10 mx-auto flex w-full max-w-6xl flex-col gap-1 border-b border-stone/35 px-4 pt-6 pb-3 text-stone drop-shadow-[0_1px_2px_rgba(0,0,0,0.65)] sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-3 sm:px-6 sm:pt-8 sm:pb-4">
+          <span className="text-[0.65rem] sm:text-[0.6875rem]">
+            {RESORT_LOCATION.coordsLabel} &nbsp;&middot;&nbsp; ~2,200M ELEVATION
+          </span>
+          <span className="text-[0.65rem] sm:text-[0.6875rem]">LOVEDALE &middot; OOTY, NILGIRIS</span>
         </div>
 
-        <div className="relative z-10 mx-auto w-full max-w-6xl px-4 py-14 sm:px-6">
+        <div className="relative z-10 mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-14">
           <span className="label-caps text-petrol-200 drop-shadow-[0_1px_2px_rgba(0,0,0,0.55)]">
             {settings.resort_name}
           </span>
-          <h1 className="mt-5 max-w-3xl font-display text-5xl font-normal leading-[1.05] text-stone drop-shadow-[0_2px_12px_rgba(0,0,0,0.45)] sm:text-7xl lg:text-8xl">
+          <h1 className="mt-4 max-w-3xl font-display text-4xl font-normal leading-[1.08] text-stone drop-shadow-[0_2px_12px_rgba(0,0,0,0.45)] sm:mt-5 sm:text-7xl sm:leading-[1.05] lg:text-8xl">
             {settings.tagline || "A quiet escape in the Nilgiris."}
           </h1>
-          <p className="mt-6 max-w-md text-base font-normal leading-relaxed text-stone drop-shadow-[0_1px_6px_rgba(0,0,0,0.5)] sm:text-lg">
+          <p className="mt-4 max-w-md text-base font-normal leading-relaxed text-stone drop-shadow-[0_1px_6px_rgba(0,0,0,0.5)] sm:mt-6 sm:text-lg">
             {settings.description}
           </p>
-          <div className="mt-10 flex flex-wrap items-center gap-4">
+          <div className="mt-7 flex flex-col gap-3 sm:mt-10 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
             <a
               href="#rooms"
-              className="label-caps bg-petrol-500 px-7 py-3.5 text-stone transition hover:bg-petrol-600"
+              className="label-caps inline-flex min-h-11 items-center justify-center bg-petrol-500 px-7 py-3.5 text-center text-stone transition hover:bg-petrol-600"
             >
               Explore the Resort
             </a>
             <a
               href="#quick-booking"
-              className="label-caps border border-stone/80 bg-charcoal/55 px-7 py-3.5 text-stone shadow-[0_1px_8px_rgba(0,0,0,0.35)] backdrop-blur-sm transition hover:bg-stone hover:text-ink"
+              className="label-caps inline-flex min-h-11 items-center justify-center border border-stone/80 bg-charcoal/55 px-7 py-3.5 text-center text-stone shadow-[0_1px_8px_rgba(0,0,0,0.35)] backdrop-blur-sm transition hover:bg-stone hover:text-ink"
             >
               Check Availability
             </a>
@@ -145,7 +147,7 @@ export default async function HomePage() {
 
         <HeroBookingBar />
 
-        <div className="label-caps relative z-10 mx-auto flex w-full max-w-6xl items-center justify-between px-4 pb-6 pt-3 text-stone/85 drop-shadow-[0_1px_2px_rgba(0,0,0,0.55)] sm:px-6">
+        <div className="label-caps relative z-10 mx-auto hidden w-full max-w-6xl items-center justify-between px-4 pb-6 pt-3 text-stone/85 drop-shadow-[0_1px_2px_rgba(0,0,0,0.55)] sm:flex sm:px-6">
           <span>Scroll to Discover</span>
           <Icon name="south" className="animate-bounce text-base" />
         </div>
@@ -178,7 +180,7 @@ export default async function HomePage() {
           </Reveal>
           <div className="lg:col-span-7">
             <div className="grid grid-cols-12 gap-4">
-              <div className="relative col-span-7 h-[420px] overflow-hidden bg-petrol-100 sm:h-[520px]">
+              <div className="relative col-span-7 h-[260px] overflow-hidden bg-petrol-100 sm:h-[420px] lg:h-[520px]">
                 <Image
                   src={stockImages.escapeTall}
                   alt="Morning mist over the hills near Mapple View"
@@ -187,8 +189,8 @@ export default async function HomePage() {
                   className="object-cover"
                 />
               </div>
-              <div className="col-span-5 pt-16">
-                <div className="relative h-[300px] overflow-hidden bg-petrol-100 sm:h-[380px]">
+              <div className="col-span-5 pt-8 sm:pt-16">
+                <div className="relative h-[180px] overflow-hidden bg-petrol-100 sm:h-[300px] lg:h-[380px]">
                   <Image
                     src={stockImages.escapeSquare}
                     alt="A warm, quiet corner at Mapple View"

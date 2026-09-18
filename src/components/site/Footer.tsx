@@ -23,11 +23,27 @@ export default async function Footer() {
         </div>
         <div className="md:col-span-4">
           <span className="label-caps text-petrol-300">Explore</span>
-          <ul className="mt-4 space-y-2.5 text-sm font-light text-stone/80">
-            <li><Link href="/rooms" className="hover:text-petrol-300">Rooms &amp; Suites</Link></li>
-            <li><Link href="/about" className="hover:text-petrol-300">About the Resort</Link></li>
-            <li><Link href="/explore-ooty" className="hover:text-petrol-300">Explore Ooty</Link></li>
-            <li><Link href="/contact" className="hover:text-petrol-300">Contact Us</Link></li>
+          <ul className="mt-4 space-y-1 text-sm font-light text-stone/80">
+            <li>
+              <Link href="/rooms" className="inline-flex min-h-11 items-center hover:text-petrol-300">
+                Rooms &amp; Suites
+              </Link>
+            </li>
+            <li>
+              <Link href="/about" className="inline-flex min-h-11 items-center hover:text-petrol-300">
+                About the Resort
+              </Link>
+            </li>
+            <li>
+              <Link href="/explore-ooty" className="inline-flex min-h-11 items-center hover:text-petrol-300">
+                Explore Ooty
+              </Link>
+            </li>
+            <li>
+              <Link href="/contact" className="inline-flex min-h-11 items-center hover:text-petrol-300">
+                Contact Us
+              </Link>
+            </li>
           </ul>
         </div>
         <div className="md:col-span-4">

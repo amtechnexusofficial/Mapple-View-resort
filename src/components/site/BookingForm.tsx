@@ -80,7 +80,7 @@ export default function BookingForm({ room }: { room: Room }) {
         Book This Room
       </h3>
 
-      <div className="mt-5 grid grid-cols-2 gap-4">
+      <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <label className="text-xs font-medium text-ink/60">Check-in</label>
           <input
@@ -94,7 +94,7 @@ export default function BookingForm({ room }: { room: Room }) {
                 setCheckOut(format(addDays(new Date(e.target.value), 1), "yyyy-MM-dd"));
               }
             }}
-            className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm focus:border-petrol-500 focus:outline-none"
+            className="mt-1 min-h-11 w-full rounded-lg border border-line px-3 py-2.5 text-base focus:border-petrol-500 focus:outline-none"
           />
         </div>
         <div>
@@ -105,7 +105,7 @@ export default function BookingForm({ room }: { room: Room }) {
             min={format(addDays(new Date(checkIn), 1), "yyyy-MM-dd")}
             value={checkOut}
             onChange={(e) => setCheckOut(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm focus:border-petrol-500 focus:outline-none"
+            className="mt-1 min-h-11 w-full rounded-lg border border-line px-3 py-2.5 text-base focus:border-petrol-500 focus:outline-none"
           />
         </div>
       </div>
@@ -119,7 +119,7 @@ export default function BookingForm({ room }: { room: Room }) {
           max={room.max_guests}
           value={guests}
           onChange={(e) => setGuests(Number(e.target.value))}
-          className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm focus:border-petrol-500 focus:outline-none"
+          className="mt-1 min-h-11 w-full rounded-lg border border-line px-3 py-2.5 text-base focus:border-petrol-500 focus:outline-none"
         />
         <p className="mt-1 text-xs text-ink/50">Max {room.max_guests} guests</p>
       </div>
@@ -132,7 +132,7 @@ export default function BookingForm({ room }: { room: Room }) {
           value={guestName}
           onChange={(e) => setGuestName(e.target.value)}
           placeholder="Your full name"
-          className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm focus:border-petrol-500 focus:outline-none"
+          className="mt-1 min-h-11 w-full rounded-lg border border-line px-3 py-2.5 text-base focus:border-petrol-500 focus:outline-none"
         />
       </div>
 
@@ -144,7 +144,7 @@ export default function BookingForm({ room }: { room: Room }) {
           value={guestPhone}
           onChange={(e) => setGuestPhone(e.target.value)}
           placeholder="+91 98765 43210"
-          className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm focus:border-petrol-500 focus:outline-none"
+          className="mt-1 min-h-11 w-full rounded-lg border border-line px-3 py-2.5 text-base focus:border-petrol-500 focus:outline-none"
         />
       </div>
 
@@ -157,7 +157,7 @@ export default function BookingForm({ room }: { room: Room }) {
           value={guestEmail}
           onChange={(e) => setGuestEmail(e.target.value)}
           placeholder="you@example.com"
-          className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm focus:border-petrol-500 focus:outline-none"
+          className="mt-1 min-h-11 w-full rounded-lg border border-line px-3 py-2.5 text-base focus:border-petrol-500 focus:outline-none"
         />
       </div>
 
@@ -169,7 +169,7 @@ export default function BookingForm({ room }: { room: Room }) {
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           rows={2}
-          className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm focus:border-petrol-500 focus:outline-none"
+          className="mt-1 w-full rounded-lg border border-line px-3 py-2.5 text-base focus:border-petrol-500 focus:outline-none"
         />
       </div>
 
@@ -193,7 +193,7 @@ export default function BookingForm({ room }: { room: Room }) {
       <button
         type="submit"
         disabled={submitting || nights < 1}
-        className="mt-6 w-full rounded-full bg-ink px-6 py-3 text-sm font-semibold text-stone transition hover:bg-charcoal-light disabled:cursor-not-allowed disabled:opacity-60"
+        className="mt-6 w-full min-h-12 rounded-full bg-ink px-6 py-3 text-base font-semibold text-stone transition hover:bg-charcoal-light disabled:cursor-not-allowed disabled:opacity-60"
       >
         {submitting ? "Processing..." : "Continue to Payment"}
       </button>

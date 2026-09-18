@@ -51,28 +51,30 @@ export default function ChooseYourEscape() {
 
   return (
     <div>
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-1 lg:mx-0 lg:grid lg:grid-cols-4 lg:gap-4 lg:overflow-visible lg:px-0">
         {personas.map((p, i) => (
           <button
             key={p.title}
             type="button"
             onClick={() => setActive(i)}
-            className={`border-b-2 p-5 text-left transition-all ${
+            className={`min-w-[70%] shrink-0 snap-start border-b-2 p-4 text-left transition-all sm:min-w-[45%] lg:min-w-0 lg:p-5 ${
               i === active
                 ? "border-charcoal bg-petrol-50"
                 : "border-transparent bg-white hover:bg-petrol-50/60"
             }`}
           >
             <span className="label-caps block text-petrol-500">{p.label}</span>
-            <h4 className="mt-1 font-display text-lg font-medium text-ink">{p.title}</h4>
-            <p className="mt-1 line-clamp-1 text-sm font-light text-ink-soft/70">{p.tag}</p>
+            <h4 className="mt-1 font-display text-base font-medium text-ink sm:text-lg">{p.title}</h4>
+            <p className="mt-1 line-clamp-1 hidden text-sm font-light text-ink-soft/70 sm:block">
+              {p.tag}
+            </p>
           </button>
         ))}
       </div>
 
-      <div className="mt-4 bg-petrol-50 p-6 lg:p-10">
+      <div className="mt-4 bg-petrol-50 p-4 sm:p-6 lg:p-10">
         <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-12">
-          <div className="relative h-[280px] overflow-hidden lg:col-span-6">
+          <div className="relative h-[220px] overflow-hidden sm:h-[280px] lg:col-span-6">
             <Image src={current.image} alt={current.title} fill sizes="(min-width: 1024px) 50vw, 100vw" className="object-cover" />
           </div>
           <div className="space-y-4 lg:col-span-6">

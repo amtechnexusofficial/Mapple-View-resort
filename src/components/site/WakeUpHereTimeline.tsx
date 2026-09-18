@@ -51,13 +51,13 @@ export default function WakeUpHereTimeline() {
 
   return (
     <div>
-      <div className="flex items-center gap-2 overflow-x-auto border-b border-line pb-4">
+      <div className="-mx-4 flex snap-x snap-mandatory gap-2 overflow-x-auto border-b border-line px-4 pb-4 sm:mx-0 sm:px-0">
         {moments.map((m, i) => (
           <button
             key={m.time}
             type="button"
             onClick={() => setActive(i)}
-            className={`label-caps whitespace-nowrap px-4 py-2.5 transition-all ${
+            className={`label-caps snap-start whitespace-nowrap px-4 py-3 transition-all ${
               i === active ? "bg-charcoal text-stone" : "bg-petrol-50 text-ink-soft hover:bg-petrol-100"
             }`}
           >
@@ -66,8 +66,8 @@ export default function WakeUpHereTimeline() {
         ))}
       </div>
 
-      <div className="mt-8 grid grid-cols-1 items-center gap-8 bg-white p-6 lg:grid-cols-12 lg:p-10">
-        <div className="relative h-[320px] overflow-hidden lg:col-span-7 lg:h-[420px]">
+      <div className="mt-8 grid grid-cols-1 items-center gap-8 bg-white p-4 sm:p-6 lg:grid-cols-12 lg:p-10">
+        <div className="relative h-[240px] overflow-hidden sm:h-[320px] lg:col-span-7 lg:h-[420px]">
           <Image src={image} alt={current.title} fill sizes="(min-width: 1024px) 55vw, 100vw" className="object-cover" />
         </div>
         <div className="space-y-4 lg:col-span-5">

@@ -24,7 +24,7 @@ export default function LocationSection({ settings }: { settings: Settings }) {
       <div className="flex flex-col justify-center gap-6">
         <div>
           <span className="label-caps text-petrol-500">Mapple View Resort</span>
-          <h3 className="mt-2 font-display text-2xl font-normal text-ink">
+          <h3 className="mt-2 font-display text-lg font-normal leading-snug text-ink sm:text-2xl">
             {settings.address || RESORT_LOCATION.address}
           </h3>
         </div>

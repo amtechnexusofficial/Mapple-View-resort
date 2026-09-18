@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import type { Room } from "@/lib/types";
@@ -17,6 +17,13 @@ export default function RoomShowcase({
 }) {
   const [active, setActive] = useState<Room | null>(null);
   const activeIndex = active ? rooms.findIndex((r) => r.id === active.id) : -1;
+
+  useEffect(() => {
+    document.body.style.overflow = active ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [active]);
 
   return (
     <>
@@ -35,7 +42,7 @@ export default function RoomShowcase({
                 {room.size_sqft > 0 ? `${room.size_sqft} sq ft` : `Up to ${room.max_guests} guests`}
               </div>
             </div>
-            <div className="flex flex-1 flex-col justify-between p-6">
+            <div className="flex flex-1 flex-col justify-between p-5 sm:p-6">
               <div>
                 <span className="label-caps text-petrol-500">
                   {formatInr(room.price_per_night)} / night
@@ -48,7 +55,7 @@ export default function RoomShowcase({
               <button
                 type="button"
                 onClick={() => setActive(room)}
-                className="label-caps mt-6 flex items-center justify-center gap-2 bg-charcoal px-4 py-3 text-stone transition hover:bg-charcoal-light"
+                className="label-caps mt-6 flex min-h-11 items-center justify-center gap-2 bg-charcoal px-4 py-3 text-stone transition hover:bg-charcoal-light"
               >
                 Explore Suite
                 <Icon name="arrow_forward" className="text-sm" />
@@ -66,7 +73,7 @@ export default function RoomShowcase({
         onClick={() => setActive(null)}
       >
         <div
-          className="flex h-full w-full max-w-xl flex-col justify-between overflow-y-auto bg-stone p-8 shadow-2xl lg:p-12"
+          className="flex h-full w-full max-w-xl flex-col justify-between overflow-y-auto bg-stone p-5 pt-[max(1.5rem,env(safe-area-inset-top))] pb-[max(2rem,env(safe-area-inset-bottom))] shadow-2xl sm:p-8 lg:p-12"
           onClick={(e) => e.stopPropagation()}
         >
           {active && (
@@ -78,7 +85,7 @@ export default function RoomShowcase({
                     type="button"
                     onClick={() => setActive(null)}
                     aria-label="Close"
-                    className="p-1 text-ink hover:text-petrol-600"
+                    className="inline-flex min-h-11 min-w-11 items-center justify-center text-ink hover:text-petrol-600"
                   >
                     <Icon name="close" className="text-2xl" />
                   </button>
